@@ -24,6 +24,11 @@ With more than 70+ core
 # UWP improvements
 This app supported by [UWP2Win32](https://github.com/basharast/UWP2Win32)
 
+# Cores updater
+The current cores downloader/updater linked with my repo at `docs/cores`
+
+if you want to help to get/fix more cores for ARM please submit pull request with the target core or contact me
+
 
 # Future
 
