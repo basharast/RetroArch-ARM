@@ -18,7 +18,8 @@ With more than 70+ core
 
 # Target
 
-- It should work with Build: 15035+ (14393 with few cores)
+- It should work with Build: 15035+ 
+- 1.14.0 and below (14393 with few cores)
 
 
 # UWP improvements
