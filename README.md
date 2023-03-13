@@ -35,7 +35,7 @@ if you want to help to get/fix more cores for ARM please submit pull request wit
 
 - Help me add Dynarec for Flycast: [GitHub Issue here](https://github.com/flyinghead/flycast/issues/545)
 
-- Help me to solve N64 issue: [GitHub Issue here](https://github.com/mupen64plus/mupen64plus-video-rice/issues/102)
+- ~~Help me to solve N64 issue: [GitHub Issue here](https://github.com/mupen64plus/mupen64plus-video-rice/issues/102)~~ [Solved]
 
 
 # Credits
