@@ -21,7 +21,7 @@ With more than 70+ core
 - It should work with Build: 15035+ 
 - (14393 with few cores)
 
-# Note
+# Support
 
 Please note that I'm not maintaining WOA (.exe) releases any more, only UWP
 if you faced installation difficulties please checkout [this page](https://github.com/basharast/RetroArch-ARM/wiki/Installation)
