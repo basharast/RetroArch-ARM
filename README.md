@@ -36,6 +36,10 @@ The current cores downloader/updater linked with my repo at `docs/cores`
 if you want to help to get/fix more cores for ARM please submit pull request with the target core or contact me
 
 
+# Recently added
+- EasyRPG (supported only with `1.15.5` or higher)
+
+
 # Future
 
 - Help me add Dynarec for Flycast: [GitHub Issue here](https://github.com/flyinghead/flycast/issues/545)
