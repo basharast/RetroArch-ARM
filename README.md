@@ -62,7 +62,7 @@ if you want to help to get/fix more cores for ARM please submit pull request wit
 RetroArch Team done greate job to make this project if you would like to support them <a href="https://www.retroarch.com/index.php?page=donate">Click Here</a>
 
 # Source
-Outdated source here, since this for ARM32, legacy support (where no one is intersted)
+Outdated source here, since this for ARM32, legacy support (where no one is interested)
 
 I'm delaying that because I don't have time to keep this up, it will be updated once I had free time
 
