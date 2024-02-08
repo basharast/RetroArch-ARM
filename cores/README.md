@@ -5,6 +5,7 @@ Tested on UWP & WOA versions including quick tests for the contents
 
 
 # Supported Cores
+## Not updated, more cores added
 
 <b>Arcade:</b>
 
