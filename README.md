@@ -25,6 +25,9 @@ With more than 70+ core
 Please note that I'm not maintaining WOA (.exe) releases any more, only UWP
 if you faced installation difficulties please checkout [this page](https://github.com/basharast/RetroArch-ARM/wiki/Installation)
 
+## Surface (ARM64)
+- Please note Qualcomm and Windows are no longer support ARM32 (which what I do)
+- Keep check the official download page for any update from libretro side [Click here](https://retroarch.com/?page=platforms)
 
 # UWP improvements
 This app supported by [UWP2Win32](https://github.com/basharast/UWP2Win32)
