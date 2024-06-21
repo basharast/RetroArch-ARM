@@ -28,7 +28,8 @@ if you faced installation difficulties please checkout [this page](https://githu
 ## Surface (ARM64)
 - Please note Qualcomm and Windows are no longer support ARM32 (which what I do)
 - Keep check the official download page for any update from libretro side [Click here](https://retroarch.com/?page=platforms)
-
+- My work is focus on legacy support for older devices and ARM devices that still support ARM32
+- 
 # UWP improvements
 This app supported by [UWP2Win32](https://github.com/basharast/UWP2Win32)
 
