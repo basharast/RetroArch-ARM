@@ -168,12 +168,16 @@ struct android_app
    jmethodID setScreenOrientation;
    jmethodID getUserLanguageString;
    jmethodID doVibrate;
+   jmethodID doHapticFeedback;
 
    jmethodID isPlayStoreBuild;
    jmethodID getAvailableCores;
    jmethodID getInstalledCores;
    jmethodID downloadCore;
    jmethodID deleteCore;
+
+   jmethodID getVolumeCount;
+   jmethodID getVolumePath;
 
    struct
    {
@@ -287,9 +291,7 @@ enum
     */
    APP_CMD_DESTROY,
 
-   APP_CMD_REINIT_DONE,
-
-   APP_CMD_VIBRATE_KEYPRESS
+   APP_CMD_REINIT_DONE
 };
 
 #define JNI_EXCEPTION(env) \

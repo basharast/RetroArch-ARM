@@ -22,7 +22,7 @@
 #include <string/stdstring.h>
 
 #include "../verbosity.h"
-#include "../retroarch.h"
+#include "../runloop.h"
 
 #include "tasks_internal.h"
 
@@ -519,7 +519,6 @@ void input_autoconfigure_blissbox_override_handler(
          /* override name given to autoconfig so it knows what kind of pad this is */
          if (len > 0)
          {
-            device_name[0] = '\0';
             strlcpy(device_name, "Bliss-Box 4-Play ", len);
             strlcat(device_name, pad->name, len);
          }

@@ -37,32 +37,11 @@ int msg_hash_get_help_enum(enum msg_hash_enums msg, char *s, size_t len)
 #ifdef HAVE_LANGEXTRA
    switch (uint_user_language)
    {
-      case RETRO_LANGUAGE_FRENCH:
-         ret = msg_hash_get_help_fr_enum(msg, s, len);
-         break;
-      case RETRO_LANGUAGE_GERMAN:
-         ret = msg_hash_get_help_de_enum(msg, s, len);
-         break;
-      case RETRO_LANGUAGE_SPANISH:
-         ret = msg_hash_get_help_es_enum(msg, s, len);
-         break;
-      case RETRO_LANGUAGE_ITALIAN:
-         ret = msg_hash_get_help_it_enum(msg, s, len);
-         break;
       case RETRO_LANGUAGE_PORTUGUESE_BRAZIL:
          ret = msg_hash_get_help_pt_br_enum(msg, s, len);
          break;
       case RETRO_LANGUAGE_PORTUGUESE_PORTUGAL:
          ret = msg_hash_get_help_pt_pt_enum(msg, s, len);
-         break;
-      case RETRO_LANGUAGE_DUTCH:
-         ret = msg_hash_get_help_nl_enum(msg, s, len);
-         break;
-      case RETRO_LANGUAGE_ESPERANTO:
-         ret = msg_hash_get_help_eo_enum(msg, s, len);
-         break;
-      case RETRO_LANGUAGE_POLISH:
-         ret = msg_hash_get_help_pl_enum(msg, s, len);
          break;
       case RETRO_LANGUAGE_JAPANESE:
          ret = msg_hash_get_help_jp_enum(msg, s, len);
@@ -79,29 +58,33 @@ int msg_hash_get_help_enum(enum msg_hash_enums msg, char *s, size_t len)
       case RETRO_LANGUAGE_CHINESE_TRADITIONAL:
          ret = msg_hash_get_help_cht_enum(msg, s, len);
          break;
-      case RETRO_LANGUAGE_ARABIC:
-         ret = msg_hash_get_help_ar_enum(msg, s, len);
-         break;
       case RETRO_LANGUAGE_GREEK:
          ret = msg_hash_get_help_el_enum(msg, s, len);
          break;
       case RETRO_LANGUAGE_TURKISH:
          ret = msg_hash_get_help_tr_enum(msg, s, len);
          break;
+      case RETRO_LANGUAGE_CATALAN_VALENCIA:
+      case RETRO_LANGUAGE_UKRAINIAN:
       case RETRO_LANGUAGE_SLOVAK:
-         ret = msg_hash_get_help_sk_enum(msg, s, len);
-         break;
       case RETRO_LANGUAGE_PERSIAN:
-         ret = msg_hash_get_help_fa_enum(msg, s, len);
-         break;
+      case RETRO_LANGUAGE_ESPERANTO:
+      case RETRO_LANGUAGE_BRITISH_ENGLISH:
+      case RETRO_LANGUAGE_CATALAN:
+      case RETRO_LANGUAGE_CZECH:
       case RETRO_LANGUAGE_HEBREW:
-         ret = msg_hash_get_help_he_enum(msg, s, len);
-         break;
+      case RETRO_LANGUAGE_HUNGARIAN:
+      case RETRO_LANGUAGE_ARABIC:
       case RETRO_LANGUAGE_ASTURIAN:
-         ret = msg_hash_get_help_ast_enum(msg, s, len);
-         break;
       case RETRO_LANGUAGE_FINNISH:
-         ret = msg_hash_get_help_fi_enum(msg, s, len);
+      case RETRO_LANGUAGE_INDONESIAN:
+      case RETRO_LANGUAGE_SWEDISH:
+      case RETRO_LANGUAGE_FRENCH:
+      case RETRO_LANGUAGE_GERMAN:
+      case RETRO_LANGUAGE_SPANISH:
+      case RETRO_LANGUAGE_ITALIAN:
+      case RETRO_LANGUAGE_DUTCH:
+      case RETRO_LANGUAGE_POLISH:
       default:
          break;
    }
@@ -171,6 +154,26 @@ const char *get_user_language_iso639_1(bool limit)
          return "ast";
       case RETRO_LANGUAGE_FINNISH:
          return "fi";
+      case RETRO_LANGUAGE_INDONESIAN:
+         return "id";
+      case RETRO_LANGUAGE_SWEDISH:
+         return "sv";
+      case RETRO_LANGUAGE_UKRAINIAN:
+         return "uk";
+      case RETRO_LANGUAGE_CZECH:
+         return "cs";
+      case RETRO_LANGUAGE_CATALAN_VALENCIA:
+         if (limit)
+            return "ca";
+         return "ca_valencia";
+      case RETRO_LANGUAGE_CATALAN:
+         return "ca";
+      case RETRO_LANGUAGE_BRITISH_ENGLISH:
+         if (limit)
+            return "en";
+         return "en_gb";
+      case RETRO_LANGUAGE_HUNGARIAN:
+         return "hu";
    }
    return "en";
 }
@@ -251,6 +254,30 @@ const char *msg_hash_to_str(enum msg_hash_enums msg)
       case RETRO_LANGUAGE_FINNISH:
          ret = msg_hash_to_str_fi(msg);
          break;
+      case RETRO_LANGUAGE_INDONESIAN:
+         ret = msg_hash_to_str_id(msg);
+         break;
+      case RETRO_LANGUAGE_SWEDISH:
+         ret = msg_hash_to_str_sv(msg);
+         break;
+      case RETRO_LANGUAGE_UKRAINIAN:
+         ret = msg_hash_to_str_uk(msg);
+         break;
+      case RETRO_LANGUAGE_CZECH:
+         ret = msg_hash_to_str_cs(msg);
+         break;
+      case RETRO_LANGUAGE_CATALAN_VALENCIA:
+         ret = msg_hash_to_str_val(msg);
+         break;
+      case RETRO_LANGUAGE_CATALAN:
+         ret = msg_hash_to_str_ca(msg);
+         break;
+      case RETRO_LANGUAGE_BRITISH_ENGLISH:
+         ret = msg_hash_to_str_en(msg);
+         break;
+      case RETRO_LANGUAGE_HUNGARIAN:
+         ret = msg_hash_to_str_hu(msg);
+         break;
       default:
          break;
    }
@@ -322,7 +349,6 @@ uint32_t msg_hash_calculate(const char *s)
 #define MENU_VALUE_IMAGE                                                       0xbab7ebf9U
 #define MENU_VALUE_MOVIE                                                       0xc43c4bf6U
 #define MENU_VALUE_CORE                                                        0x6a167f7fU
-#define MENU_VALUE_CURSOR                                                      0x57bba8b4U
 #define MENU_VALUE_FILE                                                        0x6a496536U
 #define MENU_VALUE_RDB                                                         0x0b00f54eU
 #define MENU_VALUE_DIR                                                         0x0af95f55U
@@ -369,8 +395,6 @@ enum msg_file_type msg_hash_to_file_type(uint32_t hash)
          return FILE_TYPE_CORE;
       case MENU_VALUE_RDB:
          return FILE_TYPE_RDB;
-      case MENU_VALUE_CURSOR:
-         return FILE_TYPE_CURSOR;
       case MENU_VALUE_FILE:
          return FILE_TYPE_PLAIN;
       case MENU_VALUE_DIR:

@@ -65,9 +65,9 @@ static bool nmcli_enable(void* data, bool enabled)
 
 #if 0
    if (enabled)
-      _pclose(_popen("nmcli radio wifi on", "r"));
+      pclose(popen("nmcli radio wifi on", "r"));
    else
-      _pclose(_popen("nmcli radio wifi off", "r"));
+      pclose(popen("nmcli radio wifi off", "r"));
 #endif
 
    return true;
@@ -81,7 +81,7 @@ static bool nmcli_connection_info(void *data, wifi_network_info_t *netinfo)
    if (!netinfo)
       return false;
 
-   cmd_file = _popen("nmcli -f NAME c show --active | tail -n+2", "r");
+   cmd_file = popen("nmcli -f NAME c show --active | tail -n+2", "r");
 
    if (fgets(line, sizeof(line), cmd_file))
    {
@@ -104,14 +104,14 @@ static void nmcli_scan(void *data)
    if (nmcli->scan.net_list)
       RBUF_FREE(nmcli->scan.net_list);
 
-   cmd_file = _popen("nmcli -f IN-USE,SSID dev wifi | tail -n+2", "r");
+   cmd_file = popen("nmcli -f IN-USE,SSID dev wifi | tail -n+2", "r");
    while (fgets(line, 512, cmd_file))
    {
       wifi_network_info_t entry;
       memset(&entry, 0, sizeof(entry));
 
       string_trim_whitespace(line);
-      if (strlen(line) < 1)
+      if (!line || line[0] == '\0')
          continue;
 
       if (line[0] == '*')
@@ -125,7 +125,7 @@ static void nmcli_scan(void *data)
 
       RBUF_PUSH(nmcli->scan.net_list, entry);
    }
-   _pclose(cmd_file);
+   pclose(cmd_file);
 }
 
 static wifi_network_scan_t* nmcli_get_ssids(void *data)
@@ -156,7 +156,7 @@ static bool nmcli_connect_ssid(void *data,
    snprintf(cmd, sizeof(cmd),
          "nmcli dev wifi connect \"%s\" password \"%s\" 2>&1",
          netinfo->ssid, netinfo->passphrase);
-   if ((ret = _pclose(_popen(cmd, "r"))) == 0)
+   if ((ret = pclose(popen(cmd, "r"))) == 0)
    {
       for (i = 0; i < RBUF_LEN(nmcli->scan.net_list); i++)
       {
@@ -173,7 +173,7 @@ static bool nmcli_disconnect_ssid(void *data,
 {
    char cmd[256];
    snprintf(cmd, sizeof(cmd), "nmcli c down \"%s\"", netinfo->ssid);
-   _pclose(_popen(cmd, "r"));
+   pclose(popen(cmd, "r"));
 
    return true;
 }

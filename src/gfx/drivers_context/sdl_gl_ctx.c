@@ -241,12 +241,13 @@ static bool sdl_ctx_set_video_mode(void *data,
 #endif
 
    if (sdl->ctx)
-      video_driver_set_video_cache_context_ack();
+   {
+      video_state_get_ptr()->flags |= VIDEO_FLAG_CACHE_CONTEXT_ACK;
+      RARCH_LOG("[SDL_GL]: Using cached GL context.\n");
+   }
    else
    {
-      sdl->ctx = SDL_GL_CreateContext(sdl->win);
-
-      if (!sdl->ctx)
+      if (!(sdl->ctx = SDL_GL_CreateContext(sdl->win)))
          goto error;
    }
 #endif
@@ -377,7 +378,12 @@ static bool sdl_ctx_has_focus(void *data)
 
 #ifdef HAVE_SDL2
    gfx_ctx_sdl_data_t *sdl = (gfx_ctx_sdl_data_t*)data;
+#ifdef WEBOS
+   // We do not receive mouse focus when non-magic remote is used.
+   flags = (SDL_WINDOW_INPUT_FOCUS);
+#else
    flags = (SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS);
+#endif
    return (SDL_GetWindowFlags(sdl->win) & flags) == flags;
 #else
    flags = (SDL_APPINPUTFOCUS | SDL_APPACTIVE);

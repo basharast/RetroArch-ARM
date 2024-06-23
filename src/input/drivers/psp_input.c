@@ -43,10 +43,6 @@
 #include <libretro.h>
 #include <retro_miscellaneous.h>
 
-#ifdef HAVE_KERNEL_PRX
-#include "../../bootstrap/psp1/kernel_functions.h"
-#endif
-
 #include <defines/psp_defines.h>
 
 #include "../input_driver.h"
@@ -304,16 +300,15 @@ static void psp_input_free_input(void *data)
    free(data);
 }
 
-
 static uint64_t psp_input_get_capabilities(void *data)
 {
-   uint64_t caps = (1 << RETRO_DEVICE_JOYPAD) |  (1 << RETRO_DEVICE_ANALOG);
-
+   return 
 #ifdef VITA
-   caps |= (1 << RETRO_DEVICE_KEYBOARD) | (1 << RETRO_DEVICE_MOUSE);
+          (1 << RETRO_DEVICE_KEYBOARD) 
+        | (1 << RETRO_DEVICE_MOUSE) |
 #endif
-
-   return caps;
+          (1 << RETRO_DEVICE_JOYPAD) 
+        | (1 << RETRO_DEVICE_ANALOG);
 }
 
 #ifdef VITA
@@ -446,5 +441,6 @@ input_driver_t input_psp = {
 #endif
 
    NULL,                         /* grab_mouse */
+   NULL,
    NULL
 };

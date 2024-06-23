@@ -23,8 +23,24 @@ MSG_HASH(
    "retro_achievements"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_PAUSE_MENU,
-   "toggle_cheevos_hardcore"
+   MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_MENU,
+   "achievement_pause_menu"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_CANCEL,
+   "achievement_pause_cancel"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_ACHIEVEMENT_RESUME_CANCEL,
+   "achievement_resume_cancel"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE,
+   "achievement_pause"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_ACHIEVEMENT_RESUME,
+   "achievement_resume"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_ACCOUNTS_TWITCH,
@@ -66,13 +82,13 @@ MSG_HASH(
    MENU_ENUM_LABEL_EXPLORE_INITIALISING_LIST,
    "explore_initialising_list"
    )
-   MSG_HASH(
-      MENU_ENUM_LABEL_CONTENTLESS_CORES_TAB,
-      "contentless_cores_tab"
+MSG_HASH(
+   MENU_ENUM_LABEL_CONTENTLESS_CORES_TAB,
+   "contentless_cores_tab"
    )
-   MSG_HASH(
-      MENU_ENUM_LABEL_CONTENTLESS_CORE,
-      "contentless_core"
+MSG_HASH(
+   MENU_ENUM_LABEL_CONTENTLESS_CORE,
+   "contentless_core"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_ADD_TAB,
@@ -97,6 +113,141 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_AUDIO_DRIVER,
    "audio_driver"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_RSOUND,
+   "rsound"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_AUDIOIO,
+   "audioio"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_OSS,
+   "oss"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_ALSA,
+   "alsa"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_ALSATHREAD,
+   "alsathread"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_TINYALSA,
+   "tinyalsa"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_ROAR,
+   "roar"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_COREAUDIO,
+   "coreaudio"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_COREAUDIO3,
+   "coreaudio3"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_AL,
+   "openal"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_SL,
+   "opensl"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_SDL,
+   "sdl"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_SDL2,
+   "sdl2"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_DSOUND,
+   "dsound"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_WASAPI,
+   "wasapi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_XAUDIO,
+   "xaudio"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_PULSE,
+   "pulse"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_EXT,
+   "ext"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_XENON360,
+   "xenon360"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_PS3,
+   "ps3"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_WII,
+   "gx"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_WIIU,
+   "AX"
+   )
+#if defined(VITA)
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_PSP,
+   "vita"
+   )
+#elif defined(ORBIS)
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_PSP,
+   "orbis"
+   )
+#else
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_PSP,
+   "psp"
+   )
+#endif
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_PS2,
+   "ps2"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_CTR,
+   "dsp"
+   )
+#if defined(HAVE_LIBNX)
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_SWITCH,
+   "switch_audren_thread"
+   )
+#else
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_SWITCH,
+   "switch"
+   )
+#endif
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_RWEBAUDIO,
+   "rwebaudio"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_JACK,
+   "jack"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_DRIVER_NULL,
+   "null"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_AUDIO_DSP_PLUGIN,
@@ -251,6 +402,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_CB_CORE_CONTENT_LIST,
    "cb_core_content_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CB_CORE_SYSTEM_FILES_DOWNLOAD,
+   "cb_core_system_files_download"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CB_CORE_SYSTEM_FILES_LIST,
+   "cb_core_system_files_list"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_CB_CORE_THUMBNAILS_DOWNLOAD,
@@ -417,6 +576,38 @@ MSG_HASH(
    "cheevos_challenge_indicators"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_APPEARANCE_SETTINGS,
+   "cheevos_appearance_settings"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_APPEARANCE_ANCHOR,
+   "cheevos_appearance_anchor"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_APPEARANCE_PADDING_AUTO,
+   "cheevos_appearance_padding_auto"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_VISIBILITY_SETTINGS,
+   "cheevos_visibility_settings"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_VISIBILITY_SUMMARY,
+   "cheevos_visibility_summary"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_VISIBILITY_UNLOCK,
+   "cheevos_visibility_unlock"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_VISIBILITY_MASTERY,
+   "cheevos_visibility_mastery"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CHEEVOS_VISIBILITY_ACCOUNT,
+   "cheevos_visibility_account"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_CLOSE_CONTENT,
    "unload_core"
    )
@@ -435,6 +626,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_CONFIG_SAVE_ON_EXIT,
    "config_save_on_exit"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_REMAP_SAVE_ON_EXIT,
+   "remap_save_on_exit"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_CONNECT_WIFI,
@@ -553,6 +748,10 @@ MSG_HASH(
    "sideload_core"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_SAVESTATE_LIST,
+   "savestate_list"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_CORE_OPTIONS,
    "core_options"
    )
@@ -596,6 +795,28 @@ MSG_HASH(
    MENU_ENUM_LABEL_CORE_MANAGER_LIST,
    "core_manager_list"
    )
+#ifdef HAVE_MIST
+MSG_HASH(
+   MENU_ENUM_LABEL_CORE_STEAM_INSTALL,
+   "core_steam_install"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_CORE_STEAM_UNINSTALL,
+   "core_steam_uninstall"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_STEAM_SETTINGS,
+   "steam_settings"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_STEAM_RICH_PRESENCE_ENABLE,
+   "steam_rich_presence_enable"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_STEAM_RICH_PRESENCE_FORMAT,
+   "steam_rich_presence_format"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_CPU_ARCHITECTURE,
    "system_information_cpu_architecture"
@@ -712,10 +933,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_DEVICE_TYPE,
    "deferred_dropdown_box_list_input_device_type"
    )
+#ifdef ANDROID
 MSG_HASH(
-   MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_DEVICE_INDEX,
-   "deferred_dropdown_box_list_input_device_index"
-   )
+        MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_SELECT_PHYSICAL_KEYBOARD,
+    "deferred_dropdown_box_list_input_select_physical_keyboard"
+)
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_DESCRIPTION,
    "deferred_dropdown_box_list_input_description"
@@ -723,6 +946,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_DESCRIPTION_KBD,
    "deferred_dropdown_box_list_input_description_kbd"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_NETPLAY_MITM_SERVER,
+   "deferred_dropdown_box_list_netplay_mitm_server"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_CONFIGURATIONS_LIST,
@@ -752,9 +979,9 @@ MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_EXPLORE_LIST,
    "deferred_explore_list"
    )
-   MSG_HASH(
-      MENU_ENUM_LABEL_DEFERRED_CONTENTLESS_CORES_LIST,
-      "deferred_contentless_cores_list"
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_CONTENTLESS_CORES_LIST,
+   "deferred_contentless_cores_list"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_NETPLAY,
@@ -841,6 +1068,10 @@ MSG_HASH(
    "deferred_core_content_list"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_CORE_SYSTEM_FILES_LIST,
+   "deferred_core_system_files_list"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_CORE_LIST,
    "deferred_core_list"
    )
@@ -856,6 +1087,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_CORE_INFORMATION_LIST,
    "deferred_core_information_list"
    )
+#ifdef HAVE_MIST
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_CORE_INFORMATION_STEAM_LIST,
+   "deferred_core_information_steam_list"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_CORE_UPDATER_LIST,
    "core_updater"
@@ -864,6 +1101,16 @@ MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_CORE_MANAGER_LIST,
    "deferred_core_manager_list"
    )
+#ifdef HAVE_MIST
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_STEAM_SETTINGS_LIST,
+   "deferred_steam_settings_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_CORE_MANAGER_STEAM_LIST,
+   "deferred_core_manager_steam_list"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_CURSOR_MANAGER_LIST,
    "deferred_cursor_manager_list"
@@ -948,6 +1195,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_MENU_SETTINGS_LIST,
    "deferred_menu_settings_list"
    )
+#ifdef _3DS
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_MENU_BOTTOM_SETTINGS_LIST,
+   "deferred_menu_bottom_settings"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_MENU_VIEWS_SETTINGS_LIST,
    "deferred_menu_views_settings_list"
@@ -971,6 +1224,18 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_NETWORK_SETTINGS_LIST,
    "deferred_network_settings_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_NETPLAY_KICK_LIST,
+   "deferred_netplay_kick_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_NETPLAY_BAN_LIST,
+   "deferred_netplay_ban_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_NETPLAY_LOBBY_FILTERS_LIST,
+   "deferred_netplay_lobby_filters_list"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_ONSCREEN_DISPLAY_SETTINGS_LIST,
@@ -1023,6 +1288,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_RETRO_ACHIEVEMENTS_SETTINGS_LIST,
    "deferred_retro_achievements_settings_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_CHEEVOS_APPEARANCE_SETTINGS_LIST,
+   "deferred_cheevos_appearance_settings_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_CHEEVOS_VISIBILITY_SETTINGS_LIST,
+   "deferred_cheevos_visibility_settings_list"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_REWIND_SETTINGS_LIST,
@@ -1165,6 +1438,10 @@ MSG_HASH(
    "download_core_content_dirs"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_DOWNLOAD_CORE_SYSTEM_FILES,
+   "download_core_system_files"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_UPDATE_INSTALLED_CORES,
    "update_installed_cores"
    )
@@ -1209,6 +1486,10 @@ MSG_HASH(
    "core_info_cache_enable"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_CORE_RESOLVE_WIN32_ENABLE,
+   "core_resolve_win32_enable"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_DUMMY_ON_CORE_SHUTDOWN,
    "dummy_on_core_shutdown"
    )
@@ -1229,6 +1510,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_FASTFORWARD_RATIO,
    "fastforward_ratio"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_FASTFORWARD_FRAMESKIP,
+   "fastforward_frameskip"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_FILE_BROWSER_CORE,
@@ -1431,6 +1716,10 @@ MSG_HASH(
    "menu_swap_ok_cancel"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_MENU_INPUT_SWAP_SCROLL,
+   "menu_swap_scroll"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_INPUT_AUTODETECT_ENABLE,
    "input_autodetect_enable"
    )
@@ -1439,6 +1728,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_INPUT_NOWINKEY_ENABLE,
    "input_nowinkey_enable"
    )
+#endif
+#ifdef ANDROID
+MSG_HASH(
+        MENU_ENUM_LABEL_INPUT_SELECT_PHYSICAL_KEYBOARD,
+        "input_android_physical_keyboard"
+)
 #endif
 MSG_HASH(
    MENU_ENUM_LABEL_INPUT_SENSORS_ENABLE,
@@ -1597,6 +1892,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_INPUT_OVERLAY_AUTO_SCALE,
    "input_overlay_auto_scale"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_OVERLAY_DPAD_DIAGONAL_SENSITIVITY,
+   "input_overlay_dpad_diagonal_sensitivity"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_OVERLAY_ABXY_DIAGONAL_SENSITIVITY,
+   "input_overlay_abxy_diagonal_sensitivity"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_INPUT_POLL_TYPE_BEHAVIOR,
@@ -1829,6 +2132,10 @@ MSG_HASH(
    "ozone_scroll_content_metadata"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_OZONE_THUMBNAIL_SCALE_FACTOR,
+   "ozone_menu_thumbnail_scale_factor"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_MATERIALUI_MENU_COLOR_THEME,
    "materialui_menu_color_theme"
    )
@@ -1857,6 +2164,22 @@ MSG_HASH(
    "menu_driver"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_MENU_DRIVER_RGUI,
+   "rgui"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_DRIVER_OZONE,
+   "ozone"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_DRIVER_MATERIALUI,
+   "glui"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_DRIVER_XMB,
+   "xmb"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_MENU_ENUM_THROTTLE_FRAMERATE,
    "menu_throttle_framerate"
    )
@@ -1876,6 +2199,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_MENU_SETTINGS,
    "menu_settings"
    )
+#ifdef _3DS
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_BOTTOM_SETTINGS,
+   "menu_bottom_settings"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_MENU_WALLPAPER,
    "menu_wallpaper"
@@ -1945,6 +2274,14 @@ MSG_HASH(
    "menu_netplay_enable_host"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_NETPLAY_KICK,
+   "menu_netplay_kick"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_NETPLAY_BAN,
+   "menu_netplay_ban"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_NETPLAY_ALLOW_SLAVES,
    "netplay_allow_slaves"
    )
@@ -1997,12 +2334,16 @@ MSG_HASH(
    "netplay_fade_chat"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_NETPLAY_ALLOW_PAUSING,
-   "netplay_allow_pausing"
+   MENU_ENUM_LABEL_NETPLAY_CHAT_COLOR_NAME,
+   "netplay_chat_color_name"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_NETPLAY_STATELESS_MODE,
-   "netplay_stateless_mode"
+   MENU_ENUM_LABEL_NETPLAY_CHAT_COLOR_MSG,
+   "netplay_chat_color_msg"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_NETPLAY_ALLOW_PAUSING,
+   "netplay_allow_pausing"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_NETPLAY_TCP_UDP_PORT,
@@ -2069,6 +2410,10 @@ MSG_HASH(
    "network_settings"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_NETPLAY_LOBBY_FILTERS,
+   "netplay_lobby_filters"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_NO_ACHIEVEMENTS_TO_DISPLAY,
    "no_achievements_to_display"
    )
@@ -2103,6 +2448,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_NO_NETPLAY_HOSTS_FOUND,
    "no_netplay_hosts_found"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_NO_NETPLAY_CLIENTS_FOUND,
+   "no_netplay_clients_found"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_NO_BT_DEVICES_FOUND,
@@ -2267,6 +2616,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_PAUSE_NONACTIVE,
    "pause_nonactive"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_PAUSE_ON_DISCONNECT,
+   "pause_on_disconnect"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_MENU_SCREENSAVER_TIMEOUT,
@@ -2535,6 +2888,78 @@ MSG_HASH(
    "rdb_entry_genre"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_ACHIEVEMENTS,
+   "rdb_entry_achievements"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_CATEGORY,
+   "rdb_entry_category"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_LANGUAGE,
+   "rdb_entry_language"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_REGION,
+   "rdb_entry_region"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_CONSOLE_EXCLUSIVE,
+   "rdb_entry_console_exclusive"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_PLATFORM_EXCLUSIVE,
+   "rdb_entry_platform_exclusive"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_RUMBLE,
+   "rdb_entry_rumble"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_SCORE,
+   "rdb_entry_score"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_MEDIA,
+   "rdb_entry_media"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_CONTROLS,
+   "rdb_entry_controls"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_ARTSTYLE,
+   "rdb_entry_artstyle"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_GAMEPLAY,
+   "rdb_entry_gameplay"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_NARRATIVE,
+   "rdb_entry_narrative"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_PACING,
+   "rdb_entry_pacing"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_PERSPECTIVE,
+   "rdb_entry_perspective"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_SETTING,
+   "rdb_entry_setting"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_VISUAL,
+   "rdb_entry_visual"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_VEHICULAR,
+   "rdb_entry_vehicular"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_RDB_ENTRY_MAX_USERS,
    "rdb_entry_max_users"
    )
@@ -2651,6 +3076,18 @@ MSG_HASH(
    "record_use_output_directory"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_REMAP_FILE_MANAGER_LIST,
+   "deferred_remap_file_manager_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_REMAP_FILE_MANAGER_LIST,
+   "remap_file_manager_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_REMAP_FILE_INFO,
+   "remap_file_info"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_REMAP_FILE_LOAD,
    "remap_file_load"
    )
@@ -2677,6 +3114,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_REMAP_FILE_REMOVE_GAME,
    "remap_file_remove_game"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_REMAP_FILE_RESET,
+   "remap_file_reset"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_REMAP_FILE_FLUSH,
+   "remap_file_flush"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_RESTART_CONTENT,
@@ -2865,6 +3310,14 @@ MSG_HASH(
    "netplay_show_only_connectable"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_NETPLAY_SHOW_ONLY_INSTALLED_CORES,
+   "netplay_show_only_installed_cores"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_NETPLAY_SHOW_PASSWORDED,
+   "netplay_show_passworded"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_NETPLAY_REFRESH_ROOMS,
    "refresh_rooms"
    )
@@ -2933,6 +3386,10 @@ MSG_HASH(
    "slowmotion_ratio"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_RUN_AHEAD_UNSUPPORTED,
+   "run_ahead_unsupported"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_RUN_AHEAD_ENABLED,
    "run_ahead_enabled"
    )
@@ -2947,6 +3404,22 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_RUN_AHEAD_FRAMES,
    "run_ahead_frames"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_PREEMPT_ENABLE,
+   "preemptive_frames_enable"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_PREEMPT_UNSUPPORTED,
+   "preemptive_frames_unsupported"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_PREEMPT_HIDE_WARNINGS,
+   "preemptive_frames_hide_warnings"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_PREEMPT_FRAMES,
+   "preemptive_frames"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_SORT_SAVEFILES_ENABLE,
@@ -3063,6 +3536,18 @@ MSG_HASH(
    "menu_xmb_vertical_fade_factor"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_MENU_XMB_SHOW_TITLE_HEADER,
+   "menu_xmb_show_title_header"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_XMB_TITLE_MARGIN,
+   "menu_xmb_title_margin"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_XMB_TITLE_MARGIN_HORIZONTAL_OFFSET,
+   "menu_xmb_title_margin_horizontal_offset"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_MENU_THUMBNAIL_UPSCALE_THRESHOLD,
    "menu_thumbnail_upscale_threshold"
    )
@@ -3121,6 +3606,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_MENU_TICKER_SMOOTH,
    "menu_ticker_smooth"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_REMEMBER_SELECTION,
+   "menu_remember_selection"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_UI_COMPANION_ENABLE,
@@ -3297,6 +3786,154 @@ MSG_HASH(
    "video_driver"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_GL,
+   "gl"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_GL1,
+   "gl1"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_GL_CORE,
+   "glcore"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_VULKAN,
+   "vulkan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_METAL,
+   "metal"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_DRM,
+   "drm"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_WII,
+   "gx"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_WIIU,
+   "gx2"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_XENON360,
+   "xenon360"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_D3D8,
+   "d3d8"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_D3D9_CG,
+   "d3d9_cg"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_D3D9_HLSL,
+   "d3d9_hlsl"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_D3D10,
+   "d3d10"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_D3D11,
+   "d3d11"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_D3D12,
+   "d3d12"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_PSP1,
+   "psp1"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_PS2,
+   "ps2"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_VITA2D,
+   "vita2d"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_CTR,
+   "ctr"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_SWITCH,
+   "switch"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_XVIDEO,
+   "xvideo"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_SDL_DINGUX,
+   "sdl_dingux"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_SDL_RS90,
+   "sdl_rs90"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_SDL1,
+   "sdl"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_SDL2,
+   "sdl2"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_EXT,
+   "ext"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_VG,
+   "vg"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_OMAP,
+   "omap"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_EXYNOS,
+   "exynos"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_DISPMANX,
+   "dispmanx"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_SUNXI,
+   "sunxi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_CACA,
+   "caca"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_GDI,
+   "gdi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_VGA,
+   "vga"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_FPGA,
+   "fpga"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_RSX,
+   "rsx"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_DRIVER_NULL,
+   "null"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_FILTER,
    "video_filter"
    )
@@ -3373,6 +4010,14 @@ MSG_HASH(
    "video_max_swapchain_images"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_WAITABLE_SWAPCHAINS,
+   "video_waitable_swapchains"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_MAX_FRAME_LATENCY,
+   "video_max_frame_latency"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_MESSAGE_POS_X,
    "video_message_pos_x"
    )
@@ -3384,6 +4029,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_MONITOR_INDEX,
    "video_monitor_index"
    )
+#if defined(WIIU)
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_WIIU_PREFER_DRC,
+   "video_wiiu_prefer_drc"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_WINDOW_OFFSET_X,
    "video_window_offset_x"
@@ -3407,6 +4058,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_REFRESH_RATE_POLLED,
    "video_refresh_rate_polled"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_AUTOSWITCH_REFRESH_RATE,
+   "video_autoswitch_refresh_rate"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_ROTATION,
@@ -3487,6 +4142,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_SHADER_PRESET,
    "video_shader_preset"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_SHADER_PRESET_PREPEND,
+   "video_shader_preset_prepend"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_SHADER_PRESET_APPEND,
+   "video_shader_preset_append"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_SHADER_PRESET_PARAMETERS,
@@ -3724,9 +4387,9 @@ MSG_HASH(
    MENU_ENUM_LABEL_CONTENT_SHOW_EXPLORE,
    "content_show_explore"
    )
-   MSG_HASH(
-      MENU_ENUM_LABEL_CONTENT_SHOW_CONTENTLESS_CORES,
-      "content_show_contentless_cores"
+MSG_HASH(
+   MENU_ENUM_LABEL_CONTENT_SHOW_CONTENTLESS_CORES,
+   "content_show_contentless_cores"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_CONTENT_SHOW_FAVORITES,
@@ -3923,6 +4586,14 @@ MSG_HASH(
    "unified_menu_controls"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DISABLE_INFO_BUTTON,
+   "disable_info_button"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DISABLE_SEARCH_BUTTON,
+   "disable_search_button"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_QUIT_PRESS_TWICE,
    "quit_press_twice"
    )
@@ -4015,6 +4686,10 @@ MSG_HASH(
    "core_lock"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_CORE_SET_STANDALONE_EXEMPT,
+   "core_set_standalone_exempt"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_CORE_DELETE,
    "core_delete"
    )
@@ -4046,13 +4721,17 @@ MSG_HASH(
    MENU_ENUM_LABEL_GOTO_EXPLORE,
    "goto_explore"
    )
-   MSG_HASH(
-      MENU_ENUM_LABEL_GOTO_CONTENTLESS_CORES,
-      "goto_contentless_cores"
+MSG_HASH(
+   MENU_ENUM_LABEL_GOTO_CONTENTLESS_CORES,
+   "goto_contentless_cores"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_MATERIALUI_ICONS_ENABLE,
    "materialui_icons_enable"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MATERIALUI_SWITCH_ICONS,
+   "materialui_switch_icons"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_MATERIALUI_PLAYLIST_ICONS_ENABLE,
@@ -4134,19 +4813,19 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_QUICK_MENU_START_RECORDING,
-   "quick_menu_show_start_recording"
+   "quick_menu_start_recording"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_QUICK_MENU_START_STREAMING,
-   "quick_menu_show_start_streaming"
+   "quick_menu_start_streaming"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_QUICK_MENU_STOP_RECORDING,
-   "quick_menu_show_stop_recording"
+   "quick_menu_stop_recording"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_QUICK_MENU_STOP_STREAMING,
-   "quick_menu_show_stop_streaming"
+   "quick_menu_stop_streaming"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_QUICK_MENU_SHOW_TAKE_SCREENSHOT,
@@ -4179,6 +4858,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_QUICK_MENU_SHOW_RESET_CORE_ASSOCIATION,
    "quick_menu_show_reset_core_association"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_QUICK_MENU_SHOW_SAVESTATE_SUBMENU,
+   "quick_menu_show_savestate_submenu"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_QUICK_MENU_SHOW_OPTIONS,
@@ -4282,7 +4965,98 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_AUDIO_RESAMPLER_DRIVER_CC,
-   "cc"
+   "CC"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_RESAMPLER_DRIVER_NEAREST,
+   "nearest"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_AUDIO_RESAMPLER_DRIVER_NULL,
+   "null"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_ANDROID,
+   "android"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_PS4,
+   "ps4"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_PS3,
+   "ps3"
+   )
+#ifdef VITA
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_PSP,
+   "vita"
+   )
+#else
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_PSP,
+   "psp"
+   )
+#endif
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_PS2,
+   "ps2"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_CTR,
+   "ctr"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_SWITCH,
+   "switch"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_SDL,
+   "sdl"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_SDL2,
+   "sdl2"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_SDL_DINGUX,
+   "sdl_dingux"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_DINPUT,
+   "dinput"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_WINRAW,
+   "raw"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_X,
+   "x"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_WAYLAND,
+   "wayland"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_XENON360,
+   "xenon360"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_XINPUT,
+   "xinput"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_UWP,
+   "uwp"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_WII,
+   "gx"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_WIIU,
+   "wiiu"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_INPUT_DRIVER_UDEV,
@@ -4292,6 +5066,26 @@ MSG_HASH(
    MENU_ENUM_LABEL_INPUT_DRIVER_LINUXRAW,
    "linuxraw"
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_COCOA,
+   "cocoa"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_QNX,
+   "qnx_input"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_RWEBINPUT,
+   "rwebinput"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_DOS,
+   "dos"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_DRIVER_NULL,
+   "null"
+)
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_WINDOW_SHOW_DECORATIONS,
    "video_window_show_decorations"
@@ -4708,7 +5502,11 @@ MSG_HASH(
    MENU_ENUM_LABEL_NO_FAVORITES_AVAILABLE,
    "no_favorites"
    )
-#if defined(_3DS)
+#ifdef _3DS
+MSG_HASH(
+   MENU_ENUM_LABEL_NEW3DS_SPEEDUP_ENABLE,
+   "new3ds_speedup_enable"
+   )
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_3DS_LCD_BOTTOM,
    "video_3ds_lcd_bottom"
@@ -4716,6 +5514,34 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_3DS_DISPLAY_MODE,
    "video_3ds_display_mode"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_BOTTOM_ASSETS_DIRECTORY,
+   "bottom_assets_directory"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_BOTTOM_FONT_ENABLE,
+   "bottom_font_enable"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_BOTTOM_FONT_COLOR_RED,
+   "bottom_font_color_red"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_BOTTOM_FONT_COLOR_GREEN,
+   "bottom_font_color_green"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_BOTTOM_FONT_COLOR_BLUE,
+   "bottom_font_color_blue"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_BOTTOM_FONT_COLOR_OPACITY,
+   "bottom_font_color_opacity"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_BOTTOM_FONT_SCALE,
+   "bottom_font_scale"
    )
 #endif
 MSG_HASH(
@@ -4741,6 +5567,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_MENU_SOUND_BGM,
    "menu_sound_bgm"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_MENU_SOUND_SCROLL,
+   "menu_sound_scroll"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_CONTENT_RUNTIME_LOG,
@@ -5034,6 +5864,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_SETTINGS_SHOW_DIRECTORY,
    "settings_show_directory"
    )
+#ifdef HAVE_MIST
+MSG_HASH(
+   MENU_ENUM_LABEL_SETTINGS_SHOW_STEAM,
+   "settings_show_steam"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_FRAME_TIME_COUNTER_RESET_AFTER_FASTFORWARDING,
    "frame_time_counter_reset_after_fastforwarding"

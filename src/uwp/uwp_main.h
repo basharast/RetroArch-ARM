@@ -38,6 +38,7 @@ namespace RetroArchUWP
       void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
       void OnResuming(Platform::Object^ sender, Platform::Object^ args);
       void OnEnteredBackground(Platform::Object^ sender, Windows::ApplicationModel::EnteredBackgroundEventArgs^ args);
+
       void OnBackRequested(Platform::Object^ sender, Windows::UI::Core::BackRequestedEventArgs^ args);
 
       // Window event handlers.
@@ -47,6 +48,7 @@ namespace RetroArchUWP
       void OnWindowActivated(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowActivatedEventArgs^ args);
       void OnKey(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
       void OnPointer(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+      void OnPointerRelease(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
 
       // DisplayInformation event handlers.
       void OnDpiChanged(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
@@ -70,10 +72,10 @@ namespace RetroArchUWP
       bool m_windowVisible;
       bool m_windowFocused;
       bool m_windowResized;
-      static App^ m_instance;
       Platform::String^ m_launchOnExit;
       bool m_launchOnExitShutdown;
-      void ParseProtocolArgs(Windows::ApplicationModel::Activation::IActivatedEventArgs^ args, int* argc, std::vector<char*>* argv, std::vector<std::string>* argvTmp);
+      void ParseProtocolArgs(Windows::ApplicationModel::Activation::IActivatedEventArgs^ args, int *argc, std::vector<char*> *argv, std::vector<std::string> *argvTmp);
+      static App^ m_instance;
    };
 }
 

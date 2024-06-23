@@ -1,6 +1,6 @@
 Name:           retroarch
-Version:        1.10.2
-Release:        v1.9.14
+Version:        1.14.0
+Release:        v1.14.0
 Summary:        Official reference frontend for libretro
 
 Group:          Applications/Emulators
@@ -32,7 +32,7 @@ cores also in their own programs or devices.
 %ifarch armv7hl
 ./configure --prefix=%{_prefix} --enable-opengles --enable-neon --enable-egl --enable-wayland
 %else
-./configure --prefix=%{_prefix} --enable-gles
+./configure --prefix=%{_prefix} --enable-opengles
 %endif
 make %{?_smp_mflags}
 
@@ -75,7 +75,6 @@ sed -i \
 %doc README.md
 %config /etc/retroarch.cfg
 %{_prefix}/bin/retroarch
-%{_prefix}/bin/retroarch-cg2glsl
 %{_prefix}/share/applications/retroarch.desktop
 %{_prefix}/share/man/man6/*.6*
 %{_prefix}/share/icons/hicolor/86x86/apps/retroarch.*

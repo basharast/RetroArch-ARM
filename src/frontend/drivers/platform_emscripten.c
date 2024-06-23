@@ -38,14 +38,14 @@
 #include "../frontend.h"
 #include "../frontend_driver.h"
 #include "../../configuration.h"
-#include "../../defaults.h"
 #include "../../content.h"
-#include "../../retroarch.h"
-#include "../../verbosity.h"
 #include "../../command.h"
-#include "../../tasks/tasks_internal.h"
+#include "../../defaults.h"
 #include "../../file_path_special.h"
 #include "../../paths.h"
+#include "../../retroarch.h"
+#include "../../verbosity.h"
+#include "../../tasks/tasks_internal.h"
 
 void dummyErrnoCodes(void);
 void emscripten_mainloop(void);
@@ -73,12 +73,14 @@ void cmd_take_screenshot(void)
 static void frontend_emscripten_get_env(int *argc, char *argv[],
       void *args, void *params_data)
 {
-   char base_path[PATH_MAX] = {0};
-   char user_path[PATH_MAX] = {0};
+   char base_path[PATH_MAX];
+   char user_path[PATH_MAX];
    const char *home         = getenv("HOME");
 
    if (home)
    {
+      base_path[0]          = '\0';
+      user_path[0]          = '\0';
       snprintf(base_path, sizeof(base_path),
             "%s/retroarch", home);
       snprintf(user_path, sizeof(user_path),
@@ -86,8 +88,8 @@ static void frontend_emscripten_get_env(int *argc, char *argv[],
    }
    else
    {
-      snprintf(base_path, sizeof(base_path), "retroarch");
-      snprintf(user_path, sizeof(user_path), "retroarch/userdata");
+      strlcpy(base_path, "retroarch", sizeof(base_path));
+      strlcpy(user_path, "retroarch/userdata", sizeof(user_path));
    }
 
    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE], base_path,
@@ -98,8 +100,6 @@ static void frontend_emscripten_get_env(int *argc, char *argv[],
          "bundle/assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], base_path,
          "bundle/autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
-   fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CURSOR], base_path,
-         "bundle/database/cursors", sizeof(g_defaults.dirs[DEFAULT_DIR_CURSOR]));
    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_DATABASE], base_path,
          "bundle/database/rdb", sizeof(g_defaults.dirs[DEFAULT_DIR_DATABASE]));
    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE_INFO], base_path,

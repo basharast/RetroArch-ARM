@@ -13,8 +13,7 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WAYLAND_INPUT_COMMON_H__
-#define WAYLAND_INPUT_COMMON_H__
+#pragma once
 
 #include <stdint.h>
 #include <boolean.h>
@@ -52,6 +51,10 @@
 	     (const char *) pos < ((const char *) (array)->data + (array)->size); \
 	     (pos)++)
 
+#ifdef HAVE_LIBDECOR_H
+#include <libdecor.h>
+#endif
+
 typedef struct
 {
    int16_t x;
@@ -77,6 +80,8 @@ typedef struct output_info
    unsigned physical_width;
    unsigned physical_height;
    unsigned scale;
+   char *make;
+   char *model;
    struct wl_list link; /* wl->all_outputs */
 } output_info_t;
 
@@ -96,7 +101,7 @@ typedef struct input_ctx_wayland_data
 
    struct
    {
-      struct wl_pointer *surface;
+      struct wl_surface *surface;
       int last_x, last_y;
       int x, y;
       int delta_x, delta_y;
@@ -109,6 +114,15 @@ typedef struct input_ctx_wayland_data
    bool keyboard_focus;
    bool blocked;
 } input_ctx_wayland_data_t;
+
+typedef struct data_offer_ctx
+{
+  struct wl_data_offer *offer;
+  struct wl_data_device *data_device;
+  bool is_file_mime_type;
+  bool dropped;
+  enum wl_data_device_manager_dnd_action supported_actions;
+} data_offer_ctx;
 
 typedef struct gfx_ctx_wayland_data
 {
@@ -127,9 +141,17 @@ typedef struct gfx_ctx_wayland_data
    struct wl_touch *wl_touch;
    struct wl_seat *seat;
    struct wl_shm *shm;
-#ifdef HAVE_LIBDECOR
+   struct wl_data_device_manager *data_device_manager;
+   struct wl_data_device *data_device;
+   data_offer_ctx *current_drag_offer;
+#ifdef HAVE_LIBDECOR_H
    struct libdecor *libdecor_context;
    struct libdecor_frame *libdecor_frame;
+#ifdef HAVE_DYLIB
+   struct dylib_t *libdecor;
+#define RA_WAYLAND_SYM(rc,fn,params) rc (*fn) params;
+#include "../../gfx/common/wayland/libdecor_sym.h"
+#endif
 #endif
    struct zxdg_decoration_manager_v1 *deco_manager;
    struct zxdg_toplevel_decoration_v1 *deco;
@@ -154,10 +176,10 @@ typedef struct gfx_ctx_wayland_data
    int num_active_touches;
    int swap_interval;
    touch_pos_t active_touch_positions[MAX_TOUCHES]; /* int32_t alignment */
-   unsigned prev_width;
-   unsigned prev_height;
    unsigned width;
    unsigned height;
+   unsigned floating_width;
+   unsigned floating_height;
    unsigned last_buffer_scale;
    unsigned buffer_scale;
 
@@ -167,6 +189,7 @@ typedef struct gfx_ctx_wayland_data
    bool resize;
    bool configured;
    bool activated;
+   bool reported_display_size;
 } gfx_ctx_wayland_data_t;
 
 #ifdef HAVE_XKBCOMMON
@@ -179,9 +202,6 @@ void free_xkb(void);
 #endif
 
 void gfx_ctx_wl_show_mouse(void *data, bool state);
-
-void handle_toplevel_close(void *data,
-      struct xdg_toplevel *xdg_toplevel);
 
 void flush_wayland_fd(void *data);
 
@@ -203,4 +223,8 @@ extern const struct wl_output_listener output_listener;
 
 extern const struct wl_registry_listener registry_listener;
 
-#endif
+extern const struct wl_buffer_listener shm_buffer_listener;
+
+extern const struct wl_data_device_listener data_device_listener;
+
+extern const struct wl_data_offer_listener data_offer_listener;

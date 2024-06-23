@@ -452,6 +452,10 @@ MSG_HASH(
    "Interfaces de programación de aplicacións gráficas requiridas"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_SAVESTATE_DISABLED,
+   "Ningún"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_INFO_FIRMWARE,
    "Microprograma"
    )
@@ -538,17 +542,9 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_CPU_FEATURES,
    "Características da CPU"
    )
-MSG_HASH( /* FIXME Colon should be handled in menu_display.c like the rest */
-   MENU_ENUM_LABEL_VALUE_CPU_ARCHITECTURE,
-   "Arquitectura da CPU:"
-   )
-MSG_HASH( /* FIXME Colon should be handled in menu_display.c like the rest */
-   MENU_ENUM_LABEL_VALUE_CPU_CORES,
-   "Núcleos da CPU:"
-   )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_CPU_CORES,
-   "Cantidade de núcleos que ten a CPU."
+   MENU_ENUM_LABEL_VALUE_CPU_ARCHITECTURE,
+   "Arquitectura da CPU"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_FRONTEND_IDENTIFIER,
@@ -787,10 +783,6 @@ MSG_HASH(
    "Compatibilidade con xogo en rede (entre pares)"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_PYTHON_SUPPORT,
-   "Compatibilidade con Python (compatibilidade con scripts para sombreadores)"
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_V4L2_SUPPORT,
    "Compatibilidade con Video4Linux2"
    )
@@ -819,6 +811,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_GENRE,
    "Xénero"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_ACHIEVEMENTS,
+   "Logros"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_PUBLISHER,
@@ -855,14 +851,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_EDGE_MAGAZINE_ISSUE,
    "Tema de Edge Magazine"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_RELEASE_MONTH,
-   "Mes, data de lanzamento"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_RELEASE_YEAR,
-   "Ano, data de lanzamento"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_BBFC_RATING,
@@ -912,20 +900,16 @@ MSG_HASH(
    "Cargar configuración"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_RESET_TO_DEFAULT_CONFIG,
-   "Restablecer aos valores predefinidos"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_RESET_TO_DEFAULT_CONFIG,
-   "Reiniciar a actual configuración ós seus valores por defecto."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SAVE_CURRENT_CONFIG,
    "Gardar a configuración actual"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SAVE_NEW_CONFIG,
    "Gardar a nova configuración"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RESET_TO_DEFAULT_CONFIG,
+   "Restablecer aos valores predefinidos"
    )
 
 /* Main Menu > Help */
@@ -1145,6 +1129,11 @@ MSG_HASH(
    "Cambia os directorios predeterminados onde se atopan os ficheiros."
    )
 
+/* Core option category placeholders for icons */
+
+#ifdef HAVE_MIST
+#endif
+
 /* Settings > Drivers */
 
 MSG_HASH(
@@ -1318,10 +1307,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_SMOOTH,
    "Filtrado Bilinear"
    )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_SMOOTH,
-   "Engade un lixeiro desenfoque para suavizar os bordes dos píxeles. Esta opción ten moi pouco efecto no rendemento."
-   )
 #if defined(DINGUX)
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_DINGUX_IPU_FILTER_TYPE,
@@ -1444,6 +1429,8 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_MONITOR_INDEX,
    "Elixe qué monitor usar."
    )
+#if defined (WIIU)
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_ROTATION,
    "Rotación de vídeo"
@@ -1573,6 +1560,12 @@ MSG_HASH(
 
 #if defined(HAVE_DINPUT) || defined(HAVE_WINRAWINPUT)
 #endif
+#ifdef ANDROID
+#endif
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QUIT_PRESS_TWICE,
+   "Confirmar peche"
+   )
 
 /* Settings > Input > Haptic Feedback/Vibration */
 
@@ -1583,17 +1576,24 @@ MSG_HASH(
 /* Settings > Input > Hotkeys */
 
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_QUIT_PRESS_TWICE,
-   "Confirmar peche"
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_QUIT_KEY,
-   "Pechar RetroArch"
+   "Saír"
    )
+
+
+
+
+
+
+
+
+
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_AI_SERVICE,
    "Servizo de intelixencia artificial"
    )
+
+
 
 /* Settings > Input > Port # Controls */
 
@@ -1609,7 +1609,15 @@ MSG_HASH(
    )
 #ifndef HAVE_DYNAMIC
 #endif
+#ifdef HAVE_MIST
 
+
+
+
+
+
+
+#endif
 /* Settings > Configuration */
 
 
@@ -1655,6 +1663,8 @@ MSG_HASH(
 
 /* Settings > User Interface */
 
+#ifdef _3DS
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_SCREENSAVER_ANIMATION_SNOW,
    "Neve"
@@ -1687,6 +1697,7 @@ MSG_HASH(
 /* Settings > User Interface > Views > Settings */
 
 
+
 /* Settings > User Interface > Appearance */
 
 
@@ -1704,6 +1715,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CHEEVOS_ENABLE,
    "Logros"
    )
+
+/* Settings > Achievements > Appearance */
+
+
+/* Settings > Achievements > Visibility */
+
 
 /* Settings > Network */
 
@@ -1760,6 +1777,13 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_PLAYLIST_DIRECTORY,
    "Listaxes de reprodución"
    )
+
+#ifdef HAVE_MIST
+/* Settings > Steam */
+
+
+
+#endif
 
 /* Music */
 
@@ -1830,7 +1854,10 @@ MSG_HASH(
 /* Quick Menu > Controls */
 
 
-/* Quick Menu > Controls > Load Remap File */
+/* Quick Menu > Controls > Manage Remap Files */
+
+
+/* Quick Menu > Controls > Manage Remap Files > Load Remap File */
 
 
 /* Quick Menu > Cheats */
@@ -2130,6 +2157,7 @@ MSG_HASH(
 
 /* Notifications */
 
+
 MSG_HASH(
    MSG_CORE_DOES_NOT_SUPPORT_SAVESTATES,
    "O núcleo non é compatible co gardado rápido."
@@ -2184,7 +2212,7 @@ MSG_HASH(
 #ifdef HAVE_ODROIDGO2
 #else
 #endif
-#if defined(_3DS)
+#ifdef _3DS
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_3DS_LCD_BOTTOM,
    "Pantalla inferior da 3DS"

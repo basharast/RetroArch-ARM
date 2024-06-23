@@ -55,8 +55,8 @@
 
 /* TODO/FIXME - static globals */
 static egl_ctx_data_t uwp_egl;
-#ifdef HAVE_DYNAMIC
-static dylib_t          dll_handle = NULL; /* Handle to libGLESv2.dll */
+#ifdef HAVE_DYLIB
+static dylib_t  dll_handle = NULL; /* Handle to libGLESv2.dll */
 #endif
 
 typedef struct gfx_ctx_cgl_data
@@ -127,7 +127,7 @@ static void gfx_ctx_uwp_swap_interval(void *data, int interval)
 
 static gfx_ctx_proc_t gfx_ctx_uwp_get_proc_address(const char* symbol)
 {
-#ifdef HAVE_DYNAMIC
+#ifdef HAVE_DYLIB
    return (gfx_ctx_proc_t)GetProcAddress((HINSTANCE)dll_handle, symbol);
 #else
    return NULL;
@@ -148,9 +148,9 @@ static void gfx_ctx_uwp_get_video_size(void *data,
    win32_check_window(NULL, &quit, &resize, width, height);
    if (is_running_on_xbox())
    {
-      //we can set it to 1920x1080 as xbox uwp windowsize is guaranteed to be 1920x1080 and currently there is now way to set angle to use a variable resolution swapchain so regardless of the size the window is always 1080p
-      width = 1920;
-      height = 1080;
+      //match the output res to the display res
+      width = uwp_get_width();
+      height = uwp_get_height();
    }
 }
 
@@ -161,7 +161,7 @@ static void *gfx_ctx_uwp_init(void *video_driver)
    if (!uwp)
       return NULL;
 
-#ifdef HAVE_DYNAMIC
+#ifdef HAVE_DYLIB
    dll_handle = dylib_load("libGLESv2.dll");
 #endif
 
@@ -177,7 +177,7 @@ static void gfx_ctx_uwp_destroy(void *data)
 
    egl_destroy(&uwp_egl);
 
-#ifdef HAVE_DYNAMIC
+#ifdef HAVE_DYLIB
    dylib_close(dll_handle);
 #endif
 }

@@ -68,7 +68,7 @@
 #define DOS_KEYBOARD_PORT DEFAULT_MAX_PADS
 #elif defined(XENON)
 #define DEFAULT_MAX_PADS 4
-#elif defined(VITA) || defined(SN_TARGET_PSP2)
+#elif defined(VITA) || defined(SN_TARGET_PSP2) || defined(ORBIS)
 #define DEFAULT_MAX_PADS 4
 #elif defined(PSP)
 #define DEFAULT_MAX_PADS 1
@@ -77,7 +77,7 @@
 #elif defined(GEKKO) || defined(HW_RVL)
 #define DEFAULT_MAX_PADS 4
 #elif defined(HAVE_ODROIDGO2)
-#define DEFAULT_MAX_PADS 1
+#define DEFAULT_MAX_PADS 8
 #elif defined(__linux__) || (defined(BSD) && !defined(__MACH__))
 #define DEFAULT_MAX_PADS 8
 #elif defined(__QNX__)
@@ -151,7 +151,7 @@ typedef struct
    char name[256];
    char display_name[256];
    char config_path[PATH_MAX_LENGTH]; /* Path to the RetroArch config file */
-   char config_name[PATH_MAX_LENGTH]; /* Base name of the RetroArch config file */
+   char config_name[256]; /* Base name of the RetroArch config file */
    bool autoconfigured;
 } input_device_info_t;
 
@@ -275,10 +275,14 @@ struct input_driver
     * the sensor entirely, etc. This function pointer may be set to NULL if
     * setting sensor values is not supported.
     * 
-    * @param data    The input state struct
+    * @param data    
+    * The input state struct
     * @param port
-    * @param effect  Sensor action
-    * @param rate    Sensor rate update
+    * The port of the device
+    * @param effect  
+    * Sensor action
+    * @param rate    
+    * Sensor rate update
     * 
     * @return true if the operation is successful.
    **/
@@ -290,9 +294,12 @@ struct input_driver
     * function pointer may be set to NULL if retreiving sensor state is not
     * supported.
     * 
-    * @param data  The input state struct
+    * @param data  
+    * The input state struct
     * @param port
-    * @param id    Sensor ID
+    * The port of the device
+    * @param id    
+    * Sensor ID
     * 
     * @return The current state associated with the port and ID as a float
     **/
@@ -333,6 +340,12 @@ struct input_driver
     * @return True if the input driver has claimed stdin.
     */
    bool (*grab_stdin)(void *data);
+
+   /**
+    * Haptic feedback for touchscreen key presses. This function pointer can be
+    * set to NULL if haptic feedback / vibration is not supported.
+    */
+   void (*keypress_vibrate)(void);
 };
 
 struct rarch_joypad_driver
@@ -367,6 +380,21 @@ struct input_keyboard_ctx_wait
    input_keyboard_press_t cb;
 };
 
+enum input_driver_state_flags
+{
+   INP_FLAG_NONBLOCKING              = (1 << 0),
+   INP_FLAG_KB_LINEFEED_ENABLE       = (1 << 1),
+   INP_FLAG_KB_MAPPING_BLOCKED       = (1 << 2),
+   INP_FLAG_BLOCK_HOTKEY             = (1 << 3),
+   INP_FLAG_BLOCK_LIBRETRO_INPUT     = (1 << 4),
+   INP_FLAG_BLOCK_POINTER_INPUT      = (1 << 5),
+   INP_FLAG_GRAB_MOUSE_STATE         = (1 << 6),
+   INP_FLAG_OLD_ANALOG_DPAD_MODE_SET = (1 << 7),
+   INP_FLAG_OLD_LIBRETRO_DEVICE_SET  = (1 << 8),
+   INP_FLAG_REMAPPING_CACHE_ACTIVE   = (1 << 9),
+   INP_FLAG_DEFERRED_WAIT_KEYS       = (1 << 10)
+};
+
 typedef struct
 {
    /**
@@ -399,7 +427,10 @@ typedef struct
 #ifdef HAVE_OVERLAY
    input_overlay_t *overlay_ptr;
    enum overlay_visibility *overlay_visibility;
+   float overlay_eightway_dpad_slopes[2];
+   float overlay_eightway_abxy_slopes[2];
 #endif
+   uint16_t flags;
 #ifdef HAVE_NETWORKGAMEPAD
    input_remote_t *remote;
 #endif
@@ -431,17 +462,7 @@ typedef struct
 #endif
 
    /* primitives */
-   bool        nonblocking_flag;
-   bool keyboard_linefeed_enable;
-
-   bool block_hotkey;
-   bool block_libretro_input;
-   bool grab_mouse_state;
    bool analog_requested[MAX_USERS];
-   bool keyboard_mapping_blocked;
-   bool old_analog_dpad_mode_set;
-   bool old_libretro_device_set;
-   bool remapping_cache_active;
    retro_bits_512_t keyboard_mapping_bits;    /* bool alignment */
    input_game_focus_state_t game_focus_state; /* bool alignment */
 } input_driver_state_t;
@@ -459,11 +480,14 @@ const char* config_get_input_driver_options(void);
 /**
  * Sets the rumble state.
  * 
- * @param driver_state
- * @param port          User number.
+ * @param port          
+ * User number.
  * @param joy_idx
- * @param effect        Rumble effect.
- * @param strength      Strength of rumble effect.
+ * TODO/FIXME ???
+ * @param effect        
+ * Rumble effect.
+ * @param strength      
+ * Strength of rumble effect.
  *
  * @return true if the rumble state has been successfully set
  **/
@@ -473,8 +497,10 @@ bool input_driver_set_rumble(
 /**
  * Sets the rumble gain.
  *
- * @param gain             Rumble gain, 0-100 [%]
+ * @param gain             
+ * Rumble gain, 0-100 [%]
  * @param input_max_users
+ * TODO/FIXME - ???
  *
  * @return true if the rumble gain has been successfully set
  **/
@@ -486,9 +512,13 @@ bool input_driver_set_rumble_gain(
  * Sets the sensor state.
  * 
  * @param port
+ * User number.
  * @param sensors_enable
- * @param effect        Sensor action
- * @param rate          Sensor rate update
+ * TODO/FIXME - ???
+ * @param effect        
+ * Sensor action
+ * @param rate          
+ * Sensor rate update
  *
  * @return true if the sensor state has been successfully set
  **/
@@ -500,8 +530,11 @@ bool input_driver_set_sensor(
  * Retrieves the sensor state associated with the provided port and ID. 
  * 
  * @param port
+ * Port of the device
  * @param sensors_enable
- * @param id            Sensor ID
+ * TODO/FIXME - ???
+ * @param id            
+ * Sensor ID
  *
  * @return The current state associated with the port and ID as a float
  **/
@@ -572,8 +605,10 @@ const input_device_driver_t *input_joypad_init_driver(
 /**
  * Registers a newly connected pad with RetroArch.
  * 
- * @param port    Joystick number
- * @param driver  Handle for joypad driver handling joystick's input
+ * @param port    
+ * Joystick number
+ * @param driver  
+ * Handle for joypad driver handling joystick's input
  **/
 void input_pad_connect(unsigned port, input_device_driver_t *driver);
 
@@ -581,10 +616,14 @@ void input_pad_connect(unsigned port, input_device_driver_t *driver);
  * Called by drivers when keyboard events are fired. Interfaces with the global
  * driver struct and libretro callbacks.
  * 
- * @param down       Was Keycode pressed down?
- * @param code       Keycode.
- * @param character  Character inputted.
- * @param mod        TODO/FIXME/???
+ * @param down       
+ * Was Keycode pressed down?
+ * @param code       
+ * Keycode.
+ * @param character  
+ * Character inputted.
+ * @param mod        
+ * TODO/FIXME/???
  **/
 void input_keyboard_event(bool down, unsigned code, uint32_t character,
       uint16_t mod, unsigned device);
@@ -630,6 +669,7 @@ void hid_driver_reset_data(void);
  * Set the name of the device in the specified port
  * 
  * @param port
+ * The port of the device to be assigned to
  */
 void input_config_set_device_name(unsigned port, const char *name);
 
@@ -637,6 +677,7 @@ void input_config_set_device_name(unsigned port, const char *name);
  * Set the formatted "display name" of the device in the specified port
  * 
  * @param port
+ * The port of the device to be assigned to
  */
 void input_config_set_device_display_name(unsigned port, const char *name);
 void input_config_set_mouse_display_name(unsigned port, const char *name);
@@ -645,7 +686,9 @@ void input_config_set_mouse_display_name(unsigned port, const char *name);
  * Set the configuration path for the device in the specified port
  * 
  * @param port
- * @param path The path of the device config.
+ * The port of the device to be assigned to
+ * @param path 
+ * The path of the device config.
  */
 void input_config_set_device_config_path(unsigned port, const char *path);
 
@@ -653,7 +696,9 @@ void input_config_set_device_config_path(unsigned port, const char *path);
  * Set the configuration name for the device in the specified port
  * 
  * @param port
- * @param name The name of the config to set.
+ * The port of the device to be assigned to
+ * @param name 
+ * The name of the config to set.
  */
 void input_config_set_device_config_name(unsigned port, const char *name);
 
@@ -661,7 +706,9 @@ void input_config_set_device_config_name(unsigned port, const char *name);
  * Set the joypad driver for the device in the specified port
  * 
  * @param port
- * @param driver The driver to set the given port to.
+ * The port of the device to be assigned to
+ * @param driver 
+ * The driver to set the given port to.
  */
 void input_config_set_device_joypad_driver(unsigned port, const char *driver);
 
@@ -669,7 +716,9 @@ void input_config_set_device_joypad_driver(unsigned port, const char *driver);
  * Set the vendor ID (vid) for the device in the specified port
  * 
  * @param port
- * @param vid The VID to set the given device port to.
+ * The port of the device to be assigned to
+ * @param vid 
+ * The VID to set the given device port to.
  */
 void input_config_set_device_vid(unsigned port, uint16_t vid);
 
@@ -677,7 +726,9 @@ void input_config_set_device_vid(unsigned port, uint16_t vid);
  * Set the pad ID (pid) for the device in the specified port
  * 
  * @param port
- * @param pid The PID to set the given device port to.
+ * The port of the device to be assigned to
+ * @param pid 
+ * The PID to set the given device port to.
  */
 void input_config_set_device_pid(unsigned port, uint16_t pid);
 
@@ -685,7 +736,9 @@ void input_config_set_device_pid(unsigned port, uint16_t pid);
  * Sets the autoconfigured flag for the device in the specified port
  *
  * @param port
- * @param autoconfigured Whether or nor the device is configured automatically.
+ * The port of the device to be assigned to
+ * @param autoconfigured 
+ * Whether or nor the device is configured automatically.
  */
 void input_config_set_device_autoconfigured(unsigned port, bool autoconfigured);
 
@@ -693,7 +746,9 @@ void input_config_set_device_autoconfigured(unsigned port, bool autoconfigured);
  * Sets the name index number for the device in the specified port
  *
  * @param port
- * @param name_index The name index to set the device to use.
+ * The port of the device to be assigned to
+ * @param name_index 
+ * The name index to set the device to use.
  */
 void input_config_set_device_name_index(unsigned port, unsigned name_index);
 
@@ -701,7 +756,9 @@ void input_config_set_device_name_index(unsigned port, unsigned name_index);
  * Sets the device type of the specified port
  * 
  * @param port
- * @param id The device type (RETRO_DEVICE_JOYPAD, RETRO_DEVICE_MOUSE, etc)
+ * The port of the device to be assigned to
+ * @param id 
+ * The device type (RETRO_DEVICE_JOYPAD, RETRO_DEVICE_MOUSE, etc)
  */
 void input_config_set_device(unsigned port, unsigned id);
 
@@ -730,6 +787,7 @@ const char *input_config_get_device_joypad_driver(unsigned port);
  * Retrieves the vendor id (vid) of a connected controller
  * 
  * @param port
+ * The port of the device
  *
  * @return the vendor id VID of the device
  */
@@ -739,6 +797,7 @@ uint16_t input_config_get_device_vid(unsigned port);
  * Retrieves the pad id (pad) of a connected controller
  * 
  * @param port
+ * The port of the device
  *
  * @return the port id PID of the device
  */
@@ -748,6 +807,7 @@ uint16_t input_config_get_device_pid(unsigned port);
  * Returns the value of the autoconfigured flag for the specified device
  *
  * @param port
+ * The port of the device
  *
  * @return the autoconfigured flag
  */
@@ -757,6 +817,7 @@ bool input_config_get_device_autoconfigured(unsigned port);
  * Get the name index number for the device in this port
  * 
  * @param port
+ * The port of the device
  *
  * @return the name index for this device
  */
@@ -773,6 +834,7 @@ unsigned input_config_get_device_name_index(unsigned port);
  * low-level access is not required.
  * 
  * @param port
+ * The port of the device
  *
  * @return a pointer to the device name on the specified port
  */
@@ -786,6 +848,7 @@ char *input_config_get_device_name_ptr(unsigned port);
  * low-level access is not required.
  * 
  * @param port
+ * The port of the device
  *
  * @return the size of the device name on the specified port
  */
@@ -801,65 +864,9 @@ bool input_driver_find_driver(
       const char *prefix,
       bool verbosity_enabled);
 
-int16_t input_state_wrap(
-      input_driver_t *current_input,
-      void *data,
-      const input_device_driver_t *joypad,
-      const input_device_driver_t *sec_joypad,
-      rarch_joypad_info_t *joypad_info,
-      const retro_keybind_set *binds,
-      bool keyboard_mapping_blocked,
-      unsigned _port,
-      unsigned device,
-      unsigned idx,
-      unsigned id);
-
-int16_t input_joypad_axis(
-      float input_analog_deadzone,
-      float input_analog_sensitivity,
-      const input_device_driver_t *drv,
-      unsigned port, uint32_t joyaxis, float normal_mag);
-
-/**
- * input_joypad_analog:
- * @drv                     : Input device driver handle.
- * @port                    : User number.
- * @idx                     : Analog key index.
- *                            E.g.:
- *                            - RETRO_DEVICE_INDEX_ANALOG_LEFT
- *                            - RETRO_DEVICE_INDEX_ANALOG_RIGHT
- * @ident                   : Analog key identifier.
- *                            E.g.:
- *                            - RETRO_DEVICE_ID_ANALOG_X
- *                            - RETRO_DEVICE_ID_ANALOG_Y
- * @binds                   : Binds of user.
- *
- * Gets analog value of analog key identifiers @idx and @ident
- * from user with number @port with provided keybinds (@binds).
- *
- * Returns: analog value on success, otherwise 0.
- **/
-int16_t input_joypad_analog_button(
-      float input_analog_deadzone,
-      float input_analog_sensitivity,
-      const input_device_driver_t *drv,
-      rarch_joypad_info_t *joypad_info,
-      unsigned ident,
-      const struct retro_keybind *bind);
-
-int16_t input_joypad_analog_axis(
-      unsigned input_analog_dpad_mode,
-      float input_analog_deadzone,
-      float input_analog_sensitivity,
-      const input_device_driver_t *drv,
-      rarch_joypad_info_t *joypad_info,
-      unsigned idx,
-      unsigned ident,
-      const struct retro_keybind *binds);
-
-bool input_keyboard_line_append(
+void input_keyboard_line_append(
       struct input_keyboard_line *keyboard_line,
-      const char *word);
+      const char *word, size_t len);
 
 /**
  * input_keyboard_start_line:
@@ -880,10 +887,6 @@ const char **input_keyboard_start_line(
       input_keyboard_line_complete_t cb);
 
 #if defined(HAVE_NETWORKING) && defined(HAVE_NETWORKGAMEPAD)
-void input_remote_parse_packet(
-      input_remote_state_t *input_state,
-      struct remote_message *msg, unsigned user);
-
 input_remote_t *input_driver_init_remote(
       settings_t *settings,
       unsigned num_active_users);
@@ -910,19 +913,6 @@ bool input_key_pressed(int key, bool keyboard_pressed);
 
 bool input_set_rumble_state(unsigned port,
       enum retro_rumble_effect effect, uint16_t strength);
-
-/**
- * input_keyboard_line_event:
- * @state                    : Input keyboard line handle.
- * @character                : Inputted character.
- *
- * Called on every keyboard character event.
- *
- * Returns: true (1) on success, otherwise false (0).
- **/
-bool input_keyboard_line_event(
-      input_driver_state_t *input_st,
-      input_keyboard_line_t *state, uint32_t character);
 
 bool input_set_rumble_gain(unsigned gain);
 
@@ -952,42 +942,10 @@ void input_driver_deinit_command(input_driver_state_t *input_st);
 #endif
 
 #ifdef HAVE_OVERLAY
-/*
- * input_poll_overlay:
- *
- * Poll pressed buttons/keys on currently active overlay.
- **/
-void input_poll_overlay(
-      bool keyboard_mapping_blocked,
-      settings_t *settings,
-      void *ol_data,
-      enum overlay_visibility *overlay_visibility,
-      float opacity,
-      unsigned analog_dpad_mode,
-      float axis_threshold);
-
 void input_overlay_deinit(void);
-
-void input_overlay_set_visibility(int overlay_idx,
-      enum overlay_visibility vis);
 
 void input_overlay_init(void);
 #endif
-
-bool input_keys_pressed_other_sources(
-      input_driver_state_t *input_st,
-      unsigned i,
-      input_bits_t* p_new_state);
-
-int16_t input_state_device(
-      input_driver_state_t *input_st,
-      settings_t *settings,
-      input_mapper_t *handle,
-      unsigned input_analog_dpad_mode,
-      int16_t ret,
-      unsigned port, unsigned device,
-      unsigned idx, unsigned id,
-      bool button_mask);
 
 #ifdef HAVE_BSV_MOVIE
 void bsv_movie_frame_rewind(void);
@@ -1022,25 +980,6 @@ void input_driver_poll(void);
 int16_t input_driver_state_wrapper(unsigned port, unsigned device,
       unsigned idx, unsigned id);
 
-/**
- * input_keys_pressed:
- *
- * Grab an input sample for this frame.
- *
- * Returns: Input sample containing a mask of all pressed keys.
- */
-void input_keys_pressed(
-      unsigned port,
-      bool is_menu,
-      int input_hotkey_block_delay,
-      input_bits_t *p_new_state,
-      const retro_keybind_set *binds,
-      const struct retro_keybind *binds_norm,
-      const struct retro_keybind *binds_auto,
-      const input_device_driver_t *joypad,
-      const input_device_driver_t *sec_joypad,
-      rarch_joypad_info_t *joypad_info);
-
 void input_driver_collect_system_input(input_driver_state_t *input_st,
       settings_t *settings, input_bits_t *current_bits);
 
@@ -1058,6 +997,8 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
  **/
 void input_keyboard_event(bool down, unsigned code,
       uint32_t character, uint16_t mod, unsigned device);
+
+extern const unsigned input_config_bind_order[24];
 
 extern input_device_driver_t *joypad_drivers[];
 extern input_driver_t *input_drivers[];

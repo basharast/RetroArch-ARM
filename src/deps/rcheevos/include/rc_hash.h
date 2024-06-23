@@ -95,13 +95,14 @@ extern "C" {
   #define RC_HASH_CDTRACK_FIRST_DATA ((uint32_t)-1)
   #define RC_HASH_CDTRACK_LAST ((uint32_t)-2)
   #define RC_HASH_CDTRACK_LARGEST ((uint32_t)-3)
+  #define RC_HASH_CDTRACK_FIRST_OF_SECOND_SESSION ((uint32_t)-4)
 
   /* opens a track from the specified file. track 0 indicates the largest data track should be opened.
    * returns a handle to be passed to the other functions, or NULL if the track could not be opened.
    */
   typedef void* (*rc_hash_cdreader_open_track_handler)(const char* path, uint32_t track);
 
-  /* attempts to read the specified number of bytes from the file starting at the read pointer.
+  /* attempts to read the specified number of bytes from the file starting at the specified absolute sector.
    * returns the number of bytes actually read.
    */
   typedef size_t (*rc_hash_cdreader_read_sector_handler)(void* track_handle, uint32_t sector, void* buffer, size_t requested_bytes);
@@ -109,17 +110,18 @@ extern "C" {
   /* closes the track handle */
   typedef void (*rc_hash_cdreader_close_track_handler)(void* track_handle);
 
-  /* convert absolute sector to track sector */
-  typedef uint32_t(*rc_hash_cdreader_absolute_sector_to_track_sector)(void* track_handle, uint32_t sector);
+  /* gets the absolute sector index for the first sector of a track */
+  typedef uint32_t(*rc_hash_cdreader_first_track_sector_handler)(void* track_handle);
 
   struct rc_hash_cdreader
   {
     rc_hash_cdreader_open_track_handler              open_track;
     rc_hash_cdreader_read_sector_handler             read_sector;
     rc_hash_cdreader_close_track_handler             close_track;
-    rc_hash_cdreader_absolute_sector_to_track_sector absolute_sector_to_track_sector;
+    rc_hash_cdreader_first_track_sector_handler      first_track_sector;
   };
 
+  void rc_hash_get_default_cdreader(struct rc_hash_cdreader* cdreader);
   void rc_hash_init_default_cdreader(void);
   void rc_hash_init_custom_cdreader(struct rc_hash_cdreader* reader);
 

@@ -20,20 +20,18 @@
 #include "../../config.h"
 #endif
 
-#include "../../retroarch.h"
-#include "../font_driver.h"
-#include "../common/gl1_common.h"
-
 #include "../gfx_display.h"
 
-static const GLfloat gl1_menu_vertexes[] = {
+#include "../common/gl1_common.h"
+
+static const GLfloat gl1_menu_vertexes[8] = {
    0, 0,
    1, 0,
    0, 1,
    1, 1
 };
 
-static const GLfloat gl1_menu_tex_coords[] = {
+static const GLfloat gl1_menu_tex_coords[8] = {
    0, 1,
    1, 1,
    0, 0,
@@ -93,7 +91,7 @@ static void gfx_display_gl1_draw(gfx_display_ctx_draw_t *draw,
       unsigned video_width,
       unsigned video_height)
 {
-   video_shader_ctx_mvp_t mvp;
+   const GLfloat *mvp_matrix;
    gl1_t             *gl1          = (gl1_t*)data;
 
    if (!gl1 || !draw)
@@ -114,13 +112,12 @@ static void gfx_display_gl1_draw(gfx_display_ctx_draw_t *draw,
 
    glBindTexture(GL_TEXTURE_2D, (GLuint)draw->texture);
 
-   mvp.data   = gl1;
-   mvp.matrix = draw->matrix_data ? (math_matrix_4x4*)draw->matrix_data
-      : (math_matrix_4x4*)&gl1->mvp_no_rot;
+   mvp_matrix = draw->matrix_data ? (const GLfloat*)draw->matrix_data
+      : (const GLfloat*)&gl1->mvp_no_rot;
 
    glMatrixMode(GL_PROJECTION);
    glPushMatrix();
-   glLoadMatrixf((const GLfloat*)mvp.matrix);
+   glLoadMatrixf(mvp_matrix);
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix();
@@ -140,8 +137,10 @@ static void gfx_display_gl1_draw(gfx_display_ctx_draw_t *draw,
       vertices3 = (float*)malloc(sizeof(float) * 3 * draw->coords->vertices);
       for (i = 0; i < draw->coords->vertices; i++)
       {
-         memcpy(&vertices3[i*3], &draw->coords->vertex[i*2], sizeof(float) * 2);
-         vertices3[i*3+2]  = 0.0f;
+         memcpy(&vertices3[i * 3],
+               &draw->coords->vertex[i * 2],
+               sizeof(float) * 2);
+         vertices3[i * 3 + 2]  = 0.0f;
       }
       glVertexPointer(3, GL_FLOAT, 0, vertices3);   
    }
@@ -165,20 +164,6 @@ static void gfx_display_gl1_draw(gfx_display_ctx_draw_t *draw,
    glPopMatrix();
 
    gl1->coords.color = gl1->white_color_ptr;
-}
-
-static bool gfx_display_gl1_font_init_first(
-      void **font_handle, void *video_data,
-      const char *font_path, float menu_font_size,
-      bool is_threaded)
-{
-   font_data_t **handle = (font_data_t**)font_handle;
-   if (!(*handle = font_driver_init_first(video_data,
-         font_path, menu_font_size, true,
-         is_threaded,
-         FONT_DRIVER_RENDER_OPENGL1_API)))
-       return false;
-   return true;
 }
 
 static void gfx_display_gl1_scissor_begin(void *data,
@@ -208,7 +193,7 @@ gfx_display_ctx_driver_t gfx_display_ctx_gl1 = {
    gfx_display_gl1_get_default_mvp,
    gfx_display_gl1_get_default_vertices,
    gfx_display_gl1_get_default_tex_coords,
-   gfx_display_gl1_font_init_first,
+   FONT_DRIVER_RENDER_OPENGL1_API,
    GFX_VIDEO_DRIVER_OPENGL1,
    "gl1",
    false,

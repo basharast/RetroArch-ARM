@@ -16,9 +16,9 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <ctype.h>
 #include <boolean.h>
 
@@ -277,7 +277,6 @@ static void task_core_backup_handler(retro_task_t *task)
             char task_title[PATH_MAX_LENGTH];
             char backup_path[PATH_MAX_LENGTH];
 
-            task_title[0]  = '\0';
             backup_path[0] = '\0';
 
             /* Get backup path */
@@ -415,8 +414,6 @@ static void task_core_backup_handler(retro_task_t *task)
             {
                char task_title[PATH_MAX_LENGTH];
 
-               task_title[0]  = '\0';
-
                /* Get number of old backups to remove */
                backup_handle->num_auto_backups_to_remove = num_backups -
                      backup_handle->auto_backup_history_size;
@@ -483,19 +480,18 @@ static void task_core_backup_handler(retro_task_t *task)
       case CORE_BACKUP_END:
          {
             char task_title[PATH_MAX_LENGTH];
-
-            task_title[0] = '\0';
-
             /* Set final task title */
             task_free_title(task);
 
             if (backup_handle->success)
             {
                if (backup_handle->crc_match)
-                  strlcpy(task_title, msg_hash_to_str(MSG_CORE_BACKUP_ALREADY_EXISTS),
+                  strlcpy(task_title,
+                        msg_hash_to_str(MSG_CORE_BACKUP_ALREADY_EXISTS),
                         sizeof(task_title));
                else
-                  strlcpy(task_title, msg_hash_to_str(MSG_CORE_BACKUP_COMPLETE),
+                  strlcpy(task_title,
+                        msg_hash_to_str(MSG_CORE_BACKUP_COMPLETE),
                         sizeof(task_title));
             }
             else
@@ -540,8 +536,6 @@ void *task_push_core_backup(
    core_backup_handle_t *backup_handle = NULL;
    char task_title[PATH_MAX_LENGTH];
 
-   task_title[0] = '\0';
-
    /* Sanity check */
    if (string_is_empty(core_path) ||
        !path_is_valid(core_path))
@@ -577,9 +571,8 @@ void *task_push_core_backup(
    }
 
    /* Configure handle */
-   backup_handle = (core_backup_handle_t*)calloc(1, sizeof(core_backup_handle_t));
-
-   if (!backup_handle)
+   if (!(backup_handle = (core_backup_handle_t*)calloc(1,
+               sizeof(core_backup_handle_t))))
       goto error;
 
    backup_handle->dir_core_assets            = string_is_empty(dir_core_assets) ? NULL : strdup(dir_core_assets);
@@ -604,9 +597,7 @@ void *task_push_core_backup(
    backup_handle->status                     = CORE_BACKUP_BEGIN;
 
    /* Create task */
-   task = task_init();
-
-   if (!task)
+   if (!(task = task_init()))
       goto error;
 
    /* Get initial task title */
@@ -653,6 +644,7 @@ static void cb_task_core_restore(
    /* Reload core info files
     * > This must be done on the main thread */
    command_event(CMD_EVENT_CORE_INFO_INIT, NULL);
+
 #if defined(RARCH_INTERNAL) && defined(HAVE_MENU)
    /* Force reload of contentless cores icons */
    menu_contentless_cores_free();
@@ -666,9 +658,7 @@ static void task_core_restore_handler(retro_task_t *task)
    if (!task)
       goto task_finished;
 
-   backup_handle = (core_backup_handle_t*)task->state;
-
-   if (!backup_handle)
+   if (!(backup_handle = (core_backup_handle_t*)task->state))
       goto task_finished;
 
    if (task_get_cancelled(task))
@@ -748,8 +738,6 @@ static void task_core_restore_handler(retro_task_t *task)
       case CORE_RESTORE_PRE_ITERATE:
          {
             char task_title[PATH_MAX_LENGTH];
-
-            task_title[0] = '\0';
 
             /* Open backup file */
 #if defined(HAVE_ZLIB)
@@ -884,8 +872,6 @@ static void task_core_restore_handler(retro_task_t *task)
          {
             char task_title[PATH_MAX_LENGTH];
 
-            task_title[0] = '\0';
-
             /* Set final task title */
             task_free_title(task);
 
@@ -937,16 +923,15 @@ bool task_push_core_restore(const char *backup_path, const char *dir_libretro,
    retro_task_t *task                  = NULL;
    core_backup_handle_t *backup_handle = NULL;
    char core_path[PATH_MAX_LENGTH];
-   char task_title[PATH_MAX_LENGTH];
+   char task_title[256];
 
    core_path[0]  = '\0';
-   task_title[0] = '\0';
 
    /* Sanity check */
-   if (string_is_empty(backup_path) ||
-       !path_is_valid(backup_path) ||
-       string_is_empty(dir_libretro) ||
-       !core_loaded)
+   if (    string_is_empty(backup_path)
+       || !path_is_valid(backup_path)
+       ||  string_is_empty(dir_libretro)
+       || !core_loaded)
       goto error;
 
    /* Ensure core directory is valid */
@@ -967,11 +952,9 @@ bool task_push_core_restore(const char *backup_path, const char *dir_libretro,
    {
       const char *backup_filename = path_basename(backup_path);
       char msg[PATH_MAX_LENGTH];
-
-      msg[0] = '\0';
-
       strlcpy(msg, msg_hash_to_str(MSG_CORE_RESTORATION_INVALID_CONTENT), sizeof(msg));
-      strlcat(msg, backup_filename ? backup_filename : "", sizeof(msg));
+      if (backup_filename)
+         strlcat(msg, backup_filename, sizeof(msg));
 
       RARCH_ERR("[core restore] Invalid core file selected: %s\n", backup_path);
       runloop_msg_queue_push(msg, 1, 100, true,
@@ -997,13 +980,10 @@ bool task_push_core_restore(const char *backup_path, const char *dir_libretro,
    if (core_info_get_core_lock(core_path, true))
    {
       char msg[PATH_MAX_LENGTH];
-
-      msg[0] = '\0';
-
       strlcpy(msg,
-            (backup_type == CORE_BACKUP_TYPE_ARCHIVE) ?
-                  msg_hash_to_str(MSG_CORE_RESTORATION_DISABLED) :
-                        msg_hash_to_str(MSG_CORE_INSTALLATION_DISABLED),
+            (backup_type == CORE_BACKUP_TYPE_ARCHIVE)
+                  ? msg_hash_to_str(MSG_CORE_RESTORATION_DISABLED)
+                  : msg_hash_to_str(MSG_CORE_INSTALLATION_DISABLED),
             sizeof(msg));
       strlcat(msg, core_name, sizeof(msg));
 
@@ -1022,9 +1002,7 @@ bool task_push_core_restore(const char *backup_path, const char *dir_libretro,
       goto error;
 
    /* Configure handle */
-   backup_handle = (core_backup_handle_t*)calloc(1, sizeof(core_backup_handle_t));
-
-   if (!backup_handle)
+   if (!(backup_handle = (core_backup_handle_t*)calloc(1, sizeof(core_backup_handle_t))))
       goto error;
 
    backup_handle->dir_core_assets            = NULL;
@@ -1049,9 +1027,7 @@ bool task_push_core_restore(const char *backup_path, const char *dir_libretro,
    backup_handle->status                     = CORE_RESTORE_GET_CORE_CRC;
 
    /* Create task */
-   task = task_init();
-
-   if (!task)
+   if (!(task = task_init()))
       goto error;
 
    /* Get initial task title */

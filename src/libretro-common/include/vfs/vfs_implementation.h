@@ -57,6 +57,7 @@ int retro_vfs_file_rename_impl(const char *old_path, const char *new_path);
 
 const char *retro_vfs_file_get_path_impl(libretro_vfs_implementation_file *stream);
 
+int retro_vfs_exists_impl(const char *path);
 int retro_vfs_stat_impl(const char *path, int32_t *size);
 
 int retro_vfs_mkdir_impl(const char *dir);
@@ -73,7 +74,7 @@ int retro_vfs_closedir_impl(libretro_vfs_implementation_dir *dirstream);
 
 #ifdef __WINRT__
 
-//void uwp_set_acl(const wchar_t* path, const wchar_t* AccessString);
+void uwp_set_acl(const wchar_t* path, const wchar_t* AccessString);
 
 #endif
 

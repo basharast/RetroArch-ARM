@@ -42,6 +42,11 @@ enum rcheevos_menuitem_bucket
    RCHEEVOS_MENUITEM_BUCKET_ALMOST_THERE
 };
 
+/* if menu_badge_grayscale is set to a value other than 1 or 0, it's a counter for the number of
+ * frames since the last time we checked for the file. When the counter reaches this value, we'll
+ * check for the file again. */
+#define MENU_BADGE_RETRY_RELOAD_FRAMES 64
+
 static void rcheevos_menu_update_bucket(rcheevos_racheevo_t* cheevo)
 {
    cheevo->menu_progress = 0;
@@ -116,9 +121,12 @@ bool rcheevos_menu_get_state(unsigned menu_offset, char *buffer, size_t len)
       if (cheevo)
       {
          if (cheevo->menu_progress)
-            snprintf(buffer, len, "%s - %d%%",
-                  msg_hash_to_str(menuitem->state_label_idx),
-                  cheevo->menu_progress);
+         {
+            const int written = snprintf(buffer, len, "%s - ",
+               msg_hash_to_str(menuitem->state_label_idx));
+            if (len - written > 0)
+               rc_runtime_format_achievement_measured(&rcheevos_locals->runtime, cheevo->id, buffer + written, len - written);
+         }
          else
             strlcpy(buffer, msg_hash_to_str(menuitem->state_label_idx), len);
 
@@ -160,7 +168,11 @@ void rcheevos_menu_reset_badges(void)
    while (cheevo < stop)
    {
       if (cheevo->menu_badge_texture)
+      {
          video_driver_texture_unload(&cheevo->menu_badge_texture);
+         cheevo->menu_badge_texture = 0;
+         cheevo->menu_badge_grayscale = MENU_BADGE_RETRY_RELOAD_FRAMES;
+      }
       ++cheevo;
    }
 }
@@ -371,7 +383,7 @@ uintptr_t rcheevos_menu_get_badge_texture(unsigned menu_offset)
           * has become available (do this roughly once a second) */
          if (cheevo->menu_badge_grayscale >= 2)
          {
-            if (++cheevo->menu_badge_grayscale == 64)
+            if (++cheevo->menu_badge_grayscale >= MENU_BADGE_RETRY_RELOAD_FRAMES)
             {
                cheevo->menu_badge_grayscale = 2;
                rcheevos_menu_update_badge(cheevo);
@@ -396,29 +408,29 @@ void rcheevos_menu_populate_hardcore_pause_submenu(void* data)
    {
       if (rcheevos_locals->hardcore_active)
       {
-         menu_entries_append_enum(info->list,
+         menu_entries_append(info->list,
                msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_PAUSE_CANCEL),
-               msg_hash_to_str(MENU_ENUM_SUBLABEL_ACHIEVEMENT_PAUSE_CANCEL),
+               msg_hash_to_str(MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_CANCEL),
                MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_CANCEL,
-               MENU_SETTING_ACTION_CLOSE, 0, 0);
-         menu_entries_append_enum(info->list,
+               MENU_SETTING_ACTION_CLOSE, 0, 0, NULL);
+         menu_entries_append(info->list,
                msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_PAUSE),
                msg_hash_to_str(MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE),
                MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE,
-               MENU_SETTING_ACTION_PAUSE_ACHIEVEMENTS, 0, 0);
+               MENU_SETTING_ACTION_PAUSE_ACHIEVEMENTS, 0, 0, NULL);
       }
       else
       {
-         menu_entries_append_enum(info->list,
+         menu_entries_append(info->list,
                msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_RESUME_CANCEL),
-               msg_hash_to_str(MENU_ENUM_SUBLABEL_ACHIEVEMENT_RESUME_CANCEL),
+               msg_hash_to_str(MENU_ENUM_LABEL_ACHIEVEMENT_RESUME_CANCEL),
                MENU_ENUM_LABEL_ACHIEVEMENT_RESUME_CANCEL,
-               MENU_SETTING_ACTION_CLOSE, 0, 0);
-         menu_entries_append_enum(info->list,
+               MENU_SETTING_ACTION_CLOSE, 0, 0, NULL);
+         menu_entries_append(info->list,
                msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_RESUME),
                msg_hash_to_str(MENU_ENUM_LABEL_ACHIEVEMENT_RESUME),
                MENU_ENUM_LABEL_ACHIEVEMENT_RESUME,
-               MENU_SETTING_ACTION_RESUME_ACHIEVEMENTS, 0, 0);
+               MENU_SETTING_ACTION_RESUME_ACHIEVEMENTS, 0, 0, NULL);
       }
    }
 }
@@ -446,17 +458,17 @@ void rcheevos_menu_populate(void* data)
       if (settings->bools.cheevos_enable && settings->bools.cheevos_hardcore_mode_enable)
       {
          if (rcheevos_locals->hardcore_active)
-            menu_entries_append_enum(info->list,
+            menu_entries_append(info->list,
                   msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_PAUSE),
-                  msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_PAUSE_MENU),
+                  msg_hash_to_str(MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_MENU),
                   MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_MENU,
-                  MENU_SETTING_ACTION_PAUSE_ACHIEVEMENTS, 0, 0);
+                  MENU_SETTING_ACTION_PAUSE_ACHIEVEMENTS, 0, 0, NULL);
          else
-            menu_entries_append_enum(info->list,
+            menu_entries_append(info->list,
                   msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_RESUME),
-                  msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_PAUSE_MENU),
+                  msg_hash_to_str(MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_MENU),
                   MENU_ENUM_LABEL_ACHIEVEMENT_PAUSE_MENU,
-                  MENU_SETTING_ACTION_RESUME_ACHIEVEMENTS, 0, 0);
+                  MENU_SETTING_ACTION_RESUME_ACHIEVEMENTS, 0, 0, NULL);
       }
 
       /* update the bucket for each achievement */
@@ -593,18 +605,18 @@ void rcheevos_menu_populate(void* data)
       do
       {
          if (menuitem->cheevo)
-            menu_entries_append_enum(info->list, menuitem->cheevo->title,
+            menu_entries_append(info->list, menuitem->cheevo->title,
                   menuitem->cheevo->description,
                   MENU_ENUM_LABEL_CHEEVOS_LOCKED_ENTRY,
-                  MENU_SETTINGS_CHEEVOS_START + idx, 0, 0);
+                  MENU_SETTINGS_CHEEVOS_START + idx, 0, 0, NULL);
          else
          {
             snprintf(buffer, sizeof(buffer), "----- %s -----",
                   msg_hash_to_str(menuitem->state_label_idx));
 
-            menu_entries_append_enum(info->list, buffer, "",
+            menu_entries_append(info->list, buffer, "",
                   MENU_ENUM_LABEL_CHEEVOS_LOCKED_ENTRY,
-                  MENU_SETTINGS_CHEEVOS_START + idx, 0, 0);
+                  MENU_SETTINGS_CHEEVOS_START + idx, 0, 0, NULL);
          }
 
          ++idx;
@@ -615,35 +627,35 @@ void rcheevos_menu_populate(void* data)
    {
       /* no achievements found */
       if (!rcheevos_locals->core_supports)
-         menu_entries_append_enum(info->list,
+         menu_entries_append(info->list,
             msg_hash_to_str(MENU_ENUM_LABEL_VALUE_CANNOT_ACTIVATE_ACHIEVEMENTS_WITH_THIS_CORE),
             msg_hash_to_str(MENU_ENUM_LABEL_CANNOT_ACTIVATE_ACHIEVEMENTS_WITH_THIS_CORE),
             MENU_ENUM_LABEL_CANNOT_ACTIVATE_ACHIEVEMENTS_WITH_THIS_CORE,
-            FILE_TYPE_NONE, 0, 0);
+            FILE_TYPE_NONE, 0, 0, NULL);
       else if (rcheevos_locals->load_info.state == RCHEEVOS_LOAD_STATE_NETWORK_ERROR)
-         menu_entries_append_enum(info->list,
+         menu_entries_append(info->list,
             msg_hash_to_str(MENU_ENUM_LABEL_VALUE_NETWORK_ERROR),
             msg_hash_to_str(MENU_ENUM_LABEL_NETWORK_ERROR),
             MENU_ENUM_LABEL_NETWORK_ERROR,
-            FILE_TYPE_NONE, 0, 0);
+            FILE_TYPE_NONE, 0, 0, NULL);
       else if (!rcheevos_locals->game.id)
-         menu_entries_append_enum(info->list,
+         menu_entries_append(info->list,
             msg_hash_to_str(MENU_ENUM_LABEL_VALUE_UNKNOWN_GAME),
             msg_hash_to_str(MENU_ENUM_LABEL_UNKNOWN_GAME),
             MENU_ENUM_LABEL_UNKNOWN_GAME,
-            FILE_TYPE_NONE, 0, 0);
+            FILE_TYPE_NONE, 0, 0, NULL);
       else if (!rcheevos_locals->token[0])
-         menu_entries_append_enum(info->list,
+         menu_entries_append(info->list,
             msg_hash_to_str(MENU_ENUM_LABEL_VALUE_NOT_LOGGED_IN),
             msg_hash_to_str(MENU_ENUM_LABEL_NOT_LOGGED_IN),
             MENU_ENUM_LABEL_NOT_LOGGED_IN,
-            FILE_TYPE_NONE, 0, 0);
+            FILE_TYPE_NONE, 0, 0, NULL);
       else
-         menu_entries_append_enum(info->list,
+         menu_entries_append(info->list,
             msg_hash_to_str(MENU_ENUM_LABEL_VALUE_NO_ACHIEVEMENTS_TO_DISPLAY),
             msg_hash_to_str(MENU_ENUM_LABEL_NO_ACHIEVEMENTS_TO_DISPLAY),
             MENU_ENUM_LABEL_NO_ACHIEVEMENTS_TO_DISPLAY,
-            FILE_TYPE_NONE, 0, 0);
+            FILE_TYPE_NONE, 0, 0, NULL);
    }
 }
 

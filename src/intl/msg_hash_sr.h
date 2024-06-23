@@ -542,17 +542,9 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_CPU_FEATURES,
    "Karakteristike procesora"
    )
-MSG_HASH( /* FIXME Colon should be handled in menu_display.c like the rest */
-   MENU_ENUM_LABEL_VALUE_CPU_ARCHITECTURE,
-   "Arhitektura procesora:"
-   )
-MSG_HASH( /* FIXME Colon should be handled in menu_display.c like the rest */
-   MENU_ENUM_LABEL_VALUE_CPU_CORES,
-   "Jezgra procesora:"
-   )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_CPU_CORES,
-   "Broj jezgra procesora."
+   MENU_ENUM_LABEL_VALUE_CPU_ARCHITECTURE,
+   "Arhitektura procesora"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_FRONTEND_IDENTIFIER,
@@ -791,10 +783,6 @@ MSG_HASH(
    "Podrška za igru preko mreže (peer-to-peer)"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_PYTHON_SUPPORT,
-   "Podrška za Python (podrška za skripte u šejderima)"
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_V4L2_SUPPORT,
    "Podrška za Video4Linux2"
    )
@@ -823,6 +811,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_GENRE,
    "Žanr"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_ACHIEVEMENTS,
+   "Dostignuća"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_PUBLISHER,
@@ -855,14 +847,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_EDGE_MAGAZINE_ISSUE,
    "Broj Edž časopisa"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_RELEASE_MONTH,
-   "Mesec izlaska"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_RELEASE_YEAR,
-   "Godina izlaska"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_BBFC_RATING,
@@ -912,20 +896,16 @@ MSG_HASH(
    "Učitaj konfiguraciju"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_RESET_TO_DEFAULT_CONFIG,
-   "Vrati na podrazumevano"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_RESET_TO_DEFAULT_CONFIG,
-   "Vrati trenutnu konfiguraciju na podrazumevane vrednosti."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SAVE_CURRENT_CONFIG,
    "Sačuvaj trenutnu konfiguraciju"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SAVE_NEW_CONFIG,
    "Sačuvaj novu konfiguraciju"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RESET_TO_DEFAULT_CONFIG,
+   "Vrati na podrazumevano"
    )
 
 /* Main Menu > Help */
@@ -1141,6 +1121,11 @@ MSG_HASH(
    "Izmeni podrazumevane direktorijume i lokacije datoteka."
    )
 
+/* Core option category placeholders for icons */
+
+#ifdef HAVE_MIST
+#endif
+
 /* Settings > Drivers */
 
 MSG_HASH(
@@ -1314,10 +1299,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_SMOOTH,
    "Bilinearni filter"
    )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_SMOOTH,
-   "Dodaj blago zamagljenje slici da bi se omekšale oštre ivice piksela. Ova opcija ima veoma malo uticaja na performanse."
-   )
 #if defined(DINGUX)
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_DINGUX_IPU_FILTER_TYPE,
@@ -1448,6 +1429,8 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_MONITOR_INDEX,
    "Odaberi ekran za korišćenje."
    )
+#if defined (WIIU)
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_ROTATION,
    "Video rotacija"
@@ -1663,14 +1646,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_ASPECT_RATIO_INDEX,
    "Odnos ekrana"
    )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_ASPECT_RATIO,
-   "Specifičan odnos ekrana"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_ASPECT_RATIO,
-   "Decimalna vrednost za odnos širine i visine slike, koristi se ako je opcija 'Odnos ekrana' postavljena na 'Konfiguracija'."
-   )
 #if defined(DINGUX)
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_DINGUX_IPU_KEEP_ASPECT,
@@ -1778,6 +1753,10 @@ MSG_HASH(
    "Overrajduj podrazumevani audio uređaj koji će koristiti audio drajver. Ovo je nezavisno od drajvera."
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_HELP_AUDIO_DEVICE,
+   "Overrajduj podrazumevani audio uređaj koji će koristiti audio drajver. Ovo je nezavisno od drajvera."
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_AUDIO_LATENCY,
    "Kašnjenje zvuka (ms)"
    )
@@ -1817,6 +1796,8 @@ MSG_HASH(
 
 #if defined(HAVE_DINPUT) || defined(HAVE_WINRAWINPUT)
 #endif
+#ifdef ANDROID
+#endif
 
 /* Settings > Input > Haptic Feedback/Vibration */
 
@@ -1828,12 +1809,23 @@ MSG_HASH(
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_QUIT_KEY,
-   "Napusti RetroArch"
+   "Zatvori"
    )
+
+
+
+
+
+
+
+
+
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_AI_SERVICE,
    "VI servis"
    )
+
+
 
 /* Settings > Input > Port # Controls */
 
@@ -1845,7 +1837,15 @@ MSG_HASH(
 
 #ifndef HAVE_DYNAMIC
 #endif
+#ifdef HAVE_MIST
 
+
+
+
+
+
+
+#endif
 /* Settings > Configuration */
 
 
@@ -1887,6 +1887,8 @@ MSG_HASH(
 
 /* Settings > User Interface */
 
+#ifdef _3DS
+#endif
 
 /* Settings > User Interface > Menu Item Visibility */
 
@@ -1911,6 +1913,7 @@ MSG_HASH(
 /* Settings > User Interface > Views > Settings */
 
 
+
 /* Settings > User Interface > Appearance */
 
 
@@ -1928,6 +1931,12 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CHEEVOS_ENABLE,
    "Dostignuća"
    )
+
+/* Settings > Achievements > Appearance */
+
+
+/* Settings > Achievements > Visibility */
+
 
 /* Settings > Network */
 
@@ -1984,6 +1993,13 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_PLAYLIST_DIRECTORY,
    "Liste"
    )
+
+#ifdef HAVE_MIST
+/* Settings > Steam */
+
+
+
+#endif
 
 /* Music */
 
@@ -2050,7 +2066,10 @@ MSG_HASH(
 /* Quick Menu > Controls */
 
 
-/* Quick Menu > Controls > Load Remap File */
+/* Quick Menu > Controls > Manage Remap Files */
+
+
+/* Quick Menu > Controls > Manage Remap Files > Load Remap File */
 
 
 /* Quick Menu > Cheats */
@@ -2243,6 +2262,7 @@ MSG_HASH(
 /* Notifications */
 
 
+
 /* Lakka */
 
 
@@ -2264,7 +2284,7 @@ MSG_HASH(
 #ifdef HAVE_ODROIDGO2
 #else
 #endif
-#if defined(_3DS)
+#ifdef _3DS
 #endif
 #ifdef HAVE_QT
 #endif

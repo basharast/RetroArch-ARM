@@ -84,8 +84,7 @@ bool content_undo_load_state(void);
 /* Restores the last savestate file which was overwritten */
 bool content_undo_save_state(void);
 
-void content_get_status(bool *contentless,
-      bool *is_inited);
+uint8_t content_get_flags(void);
 
 void content_set_does_not_need_content(void);
 
@@ -100,7 +99,7 @@ void content_deinit(void);
 bool content_init(void);
 
 /* Resets the state and savefile backup buffers */
-bool content_reset_savestate_backups(void);
+void content_reset_savestate_backups(void);
 
 /* Checks if the buffers are empty */
 bool content_undo_load_buf_is_empty(void);

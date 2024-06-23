@@ -158,6 +158,16 @@ typedef struct audio_driver
    size_t (*buffer_size)(void *data);
 } audio_driver_t;
 
+enum audio_driver_state_flags
+{
+   AUDIO_FLAG_ACTIVE       = (1 << 0),
+   AUDIO_FLAG_USE_FLOAT    = (1 << 1),
+   AUDIO_FLAG_SUSPENDED    = (1 << 2),
+   AUDIO_FLAG_MIXER_ACTIVE = (1 << 3),
+   AUDIO_FLAG_HARD_DISABLE = (1 << 4),
+   AUDIO_FLAG_CONTROL      = (1 << 5)
+};
+
 typedef struct
 {
    double source_ratio_original;
@@ -210,19 +220,13 @@ typedef struct
 
    enum resampler_quality resampler_quality;
 
+   uint8_t flags;
+
    char resampler_ident[64];
 
-   bool active;
-   bool control;
    bool mute_enable;
-   bool use_float;
-   bool suspended;
 #ifdef HAVE_AUDIOMIXER
    bool mixer_mute_enable;
-   bool mixer_active;
-#endif
-#ifdef HAVE_RUNAHEAD
-   bool hard_disable;
 #endif
 } audio_driver_state_t;
 
@@ -262,6 +266,8 @@ bool audio_driver_mixer_add_stream(audio_mixer_stream_params_t *params);
 void audio_driver_mixer_play_stream(unsigned i);
 
 void audio_driver_mixer_play_menu_sound(unsigned i);
+
+void audio_driver_mixer_play_scroll_sound(bool direction_up);
 
 void audio_driver_mixer_play_menu_sound_looped(unsigned i);
 

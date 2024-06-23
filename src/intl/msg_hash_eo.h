@@ -136,6 +136,10 @@ MSG_HASH(
 
 /* Main Menu > Information > Database Manager > Information */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_ACHIEVEMENTS,
+   "Enable Achievements"
+   )
 
 /* Main Menu > Configuration File */
 
@@ -221,6 +225,11 @@ MSG_HASH(
    "Change default directories for this system."
    )
 
+/* Core option category placeholders for icons */
+
+#ifdef HAVE_MIST
+#endif
+
 /* Settings > Drivers */
 
 MSG_HASH(
@@ -288,6 +297,8 @@ MSG_HASH(
 
 /* Settings > Video > Output */
 
+#if defined (WIIU)
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_ROTATION,
    "Rotation"
@@ -433,6 +444,8 @@ MSG_HASH(
    )
 #if defined(HAVE_DINPUT) || defined(HAVE_WINRAWINPUT)
 #endif
+#ifdef ANDROID
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_HOTKEY_BINDS,
    "Enable hotkeys"
@@ -450,6 +463,17 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_CLOSE_CONTENT_KEY,
    "Close"
    )
+
+
+
+
+
+
+
+
+
+
+
 
 /* Settings > Input > Port # Controls */
 
@@ -469,7 +493,15 @@ MSG_HASH(
    )
 #ifndef HAVE_DYNAMIC
 #endif
+#ifdef HAVE_MIST
 
+
+
+
+
+
+
+#endif
 /* Settings > Configuration */
 
 MSG_HASH(
@@ -539,6 +571,8 @@ MSG_HASH(
 
 /* Settings > User Interface */
 
+#ifdef _3DS
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_ENABLE_KIOSK_MODE,
    "Enable Kiosk Mode"
@@ -546,10 +580,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_UI_COMPANION_ENABLE,
    "UI Companion Enable"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_UI_MENUBAR_ENABLE,
-   "Menubar"
    )
 
 /* Settings > User Interface > Menu Item Visibility */
@@ -569,6 +599,7 @@ MSG_HASH(
 
 
 /* Settings > User Interface > Views > Settings */
+
 
 
 /* Settings > User Interface > Appearance */
@@ -592,6 +623,12 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_CHEEVOS_TEST_UNOFFICIAL,
    "Enable or disable unofficial achievements and/or beta features for testing purposes."
    )
+
+/* Settings > Achievements > Appearance */
+
+
+/* Settings > Achievements > Visibility */
+
 
 /* Settings > Network */
 
@@ -660,6 +697,13 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DYNAMIC_WALLPAPERS_DIRECTORY,
    "Dynamic Wallpapers"
    )
+
+#ifdef HAVE_MIST
+/* Settings > Steam */
+
+
+
+#endif
 
 /* Music */
 
@@ -730,7 +774,10 @@ MSG_HASH(
 /* Quick Menu > Controls */
 
 
-/* Quick Menu > Controls > Load Remap File */
+/* Quick Menu > Controls > Manage Remap Files */
+
+
+/* Quick Menu > Controls > Manage Remap Files > Load Remap File */
 
 
 /* Quick Menu > Cheats */
@@ -820,10 +867,6 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_XMB_THEME,
    "Select a different theme for the icon. Changes will take effect after you restart the program."
    )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_XMB_SHADOWS_ENABLE,
-   "Icon Shadows Enable"
-   )
 
 /* XMB: Settings Options */
 
@@ -910,6 +953,7 @@ MSG_HASH(
 
 /* Notifications */
 
+
 MSG_HASH(
    MSG_CRC32_CHECKSUM_MISMATCH,
    "CRC32 checksum mismatch between content file and saved content checksum in replay file header) replay highly likely to desync on playback."
@@ -988,7 +1032,7 @@ MSG_HASH(
 #ifdef HAVE_ODROIDGO2
 #else
 #endif
-#if defined(_3DS)
+#ifdef _3DS
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_3DS_LCD_BOTTOM,
    "3DS Fundo Ekrano"

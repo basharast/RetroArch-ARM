@@ -19,7 +19,7 @@
 #endif
 
 #if defined(__PSL1GHT__) || defined(__PS3__)
-#include "defines/ps3_defines.h"
+#include <defines/ps3_defines.h>
 #endif
 
 #ifdef __MACH__
@@ -213,9 +213,6 @@ void retro_main_log_file_deinit(void)
 #if !defined(HAVE_LOGGER)
 void RARCH_LOG_V(const char *tag, const char *fmt, va_list ap)
 {
-   verbosity_state_t *g_verbosity = &main_verbosity_st;
-   const char              *tag_v = tag ? tag : FILE_PATH_LOG_INFO;
-
 #if TARGET_OS_IPHONE
 #if TARGET_IPHONE_SIMULATOR
    vprintf(fmt, ap);
@@ -241,13 +238,15 @@ void RARCH_LOG_V(const char *tag, const char *fmt, va_list ap)
    /* FIXME: Using arbitrary string as fmt argument is unsafe. */
    char msg_new[256];
    char buffer[256];
+   const char *tag_v = tag ? tag : FILE_PATH_LOG_INFO;
 
-   msg_new[0] = buffer[0] = '\0';
+   msg_new[0]        = buffer[0] = '\0';
    snprintf(msg_new, sizeof(msg_new), "%s: %s %s",
          FILE_PATH_PROGRAM_NAME, tag_v, fmt);
    wvsprintf(buffer, msg_new, ap);
    OutputDebugStringA(buffer);
 #elif defined(ANDROID)
+   verbosity_state_t *g_verbosity = &main_verbosity_st;
    int prio = ANDROID_LOG_INFO;
    if (tag)
    {
@@ -265,15 +264,17 @@ void RARCH_LOG_V(const char *tag, const char *fmt, va_list ap)
    else
       __android_log_vprint(prio, FILE_PATH_PROGRAM_NAME, fmt, ap);
 #else
-   FILE *fp = (FILE*)g_verbosity->fp;
+   verbosity_state_t *g_verbosity = &main_verbosity_st;
+   FILE                       *fp = (FILE*)g_verbosity->fp;
+   const char              *tag_v = tag ? tag : FILE_PATH_LOG_INFO;
 #if defined(HAVE_QT) || defined(__WINRT__)
-   char buffer[256];
-   buffer[0] = '\0';
+   char buffer[2048];
+   buffer[0]         = '\0';
 
    /* Ensure null termination and line break in error case */
    if (vsnprintf(buffer, sizeof(buffer), fmt, ap) < 0)
    {
-      int end;
+      size_t end;
       buffer[sizeof(buffer) - 1]  = '\0';
       end = strlen(buffer) - 1;
       if (end >= 0)
@@ -438,24 +439,18 @@ void rarch_log_file_init(
    static char timestamped_log_file_name[64] = {0};
    bool logging_to_file                      = g_verbosity->initialized;
 
-   log_directory[0]                          = '\0';
-   log_file_path[0]                          = '\0';
 
    /* If this is the first run, generate a timestamped log
     * file name (do this even when not outputting timestamped
     * log files, since user may decide to switch at any moment...) */
    if (string_is_empty(timestamped_log_file_name))
    {
-      char format[256];
       struct tm tm_;
       time_t cur_time = time(NULL);
 
       rtime_localtime(&cur_time, &tm_);
-
-      format[0] = '\0';
-      strftime(format, sizeof(format), "retroarch__%Y_%m_%d__%H_%M_%S", &tm_);
-      fill_pathname_noext(timestamped_log_file_name, format,
-            ".log",
+      strftime(timestamped_log_file_name, sizeof(timestamped_log_file_name), "retroarch__%Y_%m_%d__%H_%M_%S", &tm_);
+      strlcat(timestamped_log_file_name, ".log",
             sizeof(timestamped_log_file_name));
    }
 
@@ -508,13 +503,15 @@ void rarch_log_file_init(
       strlcpy(log_directory, log_dir, sizeof(log_directory));
 
       /* Get log file path */
-      fill_pathname_join(log_file_path,
+      fill_pathname_join_special(log_file_path,
             log_dir,
             log_to_file_timestamp
             ? timestamped_log_file_name
             : "retroarch.log",
             sizeof(log_file_path));
    }
+   else
+	   log_file_path[0] = '\0';
 
    /* > Attempt to initialise log file */
    if (!string_is_empty(log_file_path))

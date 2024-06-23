@@ -1,5 +1,5 @@
 /*
-** $Id: lcorolib.c,v 1.10.2.1 2017/04/19 17:20:42 roberto Exp $
+** $Id: lcorolib.c,v 1.10.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Coroutine Library
 ** See Copyright Notice in lua.h
 */

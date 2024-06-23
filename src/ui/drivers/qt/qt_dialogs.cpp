@@ -29,10 +29,7 @@
 #include <QStackedLayout>
 #include <QScrollBar>
 
-#include "coreoptionsdialog.h"
-#include "viewoptionsdialog.h"
-#include "coreinfodialog.h"
-#include "playlistentrydialog.h"
+#include "qt_dialogs.h"
 #include "../ui_qt.h"
 
 #ifndef CXX_BUILD
@@ -67,12 +64,6 @@ extern "C" {
 
 #ifndef CXX_BUILD
 }
-#endif
-
-#if defined(HAVE_MENU)
-#if defined(HAVE_CG) || defined(HAVE_GLSL) || defined(HAVE_SLANG) || defined(HAVE_HLSL)
-#include "shaderparamsdialog.h"
-#endif
 #endif
 
 #include "qt_options.h"
@@ -1130,10 +1121,11 @@ void CoreOptionsDialog::buildLayout()
 
             if (!contentLabel.isEmpty())
             {
-               if (!retroarch_ctl(RARCH_CTL_IS_GAME_OPTIONS_ACTIVE, NULL))
-                  label = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_GAME_SPECIFIC_OPTIONS_CREATE);
-               else
+               uint32_t flags = runloop_get_flags();
+               if (flags & RUNLOOP_FLAG_GAME_OPTIONS_ACTIVE)
                   label = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_GAME_SPECIFIC_OPTIONS_IN_USE);
+               else
+                  label = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_GAME_SPECIFIC_OPTIONS_CREATE);
 
                if (!label.isEmpty())
                {
@@ -1196,14 +1188,15 @@ void CoreOptionsDialog::buildLayout()
                if (!string_is_empty(option->info))
                {
                   char *new_info;
-                  size_t new_info_len = strlen(option->info) + 1;
+                  size_t option_info_len = strlen(option->info);
+                  size_t new_info_len    = option_info_len + 1;
 
-                  new_info = (char *)malloc(new_info_len);
-                  if (!new_info)
+                  if (!(new_info = (char *)malloc(new_info_len)))
                      return;
                   new_info[0] = '\0';
 
-                  word_wrap(new_info, new_info_len, option->info, 50, 100, 0);
+                  word_wrap(new_info, new_info_len, option->info,
+                        option_info_len, 50, 100, 0);
                   descLabel->setToolTip(new_info);
                   combo_box->setToolTip(new_info);
                   free(new_info);
@@ -1516,7 +1509,7 @@ void ShaderParamsDialog::onFilterComboBoxIndexChanged(int)
             if (video_shader)
                video_shader->pass[pass].filter = filter;
 
-            video_shader->modified = true;
+            video_shader->flags |= SHDR_FLAG_MODIFIED;
 
             command_event(CMD_EVENT_SHADERS_APPLY_CHANGES, NULL);
          }
@@ -1560,19 +1553,25 @@ void ShaderParamsDialog::onScaleComboBoxIndexChanged(int)
          {
             if (menu_shader)
             {
-               menu_shader->pass[pass].fbo.scale_x = scale;
-               menu_shader->pass[pass].fbo.scale_y = scale;
-               menu_shader->pass[pass].fbo.valid = scale;
+               menu_shader->pass[pass].fbo.scale_x   = scale;
+               menu_shader->pass[pass].fbo.scale_y   = scale;
+               if (scale)
+                  menu_shader->pass[pass].fbo.flags |=  FBO_SCALE_FLAG_VALID;
+               else
+                  menu_shader->pass[pass].fbo.flags &= ~FBO_SCALE_FLAG_VALID;
             }
 
             if (video_shader)
             {
-               video_shader->pass[pass].fbo.scale_x = scale;
-               video_shader->pass[pass].fbo.scale_y = scale;
-               video_shader->pass[pass].fbo.valid = scale;
+               video_shader->pass[pass].fbo.scale_x   = scale;
+               video_shader->pass[pass].fbo.scale_y   = scale;
+               if (scale)
+                  video_shader->pass[pass].fbo.flags |=  FBO_SCALE_FLAG_VALID;
+               else
+                  video_shader->pass[pass].fbo.flags &= ~FBO_SCALE_FLAG_VALID;
             }
 
-            video_shader->modified = true;
+            video_shader->flags |= SHDR_FLAG_MODIFIED;
 
             command_event(CMD_EVENT_SHADERS_APPLY_CHANGES, NULL);
          }
@@ -1650,7 +1649,7 @@ void ShaderParamsDialog::onShaderPassMoveDownClicked()
       memcpy(&menu_shader->pass[pass + 1], tempPass.pass, sizeof(struct video_shader_pass));
    }
 
-   menu_shader->modified = true;
+   menu_shader->flags |= SHDR_FLAG_MODIFIED;
 
    reload();
 }
@@ -1725,7 +1724,7 @@ void ShaderParamsDialog::onShaderPassMoveUpClicked()
       memcpy(&menu_shader->pass[pass], tempPass.pass, sizeof(struct video_shader_pass));
    }
 
-   menu_shader->modified = true;
+   menu_shader->flags |= SHDR_FLAG_MODIFIED;
 
    reload();
 }
@@ -1832,7 +1831,7 @@ void ShaderParamsDialog::onShaderResetPass(int pass)
          param->current = param->initial;
       }
 
-      video_shader->modified = true;
+      video_shader->flags |= SHDR_FLAG_MODIFIED;
    }
 
    reload();
@@ -1878,7 +1877,7 @@ void ShaderParamsDialog::onShaderResetParameter(QString parameter)
       if (param)
          param->current = param->initial;
 
-      video_shader->modified = true;
+      video_shader->flags |= SHDR_FLAG_MODIFIED;
    }
 
    reload();
@@ -1948,7 +1947,7 @@ void ShaderParamsDialog::onShaderAddPassClicked()
    else
       return;
 
-   menu_shader->modified = true;
+   menu_shader->flags   |= SHDR_FLAG_MODIFIED;
    shader_pass           = &menu_shader->pass[menu_shader->passes - 1];
 
    if (!shader_pass)
@@ -2129,7 +2128,7 @@ void ShaderParamsDialog::onShaderRemoveAllPassesClicked()
       return;
 
    menu_shader->passes   = 0;
-   menu_shader->modified = true;
+   menu_shader->flags   |= SHDR_FLAG_MODIFIED;
 
    onShaderApplyClicked();
 }
@@ -2176,7 +2175,7 @@ void ShaderParamsDialog::onShaderRemovePass(int pass)
 
    menu_shader->passes--;
 
-   menu_shader->modified = true;
+   menu_shader->flags   |= SHDR_FLAG_MODIFIED;
 
    onShaderApplyClicked();
 }
@@ -2627,7 +2626,7 @@ void ShaderParamsDialog::addShaderParam(struct video_shader_parameter *param, QF
       QSpinBox *spinBox             = NULL;
       QHBoxLayout *box              = new QHBoxLayout();
       QSlider *slider               = new QSlider(Qt::Horizontal, this);
-      double value                  = MainWindow::lerp(
+      double value                  = lerp(
             param->minimum, param->maximum, 0, 100, param->current);
       double intpart                = 0;
       bool stepIsFractional         = modf(param->step, &intpart);
@@ -2728,7 +2727,7 @@ void ShaderParamsDialog::onShaderParamCheckBoxClicked()
             param->current = (checkBox->isChecked() ? param->maximum : param->minimum);
       }
 
-      video_shader->modified = true;
+      video_shader->flags   |= SHDR_FLAG_MODIFIED;
    }
 }
 
@@ -2768,7 +2767,7 @@ void ShaderParamsDialog::onShaderParamSliderValueChanged(int)
 
          if (param)
          {
-            newValue = MainWindow::lerp(0, 100, param->minimum, param->maximum, slider->value());
+            newValue = lerp(0, 100, param->minimum, param->maximum, slider->value());
             newValue = round(newValue / param->step) * param->step;
             param->current = newValue;
          }
@@ -2789,12 +2788,12 @@ void ShaderParamsDialog::onShaderParamSliderValueChanged(int)
 
          if (param)
          {
-            newValue = MainWindow::lerp(0, 100, param->minimum, param->maximum, slider->value());
+            newValue = lerp(0, 100, param->minimum, param->maximum, slider->value());
             newValue = round(newValue / param->step) * param->step;
             param->current = newValue;
          }
 
-         video_shader->modified = true;
+         video_shader->flags   |= SHDR_FLAG_MODIFIED;
       }
 
    }
@@ -2871,7 +2870,7 @@ void ShaderParamsDialog::onShaderParamSpinBoxValueChanged(int value)
          if (param)
          {
             param->current = value;
-            newValue       = MainWindow::lerp(
+            newValue       = lerp(
                   param->minimum, param->maximum, 0, 100, param->current);
             slider->blockSignals(true);
             slider->setValue(newValue);
@@ -2895,14 +2894,14 @@ void ShaderParamsDialog::onShaderParamSpinBoxValueChanged(int value)
          if (param)
          {
             param->current = value;
-            newValue       = MainWindow::lerp(
+            newValue       = lerp(
                   param->minimum, param->maximum, 0, 100, param->current);
             slider->blockSignals(true);
             slider->setValue(newValue);
             slider->blockSignals(false);
          }
 
-         video_shader->modified = true;
+         video_shader->flags   |= SHDR_FLAG_MODIFIED;
       }
    }
 }
@@ -2954,7 +2953,7 @@ void ShaderParamsDialog::onShaderParamDoubleSpinBoxValueChanged(double value)
          if (param)
          {
             param->current = value;
-            newValue = MainWindow::lerp(
+            newValue       = lerp(
                   param->minimum, param->maximum, 0, 100, param->current);
             slider->blockSignals(true);
             slider->setValue(newValue);
@@ -2978,14 +2977,14 @@ void ShaderParamsDialog::onShaderParamDoubleSpinBoxValueChanged(double value)
          if (param)
          {
             param->current = value;
-            newValue       = MainWindow::lerp(
+            newValue       = lerp(
                   param->minimum, param->maximum, 0, 100, param->current);
             slider->blockSignals(true);
             slider->setValue(newValue);
             slider->blockSignals(false);
          }
 
-         video_shader->modified = true;
+         video_shader->flags   |= SHDR_FLAG_MODIFIED;
       }
    }
 }

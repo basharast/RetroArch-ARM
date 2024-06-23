@@ -35,6 +35,9 @@ enum default_dirs
    DEFAULT_DIR_AUDIO_FILTER,
    DEFAULT_DIR_VIDEO_FILTER,
    DEFAULT_DIR_ASSETS,
+#ifdef _3DS
+   DEFAULT_DIR_BOTTOM_ASSETS,
+#endif
    DEFAULT_DIR_CORE,
    DEFAULT_DIR_CORE_INFO,
    DEFAULT_DIR_OVERLAY,
@@ -59,7 +62,6 @@ enum default_dirs
    DEFAULT_DIR_WALLPAPERS,
    DEFAULT_DIR_THUMBNAILS,
    DEFAULT_DIR_DATABASE,
-   DEFAULT_DIR_CURSOR,
    DEFAULT_DIR_CHEATS,
    DEFAULT_DIR_RECORD_CONFIG,
    DEFAULT_DIR_RECORD_OUTPUT,
@@ -105,6 +107,9 @@ struct defaults
 bool dir_set_defaults(enum default_dirs dir_type, const char *dirpath);
 
 /* Public data structures. */
+#ifdef __cplusplus
+extern "C" struct defaults g_defaults;
+#else
 extern struct defaults g_defaults;
-
+#endif
 #endif

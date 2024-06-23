@@ -53,7 +53,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CONTENT_SETTINGS,
-   "Akses dengan cepat semua setelan game yang terkait."
+   "Mengakses cepat semua pengaturan permainan terkait."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_LIST,
@@ -61,7 +61,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CORE_LIST,
-   "Pilih 'core' yang akan dipakai."
+   "Pilih 'inti' yang akan dipakai."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LOAD_CONTENT_LIST,
@@ -73,29 +73,37 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LOAD_DISC,
-   "Muat Cakram"
+   "Muat Piringan"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_LOAD_DISC,
-   "Muat media cakram fisik. Pilih dahulu 'inti' (Muat Core) yang akan digunakan ke cakram."
+   "Memuatkan media cakram fisik. Pilih dulu 'inti' (Muat Core) untuk digunakan ke cakram."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DUMP_DISC,
-   "Transfer dari Cakram"
+   "Ambil Data Cakram"
    )
 MSG_HASH( /* FIXME Is a specific image format used? Is it determined automatically? User choice? */
    MENU_ENUM_SUBLABEL_DUMP_DISC,
-   "Transfer data dari media cakram fisik ke penyimpanan internal. Data akan disimpan sebagai berkas image."
+   "Mengambil data dari cakram media fisik ke penyimpanan internal. Akan disimpan sebagai berkas image."
    )
 #ifdef HAVE_LAKKA
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EJECT_DISC,
+   "Keluarkan Cakram"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_EJECT_DISC,
+   "Keluarkan cakram dari kandar CD/DVD fisik."
+   )
 #endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_PLAYLISTS_TAB,
-   "Daftar Putar"
+   "Daftar Main"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_PLAYLISTS_TAB,
-   "Konten terpindai cocok dengan database akan ditampilkan disini."
+   "Konten terpindai yang cocok di pangkalan data akan ada di sini."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_ADD_CONTENT_LIST,
@@ -103,7 +111,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_ADD_CONTENT_LIST,
-   "Buat dan perbarui daftar putar dengan memindai konten."
+   "Buat dan perbarui daftar main dengan memindai konten."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SHOW_WIMP,
@@ -213,7 +221,7 @@ MSG_HASH( /* FIXME Maybe add a description? */
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_FAVORITES,
-   "Mulai Direktori"
+   "Direktori Awal"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DOWNLOADED_FILE_DETECT_CORE_LIST,
@@ -232,11 +240,11 @@ MSG_HASH(
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_GOTO_FAVORITES,
-   "Favorit"
+   "Kesukaan"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_GOTO_FAVORITES,
-   "Konten yang ditambahkan ke 'Favorit'' akan muncul disini."
+   "Konten yang ditambah ke 'Kesukaan'' akan ada di sini."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_GOTO_MUSIC,
@@ -303,15 +311,27 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_PL_THUMBNAILS_UPDATER_LIST,
-   "Perbarui daftar putar thumbnail"
+   "Pemerbaru gambar kecil daftar main"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_PL_THUMBNAILS_UPDATER_LIST,
-   "Unduh daftar thumbnail di daftar putar terpilih."
+   "Unduh daftar gambar kecil di daftar main terpilih."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DOWNLOAD_CORE_CONTENT,
    "Pengunduh Konten"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_DOWNLOAD_CORE_CONTENT,
+   "Unduh konten cuma-cuma untuk core terpilih."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DOWNLOAD_CORE_SYSTEM_FILES,
+   "Pengunduh Berkas Sistem Inti"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_DOWNLOAD_CORE_SYSTEM_FILES,
+   "Mengunduh berkas sistem tambahan untuk pelaksanaan inti yang optimal/benar."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_UPDATE_CORE_INFO_FILES,
@@ -323,7 +343,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_UPDATE_AUTOCONFIG_PROFILES,
-   "Perbarui Profil Controler"
+   "Perbarui Profil Stik Kendali"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_UPDATE_CHEATS,
@@ -362,19 +382,19 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DISC_INFORMATION,
-   "Informasi Diska"
+   "Info Piringan"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_DISC_INFORMATION,
-   "Lihat informasi tentang diska yang dimasukkan."
+   "Lihat info tentang piringan yang disisipkan."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_NETWORK_INFORMATION,
-   "Informasi Jaringan"
+   "Informasi Jejaring"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_NETWORK_INFORMATION,
-   "Lihat antarmuka jaringan dan alamat IP yang terhubung."
+   "Lihat antarmuka jejaring dan alamat IP yang terhubung."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFORMATION,
@@ -412,6 +432,10 @@ MSG_HASH(
    "Label Core"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_CORE_VERSION,
+   "Versi Inti"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_INFO_SYSTEM_NAME,
    "Nama Sistem"
    )
@@ -444,6 +468,22 @@ MSG_HASH(
    "Syarat Minimal Grafis API"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_SAVESTATE_SUPPORT_LEVEL,
+   "Dukungan Save State"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_SAVESTATE_DISABLED,
+   "Tak ada"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_SAVESTATE_BASIC,
+   "Mendasar (Simpan/Muat)"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_SAVESTATE_SERIALIZED,
+   "Berserial (Simpan/Muat, Gerak Mundur)"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MISSING_REQUIRED,
    "Tidak ditemukan, yang diperlukan:"
    )
@@ -473,7 +513,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CORE_DELETE,
-   "Hapus 'inti' dari penyimpanan."
+   "Hapus 'inti' ini dari piringan."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_CREATE_BACKUP,
@@ -522,17 +562,13 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_CPU_FEATURES,
    "Fitur CPU"
    )
-MSG_HASH( /* FIXME Colon should be handled in menu_display.c like the rest */
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CPU_ARCHITECTURE,
-   "Arsitektur CPU:"
-   )
-MSG_HASH( /* FIXME Colon should be handled in menu_display.c like the rest */
-   MENU_ENUM_LABEL_VALUE_CPU_CORES,
-   "Inti CPU:"
+   "Arsitektur CPU"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_CPU_CORES,
-   "Jumlah core yang dimiliki CPU."
+   MENU_ENUM_LABEL_VALUE_CPU_CORES,
+   "'Core' CPU"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_FRONTEND_IDENTIFIER,
@@ -576,11 +612,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_NETWORK_COMMAND_IFACE_SUPPORT,
-   "Dukungan Antarmuka Perintah Jaringan"
+   "Dukungan Antarmuka Perintah Jejaring"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_NETWORK_REMOTE_SUPPORT,
-   "Dukungan Pengontrol Jaringan"
+   "Dukungan Stik Kendali Jejaring"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_COCOA_SUPPORT,
@@ -720,11 +756,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_DYLIB_SUPPORT,
-   "Dukungan Perpustakaan Dinamis"
+   "Dukungan Pustaka Dinamis"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_DYNAMIC_SUPPORT,
-   "Pemuatan Runtime Dinamis dari Perpustakaan libretro"
+   "Pemuatan Runtime Dinamis dari Pustaka libretro"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_CG_SUPPORT,
@@ -767,10 +803,6 @@ MSG_HASH(
    "Dukungan Netplay (Peer-to-Peer)"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_PYTHON_SUPPORT,
-   "Dukungan Python (Dukungan Skrip dalam Shader)"
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_V4L2_SUPPORT,
    "Dukungan Video4Linux2"
    )
@@ -795,6 +827,58 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_DESCRIPTION,
    "Deskripsi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_ACHIEVEMENTS,
+   "Capaian"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_CATEGORY,
+   "Kategori"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_LANGUAGE,
+   "Bahasa"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_REGION,
+   "Daerah"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_CONSOLE_EXCLUSIVE,
+   "Eksklusif di Konsol"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_PLATFORM_EXCLUSIVE,
+   "Eksklusif di Pelantar"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_SCORE,
+   "Skor"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_CONTROLS,
+   "Tombol Kendali"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_ARTSTYLE,
+   "Gaya Gambar"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_NARRATIVE,
+   "Naratif"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_PACING,
+   "Kadar Gerak"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_PERSPECTIVE,
+   "Perspektif"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RDB_ENTRY_SETTING,
+   "Pengaturan"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_PUBLISHER,
@@ -834,11 +918,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_RELEASE_MONTH,
-   "Tanggal rilis Bulan"
+   "Bulan Rilis"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_RELEASE_YEAR,
-   "Tanggal rilis Tahun"
+   "Tahun Rilis"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RDB_ENTRY_BBFC_RATING,
@@ -884,14 +968,6 @@ MSG_HASH(
    "Muat Konfigurasi"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_RESET_TO_DEFAULT_CONFIG,
-   "Setel ulang ke Default"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_RESET_TO_DEFAULT_CONFIG,
-   "Atur ulang konfigurasi saat ini ke nilai default."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SAVE_CURRENT_CONFIG,
    "Simpan Konfigurasi Saat Ini"
    )
@@ -899,19 +975,23 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SAVE_NEW_CONFIG,
    "Simpan Konfigurasi Baru"
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RESET_TO_DEFAULT_CONFIG,
+   "Setel ulang ke Default"
+   )
 
 /* Main Menu > Help */
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_HELP_CONTROLS,
-   "Kontrol Menu Dasar"
+   "Tombol Menu Mendasar"
    )
 
 /* Main Menu > Help > Basic Menu Controls */
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_SCROLL_UP,
-   "Gulir ke atas"
+   "Gulir ke Atas"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_SCROLL_DOWN,
@@ -927,7 +1007,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_TOGGLE_MENU,
-   "Beralih Menu"
+   "Cetikkan Menu"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_QUIT,
@@ -935,22 +1015,22 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_TOGGLE_KEYBOARD,
-   "Alihkan Papan Ketik"
+   "Cetikkan Papan Ketik"
    )
 
 /* Settings */
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DRIVER_SETTINGS,
-   "Driver"
+   "Pengandar"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_DRIVER_SETTINGS,
-   "Ubah setelan driver sistem."
+   "Ubah pengaturan pengandar sistem."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_SETTINGS,
-   "Ubah setelan luaran video."
+   "Ubah pengaturan keluaran video."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_AUDIO_SETTINGS,
@@ -966,7 +1046,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_SETTINGS,
-   "Ubah pengaturan pengontrol, keyboard, dan mouse."
+   "Ubah pengaturan stik kendali, papan ketik, dan tetikus."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LATENCY_SETTINGS,
@@ -974,11 +1054,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_LATENCY_SETTINGS,
-   "Ubah setelan besar nilai tunda pada video, suara, dan nilai tunda masukan."
+   "Ubah pengaturan terkait latensi video, audio, dan masukan."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CORE_SETTINGS,
-   "Ubah setelan 'inti'."
+   "Ubah pengaturan 'inti'."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CONFIGURATION_SETTINGS,
@@ -986,7 +1066,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CONFIGURATION_SETTINGS,
-   "Ubah setelan default pada berkas konfigurasi."
+   "Ubah pengaturan bawaan pada berkas konfigurasi."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SAVING_SETTINGS,
@@ -1002,15 +1082,15 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_LOGGING_SETTINGS,
-   "Ubah setelan pencatatan log."
+   "Ubah pengaturan catat log."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_FILE_BROWSER_SETTINGS,
-   "Perambah Berkas"
+   "Peramban Berkas"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_MENU_FILE_BROWSER_SETTINGS,
-   "Ubah pengaturan browser file."
+   "Ubah pengaturan peramban berkas."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_FRAME_THROTTLE_SETTINGS,
@@ -1018,7 +1098,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_FRAME_THROTTLE_SETTINGS,
-   "Ubah pengaturan mundur, maju cepat, dan gerak lambat."
+   "Ubah pengaturan gerak mundur, maju-cepat, dan gerak lambat."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RECORDING_SETTINGS,
@@ -1026,11 +1106,15 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_RECORDING_SETTINGS,
-   "Ubah setelan rekaman."
+   "Ubah pengaturan rekaman."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_ONSCREEN_DISPLAY_SETTINGS,
+   "Tampilan Muka Layar"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_ONSCREEN_DISPLAY_SETTINGS,
-   "Ubah setelan overlay tampilan, overlay keyboard, dan setelan notifikasi layar."
+   "Ubah pengaturan hamparan tampilan, hamparan papan ketik, dan notifikasi layar."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_USER_INTERFACE_SETTINGS,
@@ -1038,7 +1122,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_USER_INTERFACE_SETTINGS,
-   "Ubah setelan antarmuka pengguna."
+   "Ubah pengaturan antarmuka pengguna."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_AI_SERVICE_SETTINGS,
@@ -1046,7 +1130,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_AI_SERVICE_SETTINGS,
-   "Ubah setelan Layanan AI (Terjemahan/TTS/Lainnya)."
+   "Ubah pengaturan Layanan AI (Terjemahan/TTS/Lainnya)."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_ACCESSIBILITY_SETTINGS,
@@ -1054,7 +1138,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_ACCESSIBILITY_SETTINGS,
-   "Ubah setelan Aksesibilitas narator."
+   "Ubah pengaturan narasi Aksesibilitas."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_POWER_MANAGEMENT_SETTINGS,
@@ -1062,31 +1146,31 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_POWER_MANAGEMENT_SETTINGS,
-   "Ubah setelan pengelolaan daya."
+   "Ubah pengaturan pengelolaan daya."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RETRO_ACHIEVEMENTS_SETTINGS,
-   "Pencapaian"
+   "Capaian"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_RETRO_ACHIEVEMENTS_SETTINGS,
-   "Ubah setelan pencapaian."
+   "Ubah pengaturan capaian."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_NETWORK_SETTINGS,
-   "Jaringan"
+   "Jejaring"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_NETWORK_SETTINGS,
-   "Ubah pengaturan server dan jaringan."
+   "Ubah pengaturan server dan jejaring."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_PLAYLIST_SETTINGS,
-   "Daftar Putar"
+   "Daftar Main"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_PLAYLIST_SETTINGS,
-   "Ubah setelan daftar putar."
+   "Ubah pengaturan daftar main."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_USER_SETTINGS,
@@ -1094,7 +1178,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_USER_SETTINGS,
-   "Ubah setelan akun, nama pengguna, dan bahasa."
+   "Ubah pengaturan akun, nama pengguna, dan bahasa."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DIRECTORY_SETTINGS,
@@ -1102,8 +1186,49 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_DIRECTORY_SETTINGS,
-   "Ubah lokasi direktori berada."
+   "Ubah direktori tempat berkas."
    )
+
+/* Core option category placeholders for icons */
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_HACKS_SETTINGS,
+   "Retasan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MAPPING_SETTINGS,
+   "Pemetaan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PERFORMANCE_SETTINGS,
+   "Kinerja"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SOUND_SETTINGS,
+   "Suara"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SPECS_SETTINGS,
+   "Spesifikasi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_STORAGE_SETTINGS,
+   "Penyimpanan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SYSTEM_SETTINGS,
+   "Sistem"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIMING_SETTINGS,
+   "Pewaktuan"
+   )
+
+#ifdef HAVE_MIST
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_STEAM_SETTINGS,
+   "Ubah pengaturan yang terkait Steam."
+   )
+#endif
 
 /* Settings > Drivers */
 
@@ -1117,11 +1242,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_JOYPAD_DRIVER,
-   "Pengontrol"
+   "Stik Kendali"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_JOYPAD_DRIVER,
-   "Driver Kontroler yang digunakan."
+   "Pengandar stik kendali yang digunakan."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_DRIVER,
@@ -1188,11 +1313,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_OUTPUT_SETTINGS,
-   "Luaran"
+   "Keluaran"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_OUTPUT_SETTINGS,
-   "Ubah setelan luaran video."
+   "Ubah pengaturan keluaran video."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_FULLSCREEN_MODE_SETTINGS,
@@ -1204,11 +1329,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_WINDOWED_MODE_SETTINGS,
-   "Modus Jendela"
+   "Berjendela"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_WINDOWED_MODE_SETTINGS,
-   "Ubah pengaturan modus jendela."
+   "Ubah pengaturan mode berjendela."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_SCALING_SETTINGS,
@@ -1217,10 +1342,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_SCALING_SETTINGS,
    "Ubah pengaturan penskalaan video."
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_HDR_SETTINGS,
-   "HDR - Kontras yang luas antara warna terang dan gelap"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_HDR_SETTINGS,
@@ -1265,10 +1386,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_SMOOTH,
    "Pemfilteran Bilinear"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_SMOOTH,
-   "Tambahkan sedikit kabur ke gambar untuk melembutkan tepi piksel keras. Opsi ini memiliki dampak yang sangat kecil pada kinerja."
    )
 #if defined(DINGUX)
 MSG_HASH(
@@ -1359,7 +1476,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_PORCH_ADJUST,
-   "Cycle melalui opsi ini untuk menyesuaikan pengaturan teras untuk mengubah ukuran gambar."
+   "Atur opsi ini untuk menyesuaikan pengaturan teras untuk mengubah ukuran gambar."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CRT_SWITCH_HIRES_MENU,
@@ -1375,7 +1492,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_RESOLUTION_USE_CUSTOM_REFRESH_RATE,
-   "Gunakan laju penyegaran kustom yang ditentukan dalam file konfigurasi jika diperlukan."
+   "Gunakan laju penyegaran kustom yang ditentukan dalam berkas konfigurasi jika perlu."
    )
 
 /* Settings > Video > Output */
@@ -1388,6 +1505,12 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_MONITOR_INDEX,
    "Pilih layar tampilan mana yang akan digunakan."
    )
+#if defined (WIIU)
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_VIDEO_WIIU_PREFER_DRC,
+   "Mengoptimalkan Wii U GamePad (perlu dimulai ulang)"
+   )
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_ROTATION,
    "Rotasi Video"
@@ -1447,6 +1570,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_REFRESH_RATE_POLLED,
    "Laju penyegaran seperti dilansir driver tampilan."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_VIDEO_AUTOSWITCH_REFRESH_RATE_WINDOWED_FULLSCREEN,
+   "Hanya di Mode Layar Penuh Berjendela"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_VIDEO_AUTOSWITCH_REFRESH_RATE_ALL_FULLSCREEN,
+   "Mode Semuanya Layar Penuh"
    )
 #if defined(DINGUX) && defined(DINGUX_BETA)
 MSG_HASH(
@@ -1525,6 +1656,10 @@ MSG_HASH(
    "Opasitas Jendela"
    )
 MSG_HASH(
+   MENU_ENUM_SUBLABEL_VIDEO_WINDOW_OPACITY,
+   "Menetapkan transparansi jendela."
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_WINDOW_SHOW_DECORATIONS,
    "Tampilkan Dekorasi Jendela"
    )
@@ -1585,7 +1720,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_SCALE_INTEGER,
-   "Skalakan video hanya dalam langkah bilangan bulat. Ukuran dasar bergantung pada geometri yang dilaporkan sistem dan rasio aspek. Jika 'Force Aspect Ratio' tidak disetel, X/Y akan diskalakan bilangan bulat secara independen."
+   "Menskala video dalam bilangan bulat saja. Ukuran dasar bergantung pada geometri yang dilaporkan sistem dan rasio aspek. Jika 'Paksa Rasio Aspek' tidak disetel, X/Y akan diskalakan bilangan bulat secara mandiri."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_SCALE_INTEGER_OVERSCALE,
@@ -1599,18 +1734,10 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_ASPECT_RATIO_INDEX,
    "Rasio Aspek"
    )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_ASPECT_RATIO,
-   "Rasio Aspek Kustom"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_ASPECT_RATIO,
-   "Nilai rasio layar (lebar/tinggi), digunakan jika 'Rasio Layar' dipasang ke 'Konfig'."
-   )
 #if defined(DINGUX)
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_DINGUX_IPU_KEEP_ASPECT,
-   "Jaga aspek rasio"
+   "Tetapkan Rasio Aspek"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_DINGUX_IPU_KEEP_ASPECT,
@@ -1635,7 +1762,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_WIDTH,
-   "Rasio Aspek Kustom (lebar)"
+   "Rasio Aspek Kustom (Lebar)"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_WIDTH,
@@ -1690,7 +1817,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_HDR_CONTRAST,
-   "Sinar gamma/pengaturan kontras untuk HDR. Kontras antara gambar terang dan gelap dapat diatur. Semakin tinggi Kontras HDR, semakin baik tampilan terang dan gelap; semakin rendah kontras, semakin lusuh gambarnya. Pengguna bisa mengatur gambar sesuai yang diinginkan dan menyesuaikan dengan tampilan layarnya."
+   "Pengaturan sinar gamma/kontras untuk HDR. Kontras antara gambar terang dan gelap bias diatur. Semakin tinggi Kontras HDR, semakin kentara tampilan terang dan gelap; semakin rendah kontras, semakin lusuh gambarnya. Pengguna bisa mengatur gambar sesuai yang diinginkan dan menyesuaikan dengan tampilan layar."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_HDR_EXPAND_GAMUT,
@@ -1708,16 +1835,16 @@ MSG_HASH(
    "Sinkronkan video keluaran kartu grafis ke laju penyegaran layar. Direkomendasikan."
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_SWAP_INTERVAL,
-   "Gunakan interval swap khusus untuk VSync. Setel ini untuk mengurangi separuh kecepatan refresh monitor secara efektif."
+   MENU_ENUM_LABEL_VALUE_VIDEO_SWAP_INTERVAL_AUTO,
+   "Otomatis"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_ADAPTIVE_VSYNC,
    "VSync diaktifkan hingga performa turun di bawah kecepatan refresh target. Dapat meminimalkan kegagapan saat performa turun di bawah waktu nyata, dan lebih hemat energi."
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_FRAME_DELAY,
-   "Mengurangi latensi dengan mengorbankan risiko video gagap yang lebih tinggi. Menambahkan penundaan setelah VSync (dalam ms)."
+   MENU_ENUM_LABEL_VALUE_VIDEO_FRAME_DELAY,
+   "Tundaan Bingkai (ms)"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_FRAME_DELAY_AUTO,
@@ -1726,6 +1853,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_FRAME_DELAY_AUTO,
    "Turunkan sementara 'Frame Delay' untuk mencegah frame tersendat. Dimulai dari setengah frame jika 'Frame Delay' adalah 0."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_VIDEO_FRAME_DELAY_AUTOMATIC,
+   "Otomatis"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_VIDEO_FRAME_DELAY_EFFECTIVE,
+   "efektif"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_HARD_SYNC,
@@ -1751,8 +1886,12 @@ MSG_HASH(
 /* Settings > Audio */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_AUDIO_OUTPUT_SETTINGS,
+   "Keluaran"
+   )
+MSG_HASH(
    MENU_ENUM_SUBLABEL_AUDIO_OUTPUT_SETTINGS,
-   "Ubah pengaturan output audio."
+   "Ubah pengaturan keluaran audio."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_AUDIO_RESAMPLER_SETTINGS,
@@ -1840,7 +1979,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_AUDIO_WASAPI_EXCLUSIVE_MODE,
-   "Izinkan driver WASAPI untuk mengambil kendali eksklusif atas perangkat audio. Jika dinonaktifkan, itu akan menggunakan mode bersama sebagai gantinya."
+   "Mengizinkan pengandar WASAPI mengambil kendali eksklusif atas perangkat audio. Jika dinonaktifkan, nanti akan menggunakan mode bersama."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_AUDIO_WASAPI_FLOAT_FORMAT,
@@ -1856,7 +1995,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_AUDIO_WASAPI_SH_BUFFER_LENGTH,
-   "Panjang buffer menengah (dalam bingkai) saat menggunakan driver WASAPI dalam mode bersama."
+   "Panjang penyangga data menengah (berjumlah bingkai) saat menggunakan pengandar WASAPI di 'mode bersama'."
    )
 
 /* Settings > Audio > Output */
@@ -1871,6 +2010,10 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_AUDIO_DEVICE,
+   "Ganti perangkat audio default yang digunakan driver audio. Ini tergantung driver."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_HELP_AUDIO_DEVICE,
    "Ganti perangkat audio default yang digunakan driver audio. Ini tergantung driver."
    )
 MSG_HASH(
@@ -1921,11 +2064,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_AUDIO_RATE_CONTROL_DELTA,
-   "Kontrol Kecepatan Audio Dinamis"
+   "Kendali Tingkat Audio Dinamis"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_AUDIO_RATE_CONTROL_DELTA,
-   "Memperhalus sinkornisasi waktu agar selaras antara suara dan video. Patut diperhatikan jika fitur ini dimatikan, maka sinkornisasi akan sulit dilakukan."
+   "Memperhalus sinkronisasi waktu agar selaras antara suara dan video. Patut diperhatikan jika fitur ini dimatikan, maka sinkornisasi akan sulit dilakukan."
    )
 
 /* Settings > Audio > MIDI */
@@ -2032,16 +2175,8 @@ MSG_HASH(
    "Jumlah maksimal pemain yang diperbolehkan di RetroArch."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_POLL_TYPE_BEHAVIOR,
-   "Perilaku Polling"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_POLL_TYPE_BEHAVIOR,
-   "Bagaimana polling input dilakukan di RetroArch. Jika diatur ke 'Lebih Awal' atau \"Telat\" dapat mengurangi latensi."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_REMAP_BINDS_ENABLE,
-   "Atur ulang letak kontroler untuk Inti ini"
+   "Atur ulang letak stik kendali untuk Core ini"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_REMAP_BINDS_ENABLE,
@@ -2053,7 +2188,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_AUTODETECT_ENABLE,
-   "Setel kontroler secara otomatis untuk kontroler yang berfitur Plug-and-Play."
+   "Otomatis menyetel stik kendali yang ada profil, agar jadi Pasang-dan-Pakai."
    )
 #if defined(HAVE_DINPUT) || defined(HAVE_WINRAWINPUT)
 MSG_HASH(
@@ -2065,13 +2200,15 @@ MSG_HASH(
    "Kombinasi tombil Win-key hanya tersedia di aplikasi."
    )
 #endif
+#ifdef ANDROID
+#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_SENSORS_ENABLE,
    "Aktifkan Input Sensor Auxiliary"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_SENSORS_ENABLE,
-   "Gunakan input akselerometer, giroskop, dan sensor cahaya, jika ada. Fitur ini akan mempengaruhi kinerja perangkat dan akan menguras daya baterai pada platform tertentu."
+   "Mengaktifkan masukan akselerometer, giroskop, dan pengindra cahaya, jika ada. Fitur ini akan memengaruhi kinerja perangkat dan menguras daya baterai pada pelantar tertentu."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_AUTO_MOUSE_GRAB,
@@ -2103,15 +2240,15 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_BUTTON_AXIS_THRESHOLD,
-   "Ambang Batas Input Tombol Axis"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_BUTTON_AXIS_THRESHOLD,
-   "Seberapa jauh tombol axis harus dimiringkan agar terbaca pada saat menekan tombol."
+   "Ambang Batas Tombol Masukkan Axis"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_ANALOG_SENSITIVITY,
    "Kepekaan Kontroler Analog"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_INPUT_ANALOG_SENSITIVITY,
+   "Sesuaikan daya tanggapan stik analok."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_BIND_TIMEOUT,
@@ -2127,59 +2264,59 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_TURBO_PERIOD,
-   "Periode Turbo"
+   "Lamanya Bertubi"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_TURBO_PERIOD,
-   "Periode (dalam bingkai) saat tombol berkemampuan turbo ditekan."
+   "Lamanya (jumlah bingkai) saat tombol berkemampuan bertubi ditekan."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_DUTY_CYCLE,
-   "Siklus Tugas Turbo"
+   "Daur Kerja Bertubi"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_DUTY_CYCLE,
-   "Jumlah bingkai dari Periode Turbo yang menahan tombol tersebut. Jika angka ini sama dengan atau lebih besar dari Periode Turbo, tombol tidak akan pernah lepas."
+   "Jumlah bingkai dari Lamanya Bertubi yang tombolnya ditekan. Jika bilangan ini sama atau lebih besar dari yang di Lamanya Bertubi, tombol akan ditekan terus."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_TURBO_MODE,
-   "Mode Turbo"
+   "Mode Bertubi"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_TURBO_MODE,
-   "Pilih perilaku umum mode turbo."
+   "Pilih tindakan utama tombol mode bertubi."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_TURBO_DEFAULT_BUTTON,
-   "Tombol Default Turbo"
+   "Tombol Bawaan Bertubi"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_TURBO_DEFAULT_BUTTON,
-   "Tombol aktif default untuk Mode Turbo 'Tombol Tunggal'."
+   "Tombol aktif bawaan untuk 'Satu Tombol' Mode Bertubi."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_TURBO_FIRE_SETTINGS,
-   "Turbo Api"
+   "Tekan Bertubi"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_TURBO_FIRE_SETTINGS,
-   "Ubah pengaturan api turbo."
+   "Ubah pengaturan tekan bertubi."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_HAPTIC_FEEDBACK_SETTINGS,
-   "Umpan Balik/Getaran Haptik"
+   "Umpan Balik/Getaran Sentuh"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_HAPTIC_FEEDBACK_SETTINGS,
-   "Ubah umpan balik haptic dan pengaturan getaran."
+   "Ubah pengaturan umpan balik dan getaran dari sentuh."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_MENU_SETTINGS,
-   "Kontrol Menu"
+   "Kendali Menu"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_MENU_SETTINGS,
-   "Ubah pengaturan kontrol menu."
+   "Ubah pengaturan kendali menu."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_HOTKEY_BINDS,
@@ -2191,11 +2328,19 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_USER_BINDS,
-   "Port %u Kontrol"
+   "Kendali Porta %u"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_USER_BINDS,
-   "Ubah kontrol untuk port ini."
+   "Ubah kendali untuk porta ini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QUIT_PRESS_TWICE,
+   "Konfirmasi Keluar"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_QUIT_PRESS_TWICE,
+   "Untuk keluar dari RetroArch, kombinasi tombol Keluar harus ditekan dua kali."
    )
 
 /* Settings > Input > Haptic Feedback/Vibration */
@@ -2206,7 +2351,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_ENABLE_DEVICE_VIBRATION,
-   "Aktifkan Getaran Perangkat (Untuk Core yang Didukung)"
+   "Aktifkan Getaran Perangkat (Untuk 'Inti' yang Didukung)"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_RUMBLE_GAIN,
@@ -2221,11 +2366,11 @@ MSG_HASH(
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_UNIFIED_MENU_CONTROLS,
-   "Kontrol Menu Terpadu"
+   "Kendali Terpadu Menu"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_UNIFIED_MENU_CONTROLS,
-   "Gunakan kontrol yang sama untuk menu dan game. Berlaku untuk keyboard."
+   "Gunakan kendali yang sama untuk menu dan permainan. Berlaku untuk papan ketik."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_INPUT_SWAP_OK_CANCEL,
@@ -2237,51 +2382,67 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_ALL_USERS_CONTROL_MENU,
-   "Menu Kontrol Semua Pengguna"
+   "Menu Kendali Semua Pengguna"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_INPUT_ALL_USERS_CONTROL_MENU,
-   "Semua pengguna boleh mengendalikan manu. Jika dimatikan, hanya Pengguna 1 yang bisa kendalikan menu."
+   "Semua pengguna jadi boleh mengendalikan menu. Jika dimatikan, hanya Pengguna 1 yang mengendalikan menu."
    )
 
 /* Settings > Input > Hotkeys */
 
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_QUIT_PRESS_TWICE,
-   "Konfirmasi Keluar"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_QUIT_PRESS_TWICE,
-   "Untuk keluar dari RetroArch, kombinasi tombol Keluar harus ditekan dua kali."
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_MENU_ENUM_TOGGLE_GAMEPAD_COMBO,
-   "Menu Pengganti Kombinasi Kontroler"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_MENU_ENUM_TOGGLE_GAMEPAD_COMBO,
-   "Kombinasi tombol kontroller untuk mengganti menu."
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_QUIT_GAMEPAD_COMBO,
-   "Keluar Dari Kombinasi Kontroler"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_QUIT_GAMEPAD_COMBO,
-   "Kombinasi tombol kontroler untuk keluar dari RetroArch."
+   MENU_ENUM_LABEL_VALUE_INPUT_META_ENABLE_HOTKEY,
+   "Aktifkan Kombinasi Tombol"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_HOTKEY_BLOCK_DELAY,
    "Tombol Kombinasi Mengaktifkan 'Delay' (Frame)"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_META_QUIT_KEY,
-   "Tutup RetroArch"
+   MENU_ENUM_SUBLABEL_INPUT_MENU_ENUM_TOGGLE_GAMEPAD_COMBO,
+   "Kombinasi tombol stik kendali untuk membuka menu."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_META_RESET,
-   "Reset Permainan"
+   MENU_ENUM_SUBLABEL_INPUT_QUIT_GAMEPAD_COMBO,
+   "Kombinasi tombol stik kendali untuk keluar RetroArch."
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_QUIT_KEY,
+   "Berhenti"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_CLOSE_CONTENT_KEY,
+   "Tutup Konten"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_SLOWMOTION_KEY,
+   "Gerak Lambat (Mati/Nyala)"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_INPUT_META_SLOWMOTION_KEY,
+   "Ganti antara kecepatan lambat dan normal."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_SLOWMOTION_HOLD_KEY,
+   "Gerak Lambat (Tahan)"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_REWIND,
+   "Gerak Mundur"
+   )
+
+
+
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_DISK_NEXT,
+   "Piringan Berikut"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_DISK_PREV,
+   "Piringan Sebelum"
+   )
+
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_SHADER_NEXT,
    "Shader Berikutnya"
@@ -2290,6 +2451,7 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_SHADER_PREV,
    "Shader Sebelumnya"
    )
+
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_CHEAT_INDEX_PLUS,
    "Daftar Kode Curang"
@@ -2298,28 +2460,78 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_CHEAT_INDEX_MINUS,
    "Daftar Kode Curang Sebelumnya"
    )
+
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_SCREENSHOT,
    "Ambil Tangkapan Layar"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_META_SEND_DEBUG_INFO,
-   "Kirim Info Debug"
+   MENU_ENUM_LABEL_VALUE_INPUT_META_RECORDING_TOGGLE,
+   "Perekaman (Mati/Nyala)"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_META_ENABLE_HOTKEY,
-   "Aktifkan Kombinasi Tombol"
+   MENU_ENUM_LABEL_VALUE_INPUT_META_STREAMING_TOGGLE,
+   "Streaming (Mati/Nyala)"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_INPUT_META_STREAMING_TOGGLE,
+   "Memulai/hentikan siaran alir dari sesi saat ini ke pelantar video daring."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_BSV_RECORD_TOGGLE,
+   "Putar Ulang Masukan Rekaman (Mati/Nyala)"
+   )
+
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_FULLSCREEN_TOGGLE_KEY,
+   "Layar Penuh (Mati/Nyala)"
+   )
+
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_VRR_RUNLOOP_TOGGLE,
+   "Sinkronkan ke Laju Bingkai Konten yang Tepat (Mati/Nyala)"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_INPUT_META_VRR_RUNLOOP_TOGGLE,
+   "Mematinyalakan atau mencetik sinkronisasi ke laju bingkai (framerate) konten yang tepat."
+   )
+
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_OSK,
+   "Papan Tombol di Layar (Mati/Nyala)"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_AI_SERVICE,
    "Layanan AI"
    )
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_NETPLAY_HOST_TOGGLE,
+   "Jadi Tuan Rumah Netplay (Mati/Nyala)"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_NETPLAY_GAME_WATCH,
+   "Main Netplay/Mode Menonton (Mati/Nyala)"
+   )
+
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_META_SEND_DEBUG_INFO,
+   "Kirim Info Debug"
+   )
+
 /* Settings > Input > Port # Controls */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_SAVE_AUTOCONFIG,
+   "Simpan Profil Stik Kendali"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_JOYPAD_START,
    "Tombol Mulai"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_TURBO_ENABLE,
+   "Bertubi"
    )
 
 /* Settings > Latency */
@@ -2333,7 +2545,19 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_MANAGER_LIST,
    "Atur Core"
    )
+#ifdef HAVE_MIST
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_MANAGER_STEAM_LIST,
+   "Atur Core"
+   )
 
+
+
+
+
+
+
+#endif
 /* Settings > Configuration */
 
 MSG_HASH(
@@ -2356,15 +2580,67 @@ MSG_HASH(
 
 /* Settings > Frame Throttle */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_REWIND_SETTINGS,
+   "Gerak Mundur"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_INPUT_META_REWIND,
+   "Ubah pengaturan gerak mundur."
+   )
 
 /* Settings > Frame Throttle > Rewind */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_REWIND_ENABLE,
+   "Dukungan Gerak Mundur"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_REWIND_GRANULARITY,
+   "Laju Gerak Mundur"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_REWIND_GRANULARITY,
+   "Jumlah laju bingkai saat gerak mundur per langkah. Semakin tinggi semakin cepat."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_REWIND_BUFFER_SIZE,
+   "Ukuran Penyangga Gerak Mundur (MB)"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_REWIND_BUFFER_SIZE,
+   "Banyaknya memori (bentuk MB) untuk meluangkan penyangga gerak mundur. Meningkatkan jumlahnya akan menambah riwayat gerak mundur."
+   )
 
 /* Settings > Frame Throttle > Frame Time Counter */
 
 
 /* Settings > Recording */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_STREAMING_MODE,
+   "Mode Siar Alir"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_VIDEO_STREAM_QUALITY,
+   "Mutu Siar Alir"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_STREAM_CONFIG,
+   "Konfigurasi Siar Alir Kustom"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_STREAMING_TITLE,
+   "Judul Siaran Alir"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_STREAMING_URL,
+   "URL Siar Alir"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_UDP_STREAM_PORT,
+   "Porta Siaran Alir UDP"
+   )
 
 /* Settings > On-Screen Display */
 
@@ -2374,6 +2650,10 @@ MSG_HASH(
 
 #if defined(ANDROID)
 #endif
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_OVERLAY_SHOW_INPUTS_PHYSICAL,
+   "Fisik (Stik Kendali)"
+   )
 
 /* Settings > On-Screen Display > Video Layout */
 
@@ -2383,6 +2663,8 @@ MSG_HASH(
 
 /* Settings > User Interface */
 
+#ifdef _3DS
+#endif
 
 /* Settings > User Interface > Menu Item Visibility */
 
@@ -2397,18 +2679,83 @@ MSG_HASH(
 #ifdef HAVE_LAKKA
 #endif
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_SHOW_FAVORITES,
+   "Tampilkan 'Kesukaan'"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_SHOW_FAVORITES,
+   "Menampilkan menu 'Kesukaan'. (di Ozone/XMB perlu dimulai ulang)"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_SHOW_HISTORY,
+   "Tampilkan 'Riwayat'"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_SHOW_HISTORY,
+   "Menampilkan menu riwayat terkini. (di Ozone/XMB perlu dimulai ulang)"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_ADD_CONTENT_ENTRY_DISPLAY_MAIN_TAB,
    "Menu utama"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MENU_ADD_CONTENT_ENTRY_DISPLAY_PLAYLISTS_TAB,
+   "Menu Daftar Main"
    )
 
 /* Settings > User Interface > Menu Item Visibility > Quick Menu */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QUICK_MENU_SHOW_START_STREAMING,
+   "Tampilkan 'Mulai Siar Alir'"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_QUICK_MENU_SHOW_START_STREAMING,
+   "Menampilkan opsi 'Mulai Siar Alir'."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QUICK_MENU_SHOW_ADD_TO_FAVORITES,
+   "Tampilkan 'Tambah ke Kesukaan'"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_QUICK_MENU_SHOW_ADD_TO_FAVORITES,
+   "Menampilkan opsi 'Tambah ke Kesukaan'."
+   )
 
 /* Settings > User Interface > Views > Settings */
+
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SETTINGS_SHOW_NETWORK,
+   "Tampilkan 'Jejaring'"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_SETTINGS_SHOW_NETWORK,
+   "Tampilkan pengaturan 'Jejaring'."
+   )
 
 
 /* Settings > User Interface > Appearance */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MENU_REMEMBER_SELECTION,
+   "Ingat Pilihan saat Mengganti Tab"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_MENU_REMEMBER_SELECTION,
+   "Ingat posisi dari kursor pada menu saat beralih ke tab lain."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MENU_REMEMBER_SELECTION_ALWAYS,
+   "Selalu"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MENU_REMEMBER_SELECTION_PLAYLISTS,
+   "Hanya untuk Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MENU_REMEMBER_SELECTION_MAIN,
+   "Hanya untuk Menu Utama dan Pengaturan"
+   )
 
 /* Settings > AI Service */
 
@@ -2424,12 +2771,50 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CHEEVOS_ENABLE,
    "Pencapaian"
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CHEEVOS_HARDCORE_MODE_ENABLE,
+   "Mode Garis Keras"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CHEEVOS_RICHPRESENCE_ENABLE,
+   "Secara berkala mengirim info permainan berkonteks ke situs web RetroAchievements. Tidak berpengaruh jika 'Mode Garis Keras' dinyalakan."
+   )
+
+/* Settings > Achievements > Appearance */
+
+
+/* Settings > Achievements > Visibility */
+
 
 /* Settings > Network */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETWORK_CMD_ENABLE,
+   "Perintah Jejaring"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETWORK_CMD_PORT,
+   "Porta Perintah Jejaring"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETWORK_REMOTE_ENABLE,
+   "RetroPad Jejaring"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETWORK_REMOTE_PORT,
+   "Porta Pangkalan RetroPad Jejaring"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETWORK_USER_REMOTE_ENABLE,
+   "RetroPad Jejaring Pengguna %d"
+   )
 
 /* Settings > Network > Updater */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_UPDATER_AUTO_BACKUP_HISTORY_SIZE,
+   "Ukuran Riwayat Cadangan Inti"
+   )
 
 /* Settings > Playlists */
 
@@ -2437,12 +2822,152 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_HISTORY_LIST_ENABLE,
    "Riwayat"
    )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_HISTORY_LIST_ENABLE,
+   "Mengurus daftar main permainan, gambar, musik dan video yang tadi dibuka."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_HISTORY_SIZE,
+   "Ukuran 'Riwayat'"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_HISTORY_SIZE,
+   "Membatasi jumlah entri di daftar main terkini untuk permainan, gambar, musik dan video."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_FAVORITES_SIZE,
+   "Ukuran 'Kesukaan'"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_FAVORITES_SIZE,
+   "Membatasi jumlah entri di daftar main 'Kesukaan'. Ketika sudah di batasnya, tambahan yang baru akan ditolak sampai entri yang lama dihapus. Mengatur nilai (value) ke -1 membolehkan entri 'tanpa batas'.\nPERINGATAN: Mengurangi nilai akan menghapus entri yang ada!"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_PLAYLIST_ENTRY_RENAME,
+   "Izinkan mengganti nama entri daftar main."
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_PLAYLIST_ENTRY_REMOVE,
+   "Izinkan menghapus entri daftar main."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_SORT_ALPHABETICAL,
+   "Urutkan Daftar Sesuai Alfabet"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_USE_OLD_FORMAT,
+   "Simpan Daftar Dengan Format Lama"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_COMPRESSION,
+   "Pampatkan Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_SHOW_INLINE_CORE_NAME,
+   "Tampilkan Core Terkait di Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_SHOW_HISTORY_ICONS,
+   "Tampilkan Ikon Spesifik Konten di Riwayat dan Kesukaan"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_PLAYLIST_SHOW_HISTORY_ICONS,
+   "Menampilan ikon spesifik di masing-masing entri daftar main riwayat dan kesukaan. Berdampak beragam ke kinerja."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_SECONDS_SINGLE,
+   "detik"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_SECONDS_PLURAL,
+   "detik"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_MINUTES_SINGLE,
+   "menit"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_MINUTES_PLURAL,
+   "menit"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_HOURS_SINGLE,
+   "jam"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_HOURS_PLURAL,
+   "jam"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_DAYS_SINGLE,
+   "hari"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_DAYS_PLURAL,
+   "hari"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_WEEKS_SINGLE,
+   "minggu"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_WEEKS_PLURAL,
+   "minggu"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_MONTHS_SINGLE,
+   "bulan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_MONTHS_PLURAL,
+   "bulan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_YEARS_SINGLE,
+   "tahun"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_YEARS_PLURAL,
+   "tahun"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIME_UNIT_AGO,
+   "lalu"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_MANAGER_LIST,
+   "Kelola Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_PORTABLE_PATHS,
+   "Daftar Main Portabel"
+   )
 
 /* Settings > Playlists > Playlist Management */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_MANAGER_CLEAN_PLAYLIST,
+   "Kosongkan Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_MANAGER_REFRESH_PLAYLIST,
+   "Segarkan Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DELETE_PLAYLIST,
+   "Hapus Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_DELETE_PLAYLIST,
+   "Menghilangkan daftar main dari sistem berkas."
+   )
 
 /* Settings > User */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_USER_LANGUAGE,
+   "Bahasa"
+   )
 
 /* Settings > User > Privacy */
 
@@ -2473,14 +2998,81 @@ MSG_HASH( /* FIXME Not RGUI specific */
    "Perambah Berkas"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_PLAYLIST_DIRECTORY,
-   "Daftar Putar"
+   MENU_ENUM_LABEL_VALUE_JOYPAD_AUTOCONFIG_DIR,
+   "Profil Stik Kendali"
    )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_JOYPAD_AUTOCONFIG_DIR,
+   "Setelan otomatis profil stik kendali yang dulu digunakan akan ditampung di direktori ini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_DIRECTORY,
+   "Daftar Main"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_PLAYLIST_DIRECTORY,
+   "Daftar main ditampung di direktori ini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_FAVORITES_DIRECTORY,
+   "Daftar Main Kesukaan"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_FAVORITES_DIRECTORY,
+   "Menyimpan daftar main Kesukaan ke direktori ini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_HISTORY_DIRECTORY,
+   "Daftar Main Riwayat"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_HISTORY_DIRECTORY,
+   "Menyimpan daftar main Riwayat ke direktori ini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_IMAGE_HISTORY_DIRECTORY,
+   "Daftar Main Gambar"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_IMAGE_HISTORY_DIRECTORY,
+   "Menyimpan daftar main Riwayat Gambar ke direktori ini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_MUSIC_HISTORY_DIRECTORY,
+   "Daftar Putar Musik"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_MUSIC_HISTORY_DIRECTORY,
+   "Menyimpan daftar putar Musik ke direktori ini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_VIDEO_HISTORY_DIRECTORY,
+   "Daftar Putar Video"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CONTENT_VIDEO_HISTORY_DIRECTORY,
+   "Menyimpan daftar putar Video ke direktori ini."
+   )
+
+#ifdef HAVE_MIST
+/* Settings > Steam */
+
+
+
+#endif
 
 /* Music */
 
 /* Music > Quick Menu */
 
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_ADD_TO_MIXER,
+   "Tambahkan lintasan audio ini ke slot siaran audio yang tersedia.\nJika saat ini belum ada slot, nanti akan diabaikan."
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_ADD_TO_MIXER_AND_PLAY,
+   "Tambahkan lintasan audio ini ke slot siaran audio yang tersedia dan putar.\nJika saat ini belum ada slot, nanti akan diabaikan."
+   )
 
 /* Netplay */
 
@@ -2502,12 +3094,140 @@ MSG_HASH(
    )
 
 /* Explore tab */
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_CATEGORY_REGION,
+   "Daerah"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_DEVELOPER,
+   "Dari Pengembang"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_PUBLISHER,
+   "Dari Penerbit"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_RELEASE_YEAR,
+   "Dari Tahun Rilis"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_PLAYER_COUNT,
+   "Dari Jumlah Pemain"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_GENRE,
+   "Dari Genre"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_ACHIEVEMENTS,
+   "Dari Capaian"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_CATEGORY,
+   "Dari Kategori"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_LANGUAGE,
+   "Dari Bahasa"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_REGION,
+   "Dari Daerahnya"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_CONSOLE_EXCLUSIVE,
+   "Dari Eksklusif Konsol"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_PLATFORM_EXCLUSIVE,
+   "Dari Eksklusif Pelantar"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_RUMBLE,
+   "Dari Fitur Getar"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_SCORE,
+   "Dari Skor"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_MEDIA,
+   "Dari Media"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_CONTROLS,
+   "Dari Jenis Kendali"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_ARTSTYLE,
+   "Dari Gaya Gambar"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_GAMEPLAY,
+   "Dari Gameplay"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_NARRATIVE,
+   "Dari Jenis Narasi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_PACING,
+   "Dari Kecepatan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_PERSPECTIVE,
+   "Dari Sudut Pandang"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_SETTING,
+   "Dari Latar Tempat"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_VISUAL,
+   "Dari Visual"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_VEHICULAR,
+   "Dari Jenis Kendaraan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_ORIGIN,
+   "Dari Asalnya"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_FRANCHISE,
+   "Dari Waralaba"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_TAG,
+   "Dari Tag"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_EXPLORE_BY_SYSTEM_NAME,
+   "Dari Nama Sistem"
+   )
 
 /* Playlist > Playlist Item */
 
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DELETE_ENTRY,
    "Hapus"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_ADD_TO_FAVORITES_PLAYLIST,
+   "Tambah ke Kesukaan"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_ADD_TO_FAVORITES_PLAYLIST,
+   "Menambahkan konten ke 'Kesukaan'."
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_SET_CORE_ASSOCIATION,
+   "Tetapkan inti yang terkait dengan konten ini."
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_RESET_CORE_ASSOCIATION,
+   "Atur ulang inti yang terkait dengan konten ini."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INFORMATION,
@@ -2527,8 +3247,44 @@ MSG_HASH(
 /* Quick Menu */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CLOSE_CONTENT,
+   "Tutup Konten"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_TAKE_SCREENSHOT,
    "Ambil Tangkapan Layar"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_ADD_TO_FAVORITES,
+   "Tambah ke Kesukaan"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_ADD_TO_FAVORITES,
+   "Menambahkan konten ke 'Kesukaan'."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QUICK_MENU_START_STREAMING,
+   "Mulai Siar Alir"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_QUICK_MENU_START_STREAMING,
+   "Memulai siar alir ke destinasi terpilih."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QUICK_MENU_STOP_STREAMING,
+   "Berhenti Siar Alir"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_QUICK_MENU_STOP_STREAMING,
+   "Akhiri siaran alir."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INPUT_REMAPPING_OPTIONS,
+   "Tombol Kendali"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISK_OPTIONS,
+   "Kendali Piringan"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_ACHIEVEMENT_LIST,
@@ -2546,7 +3302,10 @@ MSG_HASH(
 /* Quick Menu > Controls */
 
 
-/* Quick Menu > Controls > Load Remap File */
+/* Quick Menu > Controls > Manage Remap Files */
+
+
+/* Quick Menu > Controls > Manage Remap Files > Load Remap File */
 
 
 /* Quick Menu > Cheats */
@@ -2570,6 +3329,22 @@ MSG_HASH(
 
 /* Quick Menu > Disc Control */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISK_TRAY_EJECT,
+   "Keluarkan Piringan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISK_TRAY_INSERT,
+   "Sisipkan Piringan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISK_IMAGE_APPEND,
+   "Muat Piringan Baru"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISK_INDEX,
+   "Indeks Piringan"
+   )
 
 /* Quick Menu > Shaders */
 
@@ -2594,18 +3369,82 @@ MSG_HASH(
 
 /* Quick Menu > Achievements */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETWORK_ERROR,
+   "Galat Jejaring"
+)
 
 /* Quick Menu > Information */
 
 
 /* Miscellaneous UI Items */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_FAVORITES_AVAILABLE,
+   "Belum Ada 'Kesukaan'"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_HISTORY_AVAILABLE,
+   "Belum Ada 'Riwayat'"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_PLAYLIST_ENTRIES_AVAILABLE,
+   "Entri Daftar Main Belum Ada"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_SETTINGS_FOUND,
+   "Tak Ditemukan Pengaturan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_BT_DEVICES_FOUND,
+   "Tidak Ditemukan Peranti Bluetooth"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_NETWORKS_FOUND,
+   "Tidak Ditemukan Jejaringan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CYCLE_THUMBNAILS,
+   "Daurkan gambar kecil"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DIRECTORY_NOT_FOUND,
+   "Direktori Tidak Ditemukan"
+   )
 
 /* Settings Options */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETPLAY_SHARE_NONE,
+   "Tak ada"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_ENTRY_REMOVE_ENABLE_HIST_FAV,
+   "Riwayat & Kesukaan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_ENTRY_REMOVE_ENABLE_ALL,
+   "Semua Daftar Main"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_PLAYLIST_ENTRY_REMOVE_ENABLE_NONE,
    "MATI"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_INLINE_CORE_DISPLAY_HIST_FAV,
+   "Riwayat & Kesukaan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NONE,
+   "Tak ada"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_MANAGER_SORT_MODE_OFF,
+   "Tak ada"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_PLAYLIST_MANAGER_THUMBNAIL_MODE_DEFAULT,
+   "Bawaan Sistem"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_ON,
@@ -2615,12 +3454,24 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_OFF,
    "MATI"
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_TIMEDATE_AGO,
+   "Lalu"
+   )
 
 /* RGUI: Settings > User Interface > Appearance */
 
 
 /* RGUI: Settings Options */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_NONE,
+   "Tak ada"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_AUTO,
+   "Otomatis"
+   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_RGUI_ASPECT_RATIO_LOCK_NONE,
    "MATI"
@@ -2649,6 +3500,10 @@ MSG_HASH(
 /* MaterialUI: Settings Options */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MATERIALUI_MENU_TRANSITION_ANIM_AUTO,
+   "Otomatis"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MATERIALUI_MENU_TRANSITION_ANIM_NONE,
    "MATI"
    )
@@ -2667,6 +3522,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MATERIALUI_LANDSCAPE_LAYOUT_OPTIMIZATION_ALWAYS,
    "NYALA"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MATERIALUI_LANDSCAPE_LAYOUT_OPTIMIZATION_EXCLUDE_THUMBNAIL_VIEWS,
+   "Sisihkan Gambar Kecil"
    )
 
 /* Qt (Desktop Menu) */
@@ -2689,23 +3548,63 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_QT_TAB_PLAYLISTS,
-   "Daftar Putar"
+   "Daftar Main"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_QT_TAB_FILE_BROWSER,
    "Perambah Berkas"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_ALL_PLAYLISTS,
+   "Semua Daftar Main"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_QT_INFORMATION,
    "Informasi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_NETWORK_ERROR,
+   "Galat Jejaring"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_QT_STOP,
    "Hentikan"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_ASSOCIATE_CORE,
+   "Inti Terkait"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_HIDDEN_PLAYLISTS,
+   "Daftar Main Tersembunyi"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_NEW_PLAYLIST,
+   "Daftar Main Baru"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_ENTER_NEW_PLAYLIST_NAME,
+   "Mohon tulis nama daftar main baru:"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_DELETE_PLAYLIST,
+   "Hapus Daftar Main"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_QT_PLAYLIST_ENTRY_NAME,
    "Nama:"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_PLAYLIST_ENTRY_PATH,
+   "Jalur:"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_PLAYLIST_ENTRY_DATABASE,
+   "Pangkalan Data:"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_QT_PLAYLIST_ENTRY_EXTENSIONS_PLACEHOLDER,
+   "(dipisah spasi; termasuk semua secara bawaan)"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_QT_REMOVE,
@@ -2719,16 +3618,60 @@ MSG_HASH(
    "Riwayat"
    )
 MSG_HASH(
+   MENU_ENUM_SUBLABEL_LOAD_CONTENT_HISTORY,
+   "Dapat memilih konten dari daftar putar riwayat terkini."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_NETPLAY_HOSTS_FOUND,
+   "Tidak ditemukan tuan rumah netplay."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NO_NETPLAY_CLIENTS_FOUND,
+   "Tidak ditemukan tamu main netplay."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SECONDS,
+   "detik"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_USER,
    "Pengguna"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_VIDEO_WAITABLE_SWAPCHAINS,
+   "Sinkronisasi CPU dan GPU dengan keras. Mengurangi latensi dengan mengorbankan kinerja."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BROWSE_START,
    "Mulai"
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETPLAY_COMPAT_CONTENT_LOOK,
+   "Sedang mencari konten kompatibel..."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETPLAY_COMPAT_CONTENT_NO_CORE,
+   "Inti tidak ditemukan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETPLAY_COMPAT_CONTENT_NO_PLAYLISTS,
+   "Daftar main tidak ditemukan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETPLAY_COMPAT_CONTENT_FOUND,
+   "Konten kompatibel ditemukan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETPLAY_COMPAT_CONTENT_NOT_FOUND,
+   "Gagal melacak konten yang cocok berdasarkan CRC atau nama berkas"
+   )
 
 /* Unused (Only Exist in Translation Files) */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CONTENT_HISTORY_PATH,
+   "Jalur Riwayat Konten"
+   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_HELP,
    "Bantuan"
@@ -2736,6 +3679,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_HELP_SEND_DEBUG_INFO,
    "Kirim Info Debug"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_NETPLAY_LAN_SCAN_SETTINGS,
+   "Pindai jejaring setempat"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CHEEVOS_DESCRIPTION,
@@ -2754,22 +3701,171 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_ENUM_CONTROLS_SCROLL_UP,
-   "Gulir ke atas"
+   "Gulir ke Atas"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_ENUM_CONTROLS_TOGGLE_KEYBOARD,
-   "Alihkan Papan Ketik"
+   "Cetikkan Papan Ketik"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_BASIC_MENU_ENUM_CONTROLS_TOGGLE_MENU,
-   "Beralih Menu"
+   "Cetikkan Menu"
    )
 
 /* Discord Status */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISCORD_IN_MENU,
+   "Dalam Menu"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISCORD_IN_GAME,
+   "Dalam Permainan"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISCORD_IN_GAME_PAUSED,
+   "Dalam Permainan (Dijeda)"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISCORD_STATUS_PLAYING,
+   "Sedang Main"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISCORD_STATUS_PAUSED,
+   "Dijeda"
+   )
 
 /* Notifications */
 
+MSG_HASH(
+   MSG_FILE_ALREADY_EXISTS_SAVING_TO_BACKUP_BUFFER,
+   "Berkasnya sudah ada. Menyimpan ke penyangga cadangan"
+   )
+MSG_HASH(
+   MSG_SETTING_DISK_IN_TRAY,
+   "Mengatur piringan di baki"
+   )
+MSG_HASH(
+   MSG_NETPLAY_OUT_OF_DATE,
+   "Kawan (peer) Netplay bermain di versi lama RetroArch. Tak bisa bersambung."
+   )
+MSG_HASH(
+   MSG_NETPLAY_ENDIAN_DEPENDENT,
+   "Core ini tidak mendukung Netplay antara para pelantar ini"
+   )
+MSG_HASH(
+   MSG_NETPLAY_PLATFORM_DEPENDENT,
+   "Core ini tidak mendukung Netplay antara pelantar yang berbeda"
+   )
+MSG_HASH(
+   MSG_DISCORD_CONNECTION_REQUEST,
+   "Sambungan dari pengguna apakah ingin diizinkan:"
+   )
+MSG_HASH(
+   MSG_NETPLAY_SERVER_NAMED_HANGUP,
+   "\"%s\" telah terputus"
+   )
+MSG_HASH(
+   MSG_NETPLAY_SERVER_HANGUP,
+   "Tamu main NetPlay telah terputus"
+   )
+MSG_HASH(
+   MSG_NETPLAY_CLIENT_HANGUP,
+   "NetPlay telah terputus"
+   )
+MSG_HASH(
+   MSG_NETPLAY_STATUS_PLAYING,
+   "Sedang Main"
+   )
+
+MSG_HASH(
+   MSG_ADDED_TO_FAVORITES,
+   "Ditambah ke kesukaan"
+   )
+MSG_HASH(
+   MSG_ADD_TO_FAVORITES_FAILED,
+   "Gagal menambahkan kesukaan: daftar putar penuh"
+   )
+MSG_HASH(
+   MSG_AUTOCONFIG_FILE_ERROR_SAVING,
+   "Galat menyimpan profil stik kendali."
+   )
+MSG_HASH(
+   MSG_AUTOCONFIG_FILE_SAVED_SUCCESSFULLY,
+   "Profil stik kendali berhasil disimpan."
+   )
+MSG_HASH(
+   MSG_CHEEVOS_HARDCORE_MODE_ENABLE,
+   "Mode Capaian Garis Keras Diaktifkan: save state & gerak mundur dinonaktifkan."
+   )
+MSG_HASH(
+   MSG_FILE_NOT_FOUND,
+   "Berkas tidak ditemukan"
+   )
+MSG_HASH(
+   MSG_FOUND_AUTO_SAVESTATE_IN,
+   "Save state otomatis ditemukan di"
+   )
+MSG_HASH(
+   MSG_LOADING_HISTORY_FILE,
+   "Memuat berkas riwayat"
+   )
+MSG_HASH(
+   MSG_LOADING_FAVORITES_FILE,
+   "Memuat berkas kesukaan"
+   )
+MSG_HASH(
+   MSG_PAUSED,
+   "Dijeda."
+   )
+MSG_HASH(
+   MSG_REMOVED_DISK_FROM_TRAY,
+   "Piringan dikeluarkan dari baki."
+   )
+MSG_HASH(
+   MSG_REWINDING,
+   "Bergerak mundur."
+   )
+MSG_HASH(
+   MSG_REWIND_UNSUPPORTED,
+   "Gerak mundur tidak bisa karena core ini tidak ada dukungan save state berserial."
+   )
+MSG_HASH(
+   MSG_REWIND_REACHED_END,
+   "Sudah di ujung penyangga gerak mundur."
+   )
+MSG_HASH(
+   MSG_SLOW_MOTION_REWIND,
+   "Gerak mundur lambat."
+   )
+MSG_HASH(
+   MSG_SCANNING_WIRELESS_NETWORKS,
+   "Memindai jejaring nirkabel..."
+   )
+MSG_HASH(
+   MSG_DUMPING_DISC,
+   "Mengambil data cakram..."
+   )
+MSG_HASH(
+   MSG_DISC_DUMP_FAILED_TO_READ_FROM_DRIVE,
+   "Gagal membaca dari kandar. Ambil data dibatalkan."
+   )
+MSG_HASH(
+   MSG_DISC_DUMP_FAILED_TO_WRITE_TO_DISK,
+   "Gagal menulis ke piringan. Ambil data dibatalkan."
+   )
+MSG_HASH(
+   MSG_NO_DISC_INSERTED,
+   "Cakram belum disisipkan di kandar."
+   )
+MSG_HASH(
+   MSG_MANUAL_CONTENT_SCAN_PLAYLIST_CLEANUP,
+   "Memeriksa entri saat ini: "
+   )
+MSG_HASH(
+   MSG_PRUNING_CORE_BACKUP_HISTORY,
+   "Menghapus cadangan yang usang: "
+   )
 
 /* Lakka */
 
@@ -2777,22 +3873,66 @@ MSG_HASH(
 /* Environment Specific Settings */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_WIFI_NETWORK_SCAN,
+   "Sambung ke Jejaring"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_WIFI_NETWORKS,
+   "Sambung ke Jejaring"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_WIFI_DISCONNECT,
+   "Putuskan"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_RESTART_KEY,
    "Jalankan Ulang RetroArch"
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_ICADE_ENABLE,
+   "Pemetaan Stik Kendali Papan Ketik"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_KEYBOARD_GAMEPAD_MAPPING_TYPE,
+   "Jenis Pemetaan Stik Kendali Papan Ketik"
+   )
 
 #ifdef HAVE_LAKKA_SWITCH
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SWITCH_GPU_PROFILE,
+   "Percepatan GPU"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+   "Mempercepat atau perlambat GPU permainan Switch."
+   )
 #endif
 #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SWITCH_CPU_PROFILE,
+   "Percepatan CPU"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_SWITCH_CPU_PROFILE,
+   "Mempercepat CPU permainan Switch."
+   )
 #endif
 #ifdef HAVE_LAKKA
+MSG_HASH(
+   MSG_WIFI_DISCONNECT_FROM,
+   "Memutus sambungan dari Wi-Fi '%s'"
+   )
 #endif
 #ifdef GEKKO
 #endif
 #ifdef HAVE_ODROIDGO2
 #else
 #endif
-#if defined(_3DS)
+#ifdef _3DS
+MSG_HASH(
+   MSG_3DS_BOTTOM_MENU_ASSET_NOT_FOUND,
+   "Aset tidak ditemukan"
+   )
 #endif
 #ifdef HAVE_QT
 #endif

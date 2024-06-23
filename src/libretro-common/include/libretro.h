@@ -283,6 +283,14 @@ enum retro_language
    RETRO_LANGUAGE_HEBREW              = 21,
    RETRO_LANGUAGE_ASTURIAN            = 22,
    RETRO_LANGUAGE_FINNISH             = 23,
+   RETRO_LANGUAGE_INDONESIAN          = 24,
+   RETRO_LANGUAGE_SWEDISH             = 25,
+   RETRO_LANGUAGE_UKRAINIAN           = 26,
+   RETRO_LANGUAGE_CZECH               = 27,
+   RETRO_LANGUAGE_CATALAN_VALENCIA    = 28,
+   RETRO_LANGUAGE_CATALAN             = 29,
+   RETRO_LANGUAGE_BRITISH_ENGLISH     = 30,
+   RETRO_LANGUAGE_HUNGARIAN           = 31,
    RETRO_LANGUAGE_LAST,
 
    /* Ensure sizeof(enum) == sizeof(int) */
@@ -1753,6 +1761,12 @@ enum retro_mod
                                             * the frontend is attempting to call retro_run().
                                             */
 
+#define RETRO_ENVIRONMENT_GET_SAVESTATE_CONTEXT (72 | RETRO_ENVIRONMENT_EXPERIMENTAL)
+                                           /* int * --
+                                            * Tells the core about the context the frontend is asking for savestate.
+                                            * (see enum retro_savestate_context)
+                                            */
+
 /* VFS functionality */
 
 /* File paths:
@@ -1781,7 +1795,6 @@ struct retro_vfs_dir_handle;
 /* File open flags
  * Introduced in VFS API v1 */
 #define RETRO_VFS_FILE_ACCESS_READ            (1 << 0) /* Read only mode */
-#define RETRO_VFS_FILE_ACCESS_READ2           (1 << 3) /* Read only mode */
 #define RETRO_VFS_FILE_ACCESS_WRITE           (1 << 1) /* Write only mode, discard contents and overwrites existing file unless RETRO_VFS_FILE_ACCESS_UPDATE is also specified */
 #define RETRO_VFS_FILE_ACCESS_READ_WRITE      (RETRO_VFS_FILE_ACCESS_READ | RETRO_VFS_FILE_ACCESS_WRITE) /* Read-write mode, discard contents and overwrites existing file unless RETRO_VFS_FILE_ACCESS_UPDATE is also specified*/
 #define RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING (1 << 2) /* Prevents discarding content of existing files opened for writing */
@@ -1858,6 +1871,7 @@ typedef int (RETRO_CALLCONV *retro_vfs_rename_t)(const char *old_path, const cha
  * Additionally stores file size in given variable, unless NULL is given.
  * Introduced in VFS API v3 */
 typedef int (RETRO_CALLCONV *retro_vfs_stat_t)(const char *path, int32_t *size);
+typedef int (RETRO_CALLCONV* retro_vfs_exists_t)(const char* path);
 
 /* Create the specified directory. Returns 0 on success, -1 on unknown failure, -2 if already exists.
  * Introduced in VFS API v3 */
@@ -1911,6 +1925,7 @@ struct retro_vfs_interface
    retro_vfs_dirent_get_name_t dirent_get_name;
    retro_vfs_dirent_is_dir_t dirent_is_dir;
    retro_vfs_closedir_t closedir;
+   retro_vfs_exists_t exists;
 };
 
 struct retro_vfs_interface_info
@@ -2989,6 +3004,35 @@ enum retro_pixel_format
 
    /* Ensure sizeof() == sizeof(int). */
    RETRO_PIXEL_FORMAT_UNKNOWN  = INT_MAX
+};
+
+enum retro_savestate_context
+{
+   /* Standard savestate written to disk. */
+   RETRO_SAVESTATE_CONTEXT_NORMAL                 = 0,
+
+   /* Savestate where you are guaranteed that the same instance will load the save state.
+    * You can store internal pointers to code or data.
+    * It's still a full serialization and deserialization, and could be loaded or saved at any time. 
+    * It won't be written to disk or sent over the network.
+    */
+   RETRO_SAVESTATE_CONTEXT_RUNAHEAD_SAME_INSTANCE = 1,
+
+   /* Savestate where you are guaranteed that the same emulator binary will load that savestate.
+    * You can skip anything that would slow down saving or loading state but you can not store internal pointers. 
+    * It won't be written to disk or sent over the network.
+    * Example: "Second Instance" runahead
+    */
+   RETRO_SAVESTATE_CONTEXT_RUNAHEAD_SAME_BINARY   = 2,
+
+   /* Savestate used within a rollback netplay feature.
+    * You should skip anything that would unnecessarily increase bandwidth usage.
+    * It won't be written to disk but it will be sent over the network.
+    */
+   RETRO_SAVESTATE_CONTEXT_ROLLBACK_NETPLAY       = 3,
+
+   /* Ensure sizeof() == sizeof(int). */
+   RETRO_SAVESTATE_CONTEXT_UNKNOWN                = INT_MAX
 };
 
 struct retro_message

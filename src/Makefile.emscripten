@@ -1,3 +1,4 @@
+HAVE_STATIC_DUMMY ?= 0
 ifeq ($(TARGET),)
 ifeq ($(LIBRETRO),)
 TARGET := retroarch.js
@@ -15,6 +16,7 @@ OBJ :=
 DEFINES := -DRARCH_INTERNAL -DHAVE_MAIN -s USE_PTHREADS=$(PTHREAD)
 DEFINES += -DHAVE_FILTERS_BUILTIN
 
+HAVE_PATCH = 1
 HAVE_DSP_FILTER = 1
 HAVE_VIDEO_FILTER = 1
 HAVE_OVERLAY = 1
@@ -43,6 +45,7 @@ HAVE_CONFIGFILE = 1
 HAVE_CHEATS = 1
 HAVE_IBXM = 1
 HAVE_CORE_INFO_CACHE = 1
+HAVE_7ZIP = 1
 
 ASYNC ?= 0
 ifeq ($(LIBRETRO), mupen64plus)
@@ -84,7 +87,14 @@ endif
 include Makefile.common
 
 CFLAGS += $(DEF_FLAGS) -Ideps -Ideps/stb
-libretro = libretro_emscripten.bc
+
+libretro :=
+
+ifeq ($(HAVE_STATIC_DUMMY),1)
+  DEFINES += -DHAVE_STATIC_DUMMY
+else
+  libretro += libretro_emscripten.bc
+endif
 
 ifneq ($(V), 1)
    Q := @

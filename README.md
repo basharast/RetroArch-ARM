@@ -62,12 +62,26 @@ if you want to help to get/fix more cores for ARM please submit pull request wit
 
 # Support
 
-RetroArch Team done greate job to make this project if you would like to support them <a href="https://www.retroarch.com/index.php?page=donate">Click Here</a>
+RetroArch Team done great job to make this project if you would like to support them <a href="https://www.retroarch.com/index.php?page=donate">Click Here</a>
 
-# Source
-Outdated source here, since this for ARM32, legacy support (where no one is interested)
+# Building
 
-I'm delaying that because I don't have time to keep this up, it will be updated once I had free time
+- You need SDKs: 18362 and 14393
+- Use Visual Studio 2022
+- Goto pkg\msvc-uwp
+- Use only `RetroArch-msvc2019-UWP.sln` 
+- You can build it as `ReleaseANGLE` or `ReleaseANGLE GL`
+- `ReleaseANGLE GL` for devices with no DirectX 11.x support
+- There is also Release 14393 (pointless, no much cores)
+- To ensure cores loaded correctly, you can make them built-in
+- Built-in cores must be at `pkg\msvc-uwp\RetroArch-msvc2019-UWP\cores`
+
+
+## Important
+
+This project maintained for legacy hardware, when something don't work well on modern hardware
+
+please don't open issue for it, I have no interests to support other than ARM32
 
 
 # Note

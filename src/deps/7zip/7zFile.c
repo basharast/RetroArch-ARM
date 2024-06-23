@@ -4,6 +4,7 @@
 #include "Precomp.h"
 
 #include "7zFile.h"
+#include "uwphelpers/UWP2C.h"
 
 #ifndef USE_WINDOWS_FILE
 
@@ -40,12 +41,18 @@ void File_Construct(CSzFile *p)
 static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 {
   #ifdef USE_WINDOWS_FILE
-  /*p->handle = CreateFileA(name,
+  p->handle = CreateFile2(utf8_to_utf16_string_alloc(name),
       writeMode ? GENERIC_WRITE : GENERIC_READ,
-      FILE_SHARE_READ, NULL,
+      FILE_SHARE_READ,
       writeMode ? CREATE_ALWAYS : OPEN_EXISTING,
-      FILE_ATTRIBUTE_NORMAL, NULL);*/
-  p->handle = CreateFile2(name, writeMode ? GENERIC_WRITE : GENERIC_READ, FILE_SHARE_READ, writeMode ? CREATE_ALWAYS : OPEN_EXISTING, NULL);
+      0);
+
+  if (p->handle == INVALID_HANDLE_VALUE) {
+     p->handle = CreateFileUWP(name,
+        writeMode ? GENERIC_WRITE : GENERIC_READ,
+        FILE_SHARE_READ,
+        writeMode ? CREATE_ALWAYS : OPEN_EXISTING);
+  }
   return (p->handle != INVALID_HANDLE_VALUE) ? 0 : GetLastError();
   #else
   p->file = fopen(name, writeMode ? "wb+" : "rb");
@@ -65,12 +72,18 @@ WRes OutFile_Open(CSzFile *p, const char *name) { return File_Open(p, name, 1); 
 #ifdef USE_WINDOWS_FILE
 static WRes File_OpenW(CSzFile *p, const WCHAR *name, int writeMode)
 {
-  /*p->handle = CreateFileW(name,
+  p->handle = CreateFile2(name,
       writeMode ? GENERIC_WRITE : GENERIC_READ,
-      FILE_SHARE_READ, NULL,
+      FILE_SHARE_READ,
       writeMode ? CREATE_ALWAYS : OPEN_EXISTING,
-      FILE_ATTRIBUTE_NORMAL, NULL);*/
-   p->handle = CreateFile2(name, writeMode ? GENERIC_WRITE : GENERIC_READ, FILE_SHARE_READ, writeMode ? CREATE_ALWAYS : OPEN_EXISTING, NULL);
+      0);
+
+  if (p->handle == INVALID_HANDLE_VALUE) {
+     p->handle = CreateFileUWP(utf16_to_utf8_string_alloc(name),
+        writeMode ? GENERIC_WRITE : GENERIC_READ,
+        FILE_SHARE_READ,
+        writeMode ? CREATE_ALWAYS : OPEN_EXISTING);
+  }
   return (p->handle != INVALID_HANDLE_VALUE) ? 0 : GetLastError();
 }
 WRes InFile_OpenW(CSzFile *p, const WCHAR *name) { return File_OpenW(p, name, 0); }
@@ -214,9 +227,26 @@ WRes File_Seek(CSzFile *p, int64_t *pos, ESzSeek origin)
 WRes File_GetLength(CSzFile *p, uint64_t *length)
 {
   #ifdef USE_WINDOWS_FILE
-  
-  DWORD sizeHigh;
-  DWORD sizeLow = GetFileSizeEx(p->handle, &sizeHigh);
+  DWORD sizeHigh = 0;
+  DWORD sizeLow  = 0;
+  LARGE_INTEGER size;
+  if (FALSE == GetFileSizeEx(p->handle, &size)) {
+     LARGE_INTEGER end_offset;
+     const LARGE_INTEGER zero;
+     if (SetFilePointerEx(p->handle, zero, &end_offset, FILE_END) == 0) {
+        CloseHandle(p->handle);
+     }
+     else {
+        sizeHigh = (DWORD)end_offset.HighPart;
+        sizeLow = (DWORD)end_offset.LowPart;
+        SetFilePointerEx(p->handle, zero, NULL, FILE_BEGIN);
+        CloseHandle(p->handle);
+     }
+  }
+  else {
+     sizeHigh = (DWORD)size.HighPart;
+     sizeLow = (DWORD)size.LowPart;
+  }
   if (sizeLow == 0xFFFFFFFF)
   {
     DWORD res = GetLastError();

@@ -22,6 +22,8 @@
 #include <lists/string_list.h>
 #include <queues/task_queue.h>
 #include <retro_timers.h>
+#include <sstream>
+#include <iomanip>
 
 #include "configuration.h"
 #include "paths.h"
@@ -33,8 +35,12 @@
 #include "../verbosity.h"
 #include "uwp_func.h"
 #include "uwp_async.h"
-#include <sstream>
-#include <iomanip>
+#include "uwphelpers/StorageAsync.h"
+#include "uwphelpers/StorageItemW.h"
+#include <menu/menu_entries.h>
+
+#include <uwphelpers/StorageManager.h>
+#include <defaults.h>
 
 using namespace RetroArchUWP;
 
@@ -61,8 +67,10 @@ char win32_cpu_model_name[128] = { 0 };
 char* uwp_picker_recents[100];
 bool isAppReady = false;
 bool isGameOpen = false;
+bool preventGoBack = false;
 
-// Some keys are unavailable in the VirtualKey enum (wtf) but the old-style constants work
+/* Some keys are unavailable in the VirtualKey enum (wtf) but the old-style
+ * constants work */
 const struct rarch_key_map rarch_key_map_uwp[] = {
    { (unsigned int)VirtualKey::Back, RETROK_BACKSPACE },
    { (unsigned int)VirtualKey::Tab, RETROK_TAB },
@@ -181,23 +189,23 @@ const struct rarch_key_map rarch_key_map_uwp[] = {
 struct input_pointer
 {
 	int id;
-	short x;
-	short y;
-	short full_x;
-	short full_y;
+	int16_t x;
+	int16_t y;
+	int16_t full_x;
+	int16_t full_y;
 	bool isInContact;
 };
 
 struct uwp_input_state_t
 {
-	struct input_pointer touch[MAX_TOUCH]; /* int alignment */
+	struct input_pointer touch; /* int alignment */
 	unsigned touch_count;
-	short mouse_screen_x;
-	short mouse_screen_y;
-	short mouse_rel_x;
-	short mouse_rel_y;
-	short mouse_wheel_left;
-	short mouse_wheel_up;
+	int16_t mouse_screen_x;
+	int16_t mouse_screen_y;
+	int16_t mouse_rel_x;
+	int16_t mouse_rel_y;
+	int16_t mouse_wheel_left;
+	int16_t mouse_wheel_up;
 	bool mouse_left;
 	bool mouse_right;
 	bool mouse_middle;
@@ -207,28 +215,37 @@ struct uwp_input_state_t
 
 struct uwp_input_state_t uwp_current_input, uwp_next_input;
 
-// Taken from DirectX UWP samples - on Xbox, everything is scaled 200% so getting the DPI calculation correct is crucial
+/* Taken from DirectX UWP samples - on Xbox, everything is scaled 200%,
+ * so getting the DPI calculation correct is crucial */
 static inline float ConvertDipsToPixels(float dips, float dpi)
 {
-	static const float dipsPerInch = 96.0f;
-	return floorf(dips * dpi / dipsPerInch + 0.5f);
+	static const float dips_per_inch = 96.0f;
+	return floorf(dips * dpi / dips_per_inch + 0.5f);
 }
 
-// The main function is only used to initialize our IFrameworkView class.
+/* The main function is only used to initialize our IFrameworkView class. */
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
-	Platform::String^ install_dir = Windows::ApplicationModel::Package::Current->InstalledLocation->Path + L"\\";
-	wcstombs(uwp_dir_install, install_dir->Data(), sizeof(uwp_dir_install));
-	Platform::String^ data_dir = Windows::Storage::ApplicationData::Current->LocalFolder->Path + L"\\";
-	wcstombs(uwp_dir_data, data_dir->Data(), sizeof(uwp_dir_data));
-
-	// delete vfs cache dir, we do this because this allows a far far more consise implementation than manually implementing a function to do this
-	// this may be a little slower but shouldn't really matter as the cache dir ver should nehave more than a few items
-	Platform::String^ vfs_dir = Windows::Storage::ApplicationData::Current->LocalFolder->Path + L"\\VFSCACHE";
+	DWORD dwAttrib;
 	char vfs_cache_dir[MAX_PATH];
+	Platform::String^ local_folder =
+		Windows::Storage::ApplicationData::Current->LocalFolder->Path;
+	Platform::String^ install_dir = Windows::ApplicationModel::Package::Current->InstalledLocation->Path + L"\\";
+	Platform::String^ data_dir = local_folder + L"\\";
+
+
+	/* Delete VFS cache dir, we do this because this allows a far more
+	* concise implementation than manually implementing a function to do this
+	 * This may be a little slower but shouldn't really matter as the cache dir
+	* should never have more than a few items */
+	Platform::String^ vfs_dir = local_folder + L"\\VFSCACHE";
+
+	wcstombs(uwp_dir_install, data_dir->Data(), sizeof(uwp_dir_install));
+	wcstombs(uwp_dir_data, data_dir->Data(), sizeof(uwp_dir_data));
 	wcstombs(vfs_cache_dir, vfs_dir->Data(), sizeof(vfs_cache_dir));
-	DWORD dwAttrib = GetFileAttributesA(vfs_cache_dir);
+
+	dwAttrib = GetFileAttributesA(vfs_cache_dir);
 	if ((dwAttrib != INVALID_FILE_ATTRIBUTES) && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
 		concurrency::task<StorageFolder^> vfsdirtask = concurrency::create_task(StorageFolder::GetFolderFromPathAsync(vfs_dir));
@@ -243,6 +260,8 @@ int main(Platform::Array<Platform::String^>^)
 
 	RARCH_LOG("Data dir: %ls\n", data_dir->Data());
 	RARCH_LOG("Install dir: %ls\n", install_dir->Data());
+
+	FillLookupList();
 
 	auto direct3DApplicationSource = ref new Direct3DApplicationSource();
 	CoreApplication::Run(direct3DApplicationSource);
@@ -269,8 +288,9 @@ App::App() :
 /* The first method called when the IFrameworkView is being created. */
 void App::Initialize(CoreApplicationView^ applicationView)
 {
-	/* Register event handlers for app lifecycle. This example includes Activated, so that we
-	 * can make the CoreWindow active and start rendering on the window. */
+	/* Register event handlers for app lifecycle. This example
+	* includes Activated, so that we can make the CoreWindow active and start
+	 * rendering on the window. */
 	applicationView->Activated +=
 		ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
 
@@ -309,7 +329,7 @@ void App::SetWindow(CoreWindow^ window)
 		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &App::OnPointer);
 
 	window->PointerReleased +=
-		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &App::OnPointer);
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &App::OnPointerRelease);
 
 	window->PointerMoved +=
 		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &App::OnPointer);
@@ -332,13 +352,157 @@ void App::SetWindow(CoreWindow^ window)
 		ref new EventHandler<Windows::UI::Core::BackRequestedEventArgs^>(this, &App::OnBackRequested);
 }
 
+
+//extern "C" struct defaults g_defaults;
+bool missingFilesCopies = false;
+bool systemPathPrinted = false;
+extern StorageItemW GetStorageItem(std::string path, bool createIfNotExists = false, bool forceFolderType = false);
+void ValidateContentFolder(Platform::String^ name, bool justCheck, retro_task_t* task = nullptr, char* title = nullptr, bool deepScan = false, Platform::String^ customTarget = nullptr) {
+	if (task != nullptr) {
+		task_set_title(task, title);
+	}
+	auto tempName = name;
+	auto destFolder = ApplicationData::Current->LocalFolder;
+
+	bool targetIsDest = false;
+	settings_t* settings = config_get_ptr();
+	if (settings && (iequals(convert(name), "system") || (customTarget != nullptr && iequals(convert(customTarget), "system")))) {
+		auto systemDir = settings->paths.directory_system;
+		if (!isChild(convert(destFolder->Path), std::string(systemDir))) {
+			StorageFolder^ systemStorageFolder;
+			try {
+				ExecuteTask(systemStorageFolder, StorageFolder::GetFolderFromPathAsync(convert(std::string(systemDir))));
+			}
+			catch (...) {
+
+			}
+			if (systemStorageFolder == nullptr) {
+				auto itemUWPTest = GetStorageItem(std::string(systemDir));
+				if (itemUWPTest.IsValid() && itemUWPTest.IsDirectory()) {
+					systemStorageFolder = itemUWPTest.GetStorageFolder();
+				}
+			}
+			if (!systemPathPrinted) {
+				systemPathPrinted = true;
+				auto isAccessible = systemStorageFolder != nullptr ? "Yes" : "No";
+				RARCH_DBG("System dir (Access->%s): %s\n", isAccessible, systemDir);
+			}
+			if (systemStorageFolder != nullptr) {
+				destFolder = systemStorageFolder;
+				name = convert(replace2(convert(name), "system\\", ""));
+				name = convert(replace2(convert(name), "system", ""));
+				targetIsDest = true;
+			}
+		}
+	}
+
+	auto fileToCheck = "z_copied.txt";
+	if (!targetIsDest && iequals(convert(name), "info")) {
+		//Force re-copy from old releases
+		fileToCheck = "z1_copied.txt";
+	}
+
+	IStorageItem^ targetFolder;
+	if (name->Length() > 1) {
+		ExecuteTask(targetFolder, destFolder->TryGetItemAsync(name));
+	}
+	else {
+		targetFolder = destFolder;
+	}
+	if (targetFolder != nullptr) {
+		if (targetFolder->IsOfType(StorageItemTypes::Folder)) {
+			ExecuteTask(targetFolder, ((StorageFolder^)targetFolder)->TryGetItemAsync(convert(std::string(fileToCheck))));
+		}
+	}
+	try {
+		if (targetFolder == nullptr) {
+			missingFilesCopies = true;
+			if (!justCheck) {
+				IStorageItem^ src;
+				ExecuteTask(src, Package::Current->InstalledLocation->TryGetItemAsync(L"contents\\" + tempName));
+				if (src != nullptr) {
+					auto srcItem = StorageItemW(src);
+					if (customTarget != nullptr && !targetIsDest) {
+						IStorageItem^ testDest;
+						ExecuteTask(testDest, destFolder->TryGetItemAsync(customTarget));
+
+						if (testDest != nullptr && testDest->IsOfType(StorageItemTypes::Folder)) {
+							destFolder = (StorageFolder^)testDest;
+						}
+					}
+					srcItem.Copy(destFolder, deepScan, task, targetIsDest);
+				}
+			}
+		}
+	}
+	catch (...) {
+
+	}
+	}
+
+retro_task_t* copyTask;
+
+bool isCopyRequired() {
+	ValidateContentFolder(L"info", true);
+#if defined(_M_ARM)
+	ValidateContentFolder(L"overlays", true);
+#endif
+	ValidateContentFolder(L"assets", true);
+	ValidateContentFolder(L"filters", true);
+	ValidateContentFolder(L"system\\Mupen64plus", true, nullptr, nullptr, false, L"system");
+	ValidateContentFolder(L"system\\RiceVideoLinux.ini", true, nullptr, nullptr, false, L"system");
+	//ValidateContentFolder(L"system\\wildmidi", true, nullptr, nullptr, false, L"system");
+
+	return missingFilesCopies;
+}
+void task_fake_handler(retro_task_t* task) {
+	ValidateContentFolder(L"info", false, task, "Copy cores info..");
+#if defined(_M_ARM)
+	ValidateContentFolder(L"overlays", false, task, "Copy basic overlays..", true);
+#endif
+	ValidateContentFolder(L"assets", false, task, "Copy initial assets..", true);
+	ValidateContentFolder(L"filters", false, task, "Copy A/V filters..", true);
+	ValidateContentFolder(L"system\\Mupen64plus", false, task, "Copy N64 Configs..", true, L"system");
+	ValidateContentFolder(L"system\\RiceVideoLinux.ini", false, task, "Copy Rice64 Configs..", true, L"system");
+	//ValidateContentFolder(L"system\\wildmidi", false, task, "Copy EasyRPG Configs..", true, L"system");
+
+	Sleep(100);
+	task_set_progress(task, 0);
+#if defined(_M_ARM)
+	task_set_title(task, strdup("Please restart.."));
+#else
+	task_set_title(task, strdup("Restarting.."));
+#endif
+	int timeout = 0;
+	while (timeout < 10) {
+		Sleep(1000);
+		timeout++;
+		task_set_progress(task, timeout * 10);
+}
+#if defined(_M_ARM)
+	CoreApplication::Exit();
+#else
+	Windows::ApplicationModel::Core::AppRestartFailureReason error;
+	ExecuteTask(error, Windows::ApplicationModel::Core::CoreApplication::RequestRestartAsync(nullptr));
+	if (error != Windows::ApplicationModel::Core::AppRestartFailureReason::RestartPending) {
+		// Shutdown
+		bool state = false;
+		ExecuteTask(state, Windows::UI::ViewManagement::ApplicationView::GetForCurrentView()->TryConsolidateAsync());
+		if (!state) {
+			// Notify the user?
+			CoreApplication::Exit();
+		}
+	}
+#endif
+	task_set_finished(task, true);
+}
+
 /* Initializes scene resources, or loads a previously saved app state. */
 void App::Load(Platform::String^ entryPoint)
 {
 	if (isAppReady) {
 		return;
 	}
-	
 
 	auto catalog = Windows::ApplicationModel::PackageCatalog::OpenForCurrentPackage();
 
@@ -357,6 +521,19 @@ void App::Run()
 		return;
 	}
 
+	concurrency::create_task([]() {
+		// Check main content
+		if (isCopyRequired()) {
+			copyTask = task_init();
+			copyTask->handler = task_fake_handler;
+			copyTask->state = NULL;
+			copyTask->mute = false;
+			copyTask->title = strdup("Please wait..");
+			copyTask->alternative_look = true;
+			copyTask->progress = 0;
+			task_queue_push(copyTask);
+		}
+		});
 
 	for (;;)
 	{
@@ -388,42 +565,53 @@ void App::Run()
  * class is torn down while the app is in the foreground. */
 void App::Uninitialize()
 {
+	//alterWin32APIsDeAttach(NULL);
 	main_exit(NULL);
-	//if this instance of RetroArch was started from another app/frontend and the frontend passed "launchOnExit" parameter:
-	//1. launch the app specified in "launchOnExit", most likely the same app that started RetroArch
-	//2. RetroArch goes to background and RunAsyncAndCatchErrors doesn't return, because the target app is immediately started.
-	//3. explicitly exit in App::OnEnteredBackground if m_launchOnExitShutdown is set. Otherwise, RetroArch doesn't properly shutdown.
-	if (m_launchOnExit != nullptr && m_launchOnExit->IsEmpty() == false)
+
+	/* If this instance of RetroArch was started from another app/frontend
+	* and the frontend passed "launchOnExit" parameter:
+	 * 1. launch the app specified in "launchOnExit", most likely the
+	*    same app that started RetroArch
+	 * 2. RetroArch goes to background and RunAsyncAndCatchErrors doesn't
+	*    return, because the target app is immediately started.
+	 * 3. Explicitly exit in App::OnEnteredBackground if
+	*    m_launchOnExitShutdown is set. Otherwise, RetroArch doesn't
+	*    properly shutdown.
+	*/
+	if (m_launchOnExit != nullptr && !m_launchOnExit->IsEmpty())
 	{
 		try
 		{
-			//launch the target app
+			/* Launch the target app */
 			m_launchOnExitShutdown = true;
 			auto ret = RunAsyncAndCatchErrors<bool>([&]() {
 				return create_task(Launcher::LaunchUriAsync(ref new Uri(m_launchOnExit)));
-				}, false);
-		}
+		}, false);
+	}
 		catch (Platform::InvalidArgumentException^ e)
 		{
 		}
-	}
+}
 }
 
 /* Application lifecycle event handlers. */
 
 void App::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
-	if (m_initialized == true)
-	{
-		return;
-	}
+	int ret;
 	int argc = NULL;
 	std::vector<char*> argv;
-	std::vector<std::string> argvTmp; //using std::string as temp buf instead of char* array to avoid manual char allocations
+	/* using std::string as temp buf instead of char* array
+	 * to avoid manual char allocations */
+	std::vector<std::string> argvTmp;
 	ParseProtocolArgs(args, &argc, &argv, &argvTmp);
 
-	int ret = rarch_main(NULL, NULL, NULL);
-	if (ret != 0)
+	/* Start only if not already initialized.
+	* If there is a game in progress, just return */
+	if (m_initialized)
+		return;
+
+	if ((ret = rarch_main(argc, argv.data(), NULL)) != 0)
 	{
 		RARCH_ERR("Init failed\n");
 		CoreApplication::Exit();
@@ -432,90 +620,102 @@ void App::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^
 	m_initialized = true;
 
 	//if (is_running_on_xbox())
-	//{
-	bool reset = false;
-	int width = uwp_get_width();
-	int height = uwp_get_height();
-	//reset driver to d3d11 if set to opengl on boot as cores can just set to gl when needed and there is no good reason to use gl for the menus
-	settings_t* settings = config_get_ptr();
-	char* currentdriver = settings->arrays.video_driver;
-	if (strcmpi(currentdriver, "gl") == 0)
 	{
-		//set driver to default
-		configuration_set_string(settings,
-			settings->arrays.video_driver,
-			config_get_default_video());
-		//reset needed
-		reset = true;
+		bool reset = false;
+		int width = uwp_get_width();
+		int height = uwp_get_height();
+		/* Reset driver to D3D11 if set to OpenGL on boot as cores can
+	   * just set to 'gl' when needed and there is no good reason to
+	   * use 'gl' for the menus
+		 * Do not change the default driver if the content is already
+	   * initialized through arguments, as this would crash RA for
+	   * cores that use only ANGLE */
+		settings_t* settings = config_get_ptr();
+		content_state_t* p_content = content_state_get_ptr();
+		char* currentdriver = settings->arrays.video_driver;
+#if defined(BUILD14393)
+		if ((strcmpi(currentdriver, "d3d") == 0 || strcmpi(currentdriver, "d3d11") == 0 || strcmpi(currentdriver, "sdl2") == 0 || strcmpi(currentdriver, "sdl") == 0)
+#else
+		if ((strcmpi(currentdriver, "gl") == 0 || strcmpi(currentdriver, "sdl2") == 0 || strcmpi(currentdriver, "sdl") == 0)
+#endif
+			&& !p_content->flags & CONTENT_ST_FLAG_IS_INITED)
+		{
+			/* Set driver to default */
+			configuration_set_string(settings,
+				settings->arrays.video_driver,
+				config_get_default_video());
+				reset = true; /* Reset needed */
+		}
+		if ((settings->uints.video_fullscreen_x != width)
+			|| (settings->uints.video_fullscreen_y != height))
+		{
+			/* Get width and height from display again */
+			configuration_set_int(settings,
+				settings->uints.video_fullscreen_x,
+				width);
+			configuration_set_int(settings,
+				settings->uints.video_fullscreen_y,
+				height);
+			reset = true; /* Reset needed */
+		}
+		if (reset) /* Restart driver */
+			command_event(CMD_EVENT_REINIT, NULL);
 	}
-	if ((settings->uints.video_fullscreen_x != width) || (settings->uints.video_fullscreen_y != height))
-	{
-		//get width and height from display again
-		configuration_set_int(settings,
-			settings->uints.video_fullscreen_x,
-			width);
-		configuration_set_int(settings,
-			settings->uints.video_fullscreen_y,
-			height);
-		//reset needed
-		reset = true;
-	}
-	if (reset)
-	{
-		//restart driver
-		command_event(CMD_EVENT_REINIT, NULL);
-	}
-	//}
+
 	/* Run() won't start until the CoreWindow is activated. */
 	CoreWindow::GetForCurrentThread()->Activate();
 }
 
 void App::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
 {
-	/* Save app state asynchronously after requesting a deferral. Holding a deferral
-	 * indicates that the application is busy performing suspending operations. Be
-	 * aware that a deferral may not be held indefinitely. After about five seconds,
-	 * the app will be forced to exit.
-	*/
+	/* This function will ensure that configs are saved in case the app
+	* is sent to background or terminated for saving configs on quit
+	 * for saving configs on quit now configs will be saved in
+	* `retroarch_main_quit` at `retroarch.c`
+	 * If this function is called because of app closed by quit,
+	* the below code must be ignored
+
+	/* Save app state asynchronously after requesting a deferral.
+	* Holding a deferral indicates that the application is busy
+	* performing suspending operations. Be aware that a deferral may
+	 * not be held indefinitely. After about five seconds, the app will
+	* be forced to exit. */
 	SuspendingDeferral^ deferral = args->SuspendingOperation->GetDeferral();
 	auto                     app = this;
-	Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
-		CoreDispatcherPriority::Normal,
-		ref new Windows::UI::Core::DispatchedHandler([this, deferral]()
-			{
 
-			}));
 	create_task([app, deferral]()
 		{
 			/* TODO: Maybe creating a save state here would be a good idea? */
 			settings_t* settings = config_get_ptr();
-			bool config_save_on_exit = settings->bools.config_save_on_exit;
+	bool config_save_on_exit = settings->bools.config_save_on_exit;
 
-			if (config_save_on_exit)
+	if (config_save_on_exit)
+	{
+		if (!path_is_empty(RARCH_PATH_CONFIG))
+		{
+			const char* config_path = path_get(RARCH_PATH_CONFIG);
+			bool path_exists = !string_is_empty(config_path);
+
+			if (path_exists)
 			{
-				if (!path_is_empty(RARCH_PATH_CONFIG))
+				if (config_save_file(config_path))
 				{
-					const char* config_path = path_get(RARCH_PATH_CONFIG);
-					bool path_exists = !string_is_empty(config_path);
-
-					if (path_exists)
-					{
-						if (config_save_file(config_path))
-						{
-							RARCH_LOG("[config] %s \"%s\".\n",
-								msg_hash_to_str(MSG_SAVED_NEW_CONFIG_TO),
-								config_path);
-						}
-						else
-						{
-							RARCH_ERR("[config] %s \"%s\".\n",
-								msg_hash_to_str(MSG_FAILED_SAVING_CONFIG_TO),
-								config_path);
-						}
-					}
+					RARCH_LOG("[config] %s \"%s\".\n",
+						msg_hash_to_str(MSG_SAVED_NEW_CONFIG_TO),
+						config_path);
+				}
+				else
+				{
+					RARCH_ERR("[config] %s \"%s\".\n",
+						msg_hash_to_str(MSG_FAILED_SAVING_CONFIG_TO),
+						config_path);
 				}
 			}
-			deferral->Complete();
+
+		}
+	}
+
+	deferral->Complete();
 		});
 }
 
@@ -527,11 +727,21 @@ void App::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 	*/
 }
 
+void App::OnEnteredBackground(Platform::Object^ sender, EnteredBackgroundEventArgs^ args)
+{
+	/* RetroArch entered background because another app/frontend
+	* was launched on exit, so properly quit */
+	if (m_launchOnExitShutdown)
+		CoreApplication::Exit();
+}
+
 void App::OnBackRequested(Platform::Object^ sender, Windows::UI::Core::BackRequestedEventArgs^ args)
 {
 	/* Prevent the B controller button on Xbox One from quitting the app */
 	if (Windows::Foundation::Metadata::ApiInformation::IsTypePresent("Windows.Phone.UI.Input.HardwareButtons")) {
-		command_event(CMD_EVENT_MENU_TOGGLE, NULL);
+		if (!preventGoBack) {
+			command_event(CMD_EVENT_MENU_TOGGLE, NULL);
+		}
 	}
 	args->Handled = true;
 }
@@ -555,6 +765,8 @@ void App::OnWindowActivated(CoreWindow^ sender, WindowActivatedEventArgs^ args)
 
 void App::OnKey(CoreWindow^ sender, KeyEventArgs^ args)
 {
+	unsigned keycode;
+	preventGoBack = true;
 	uint16_t mod = 0;
 	if ((sender->GetKeyState(VirtualKey::Shift) & CoreVirtualKeyStates::Locked) == CoreVirtualKeyStates::Locked)
 		mod |= RETROKMOD_SHIFT;
@@ -570,16 +782,76 @@ void App::OnKey(CoreWindow^ sender, KeyEventArgs^ args)
 		(sender->GetKeyState(VirtualKey::RightWindows) & CoreVirtualKeyStates::Locked) == CoreVirtualKeyStates::Locked)
 		mod |= RETROKMOD_META;
 
-	unsigned keycode = input_keymaps_translate_keysym_to_rk((unsigned)args->VirtualKey);
+	keycode = input_keymaps_translate_keysym_to_rk((unsigned)args->VirtualKey);
 
 	input_keyboard_event(!args->KeyStatus.IsKeyReleased, keycode, 0, mod, RETRO_DEVICE_KEYBOARD);
 }
 
+std::vector<input_pointer> pointers{};
+input_pointer getTouch(unsigned index) {
+	input_pointer pointer{};
+	if (index < pointers.size()) {
+		pointer = pointers[index];
+	}
+	return pointer;
+}
+
+void addOrUpdatePointer(input_pointer pointer) {
+	for (auto pItem = pointers.begin(), end = pointers.end(); pItem != end; ++pItem) {
+		if (pItem->id == pointer.id) {
+			pItem->full_x = pointer.full_x;
+			pItem->full_y = pointer.full_y;
+			pItem->x = pointer.x;
+			pItem->y = pointer.y;
+			pItem->isInContact = pointer.isInContact;
+			return;
+		}
+	}
+
+	pointers.push_back(pointer);
+	uwp_next_input.touch_count = pointers.size();
+}
+
+void removePointer(int id) {
+	pointers.erase(std::remove_if(
+		pointers.begin(), pointers.end(),
+		[&](const input_pointer& x) {
+			return x.id == id;
+		}), pointers.end());
+	uwp_next_input.touch_count = pointers.size();
+}
+
+void App::OnPointerRelease(CoreWindow^ sender, PointerEventArgs^ args) {
+	float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
+	preventGoBack = false;
+	if (args->CurrentPoint->PointerDevice->PointerDeviceType == PointerDeviceType::Mouse)
+	{
+		uwp_next_input.mouse_left = args->CurrentPoint->Properties->IsLeftButtonPressed;
+		uwp_next_input.mouse_middle = args->CurrentPoint->Properties->IsMiddleButtonPressed;
+		uwp_next_input.mouse_right = args->CurrentPoint->Properties->IsRightButtonPressed;
+		uwp_next_input.mouse_button4 = args->CurrentPoint->Properties->IsXButton1Pressed;
+		uwp_next_input.mouse_button5 = args->CurrentPoint->Properties->IsXButton2Pressed;
+		uwp_next_input.mouse_screen_x = ConvertDipsToPixels(args->CurrentPoint->Position.X, dpi);
+		uwp_next_input.mouse_screen_y = ConvertDipsToPixels(args->CurrentPoint->Position.Y, dpi);
+		uwp_next_input.mouse_rel_x = uwp_next_input.mouse_screen_x - uwp_current_input.mouse_screen_x;
+		uwp_next_input.mouse_rel_y = uwp_next_input.mouse_screen_y - uwp_current_input.mouse_screen_y;
+		if (args->CurrentPoint->Properties->IsHorizontalMouseWheel)
+			uwp_next_input.mouse_wheel_left += args->CurrentPoint->Properties->MouseWheelDelta;
+		else
+			uwp_next_input.mouse_wheel_up += args->CurrentPoint->Properties->MouseWheelDelta;
+	}
+	else {
+
+		int id = args->CurrentPoint->PointerId;
+		uwp_next_input.touch.isInContact = args->CurrentPoint->IsInContact;
+		removePointer(id);
+	}
+}
+
 void App::OnPointer(CoreWindow^ sender, PointerEventArgs^ args)
 {
-
 	float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
-
+	preventGoBack = false;
 	if (args->CurrentPoint->PointerDevice->PointerDeviceType == PointerDeviceType::Mouse)
 	{
 		uwp_next_input.mouse_left = args->CurrentPoint->Properties->IsLeftButtonPressed;
@@ -598,34 +870,8 @@ void App::OnPointer(CoreWindow^ sender, PointerEventArgs^ args)
 	}
 	else
 	{
-		unsigned i, free_index = MAX_TOUCH; bool found = false;
-		int id = args->CurrentPoint->PointerId;
-
-		for (i = 0; i < uwp_next_input.touch_count; i++)
-		{
-			if (!uwp_next_input.touch[i].isInContact && free_index == MAX_TOUCH)
-				free_index = i;
-			if (uwp_next_input.touch[i].id == id)
-			{
-				found = true;
-				break;
-			}
-		}
-
-		if (!found)
-		{
-			if (free_index >= 0 && free_index < uwp_next_input.touch_count)
-				i = free_index;
-			else if (uwp_next_input.touch_count + 1 < MAX_TOUCH)
-				i = ++uwp_next_input.touch_count;
-			else
-				return;
-		}
-
-		uwp_next_input.touch[i].id = id;
-
 		struct video_viewport vp;
-
+		int id = args->CurrentPoint->PointerId;
 		/* convert from event coordinates to core and screen coordinates */
 		vp.x = 0;
 		vp.y = 0;
@@ -634,17 +880,19 @@ void App::OnPointer(CoreWindow^ sender, PointerEventArgs^ args)
 		vp.full_width = 0;
 		vp.full_height = 0;
 
+		uwp_next_input.touch.id = id;
+		uwp_next_input.touch.isInContact = args->CurrentPoint->IsInContact;
+
 		video_driver_translate_coord_viewport_wrap(
 			&vp,
 			ConvertDipsToPixels(args->CurrentPoint->Position.X, dpi),
 			ConvertDipsToPixels(args->CurrentPoint->Position.Y, dpi),
-			&uwp_next_input.touch[i].x,
-			&uwp_next_input.touch[i].y,
-			&uwp_next_input.touch[i].full_x,
-			&uwp_next_input.touch[i].full_y);
+			&uwp_next_input.touch.x,
+			&uwp_next_input.touch.y,
+			&uwp_next_input.touch.full_x,
+			&uwp_next_input.touch.full_y);
 
-		uwp_next_input.touch[i].isInContact = args->CurrentPoint->IsInContact;
-
+		addOrUpdatePointer(uwp_next_input.touch);
 	}
 }
 
@@ -654,8 +902,6 @@ void App::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
 }
 
 /* DisplayInformation event handlers. */
-
-
 
 void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 {
@@ -672,7 +918,8 @@ void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
 	/* Probably can be ignored? */
 }
 
-void App::OnPackageInstalling(PackageCatalog^ sender, PackageInstallingEventArgs^ args)
+void App::OnPackageInstalling(PackageCatalog^ sender,
+	PackageInstallingEventArgs^ args)
 {
 	/* TODO: This doesn't seem to work even though it's exactly the same as in sample app and it works there */
 	if (args->IsComplete)
@@ -683,63 +930,63 @@ void App::OnPackageInstalling(PackageCatalog^ sender, PackageInstallingEventArgs
 	}
 }
 
-void App::OnEnteredBackground(Platform::Object^ sender, EnteredBackgroundEventArgs^ args)
-{
-	//RetroArch entered background because another app/frontend was launched on exit, so properly quit
-	if (m_launchOnExitShutdown == true)
-	{
-		CoreApplication::Exit();
-	}
-}
-
 void App::ParseProtocolArgs(Windows::ApplicationModel::Activation::IActivatedEventArgs^ args, int* argc, std::vector<char*>* argv, std::vector<std::string>* argvTmp)
 {
 	argvTmp->clear();
 	argv->clear();
 
-	// If the app is activated using protocol, it is expected to be in this format:
-	// "retroarch:?cmd=<RetroArch CLI arguments>&launchOnExit=<app to launch on exit>"
-	// For example:
-	// retroarch:?cmd=retroarch -L cores\core_libretro.dll "c:\mypath\path with spaces\game.rom"&launchOnExit=LaunchApp:
-	// "cmd" and "launchOnExit" are optional. If none specified, it will normally launch into menu
+	/* If the app is activated using protocol,
+	* it is expected to be in this format:
+	 * "retroarch:?cmd=<RetroArch CLI arguments>&launchOnExit=<app to launch on exit>"
+	 * For example:
+	 * retroarch:?cmd=retroarch -L cores\core_libretro.dll "c:\mypath\path with spaces\game.rom"&launchOnExit=LaunchApp:
+	 * "cmd" and "launchOnExit" are optional. If none specified,
+	* it will normally launch into menu
+	*/
 	if (args->Kind == ActivationKind::Protocol)
 	{
+		unsigned i;
 		ProtocolActivatedEventArgs^ protocolArgs = dynamic_cast<Windows::ApplicationModel::Activation::ProtocolActivatedEventArgs^>(args);
 		Windows::Foundation::WwwFormUrlDecoder^ query = protocolArgs->Uri->QueryParsed;
 
-		for (int i = 0; i < query->Size; i++)
+		for (i = 0; i < query->Size; i++)
 		{
 			IWwwFormUrlDecoderEntry^ arg = query->GetAt(i);
 
-			//parse RetroArch command line string
-			if (arg->Name == "cmd")
+			/* Parse RetroArch command line string */
+		 /* This allows a frotend to quit RetroArch, which in turn allows it
+		  * to launch a different game. */
+			if (arg->Name == "forceExit")
+				CoreApplication::Exit();
+			else if (arg->Name == "cmd" && !m_initialized)
 			{
 				std::wstring wsValue(arg->Value->ToString()->Data());
 				std::string strValue(wsValue.begin(), wsValue.end());
 				std::istringstream iss(strValue);
 				std::string s;
 
-				//set escape character to null char to preserve backslashes in paths which are inside quotes, they get stripped by default
-				while (iss >> std::quoted(s, '"', (char)0)) {
+				/* Set escape character to NULL char to preserve backslashes in
+			 * paths which are inside quotes, they get stripped by default */
+				while (iss >> std::quoted(s, '"', (char)0))
 					argvTmp->push_back(s);
-				}
 			}
+			/* If RetroArch UWP app is started using protocol
+			 * with argument "launchOnExit", this gives an option
+			 * to launch another app on RA exit,
+			 * making it easy to integrate RA with other UWP frontends */
 			else if (arg->Name == "launchOnExit")
-			{
-				//if RetroArch UWP app is started using protocol with argument "launchOnExit", this gives an option to launch another app on RA exit,
-				//making it easy to integrate RA with other UWP frontends
 				m_launchOnExit = arg->Value;
-			}
 		}
 	}
 
-	(*argc) = argvTmp->size();
-	//convert to char* array compatible with argv
-	for (int i = 0; i < argvTmp->size(); i++)
+	if (!m_initialized)
 	{
-		argv->push_back((char*)(argvTmp->at(i)).c_str());
+		(*argc) = argvTmp->size();
+		/* Convert to char* array compatible with argv */
+		for (int i = 0; i < argvTmp->size(); i++)
+			argv->push_back((char*)(argvTmp->at(i)).c_str());
+		argv->push_back(nullptr);
 	}
-	argv->push_back(nullptr);
 }
 
 /* Implement UWP equivalents of various win32_* functions */
@@ -760,7 +1007,8 @@ extern "C" {
 	{
 		if (App::GetInstance()->IsInitialized())
 		{
-			if (fullscreen != ApplicationView::GetForCurrentView()->IsFullScreenMode)
+			if (fullscreen !=
+				ApplicationView::GetForCurrentView()->IsFullScreenMode)
 			{
 				if (fullscreen)
 					ApplicationView::GetForCurrentView()->TryEnterFullScreenMode();
@@ -771,8 +1019,12 @@ extern "C" {
 		}
 		else
 		{
-			/* In case the window is not activated yet, TryResizeView will fail and we have to set the initial parameters instead */
-			/* Note that these are preserved after restarting the app and used for the UWP splash screen size (!), so they should be set only during init and not changed afterwards */
+			/* In case the window is not activated yet,
+		  * TryResizeView will fail and we have to set the
+		  * initial parameters instead
+			 * Note that these are preserved after restarting the app
+		  * and used for the UWP splash screen size (!), so they
+		  * should be set only during init and not changed afterwards */
 			ApplicationView::PreferredLaunchViewSize = Size(width, height);
 			ApplicationView::PreferredLaunchWindowingMode = fullscreen ? ApplicationViewWindowingMode::FullScreen : ApplicationViewWindowingMode::PreferredLaunchViewSize;
 		}
@@ -780,8 +1032,8 @@ extern "C" {
 		/* Setting the window size may sometimes fail "because UWP"
 		 * (i.e. we are on device with no windows, or Windows sandbox decides the window can't be that small)
 		 * so in case resizing fails we just send a resized event back to RetroArch with old size
-		 * (and report success because otherwise it bails out hard about failing to set video mode)
-		 */
+		 * (and report success because otherwise it bails out hard about failing
+		 * to set video mode) */
 		App::GetInstance()->SetWindowResized();
 		return true;
 	}
@@ -857,22 +1109,7 @@ extern "C" {
 		*resize = App::GetInstance()->CheckWindowResized();
 		if (*resize)
 		{
-			float dpi = 0;
-			volatile bool finished = false;
-			Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
-				CoreDispatcherPriority::Normal,
-				ref new Windows::UI::Core::DispatchedHandler([&dpi, &finished]()
-					{
-						dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
-						finished = true;
-					}));
-			Windows::UI::Core::CoreWindow^ corewindow = Windows::UI::Core::CoreWindow::GetForCurrentThread();
-			while (!finished)
-			{
-				if (corewindow) {
-					corewindow->Dispatcher->ProcessEvents(Windows::UI::Core::CoreProcessEventsOption::ProcessAllIfPresent);
-				}
-			}
+			float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
 			*width = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Width, dpi);
 			*height = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Height, dpi);
 		}
@@ -885,39 +1122,47 @@ extern "C" {
 
 	int uwp_get_height(void)
 	{
+		/* This function must be performed within UI thread,
+	   * otherwise it will cause a crash in specific cases
+		 * https://github.com/libretro/RetroArch/issues/13491 */
 		float surface_scale = 0;
-		int returnValue = -1;
+		int ret = -1;
 		volatile bool finished = false;
 		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 			CoreDispatcherPriority::Normal,
-			ref new Windows::UI::Core::DispatchedHandler([&surface_scale, &returnValue, &finished]()
+			ref new Windows::UI::Core::DispatchedHandler([&surface_scale, &ret, &finished]()
 				{
 					if (is_running_on_xbox())
 					{
 						const Windows::Graphics::Display::Core::HdmiDisplayInformation^ hdi = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView();
 						if (hdi)
-							returnValue = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionHeightInRawPixels;
+							ret = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionHeightInRawPixels;
 					}
 
-					if (returnValue == -1) {
-					const LONG32 resolution_scale = static_cast<LONG32>(Windows::Graphics::Display::DisplayInformation::GetForCurrentView()->ResolutionScale);
-					surface_scale = static_cast<float>(resolution_scale) / 100.0f;
-					returnValue = static_cast<LONG32>(CoreWindow::GetForCurrentThread()->Bounds.Height * surface_scale);
-					}
-					finished = true;
+		if (ret == -1)
+		{
+			const LONG32 resolution_scale = static_cast<LONG32>(Windows::Graphics::Display::DisplayInformation::GetForCurrentView()->ResolutionScale);
+			surface_scale = static_cast<float>(resolution_scale) / 100.0f;
+			ret = static_cast<LONG32>(
+				CoreWindow::GetForCurrentThread()->Bounds.Height
+				* surface_scale);
+		}
+		finished = true;
 				}));
 		Windows::UI::Core::CoreWindow^ corewindow = Windows::UI::Core::CoreWindow::GetForCurrentThread();
 		while (!finished)
 		{
-			if (corewindow) {
+			if (corewindow)
 				corewindow->Dispatcher->ProcessEvents(Windows::UI::Core::CoreProcessEventsOption::ProcessAllIfPresent);
-			}
 		}
-		return returnValue;
+		return ret;
 	}
 
 	int uwp_get_width(void)
 	{
+		/* This function must be performed within UI thread,
+	   * otherwise it will cause a crash in specific cases
+		 * https://github.com/libretro/RetroArch/issues/13491 */
 		float surface_scale = 0;
 		int returnValue = -1;
 		volatile bool finished = false;
@@ -932,21 +1177,23 @@ extern "C" {
 							returnValue = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionWidthInRawPixels;
 					}
 
-					if(returnValue == -1) {
-					const LONG32 resolution_scale = static_cast<LONG32>(Windows::Graphics::Display::DisplayInformation::GetForCurrentView()->ResolutionScale);
-					surface_scale = static_cast<float>(resolution_scale) / 100.0f;
-					returnValue = static_cast<LONG32>(CoreWindow::GetForCurrentThread()->Bounds.Width * surface_scale);
-					}
-					finished = true;
+		if (returnValue == -1)
+		{
+			const LONG32 resolution_scale = static_cast<LONG32>(Windows::Graphics::Display::DisplayInformation::GetForCurrentView()->ResolutionScale);
+			surface_scale = static_cast<float>(resolution_scale) / 100.0f;
+			returnValue = static_cast<LONG32>(
+				CoreWindow::GetForCurrentThread()->Bounds.Width
+				* surface_scale);
+		}
+		finished = true;
 				}));
 		Windows::UI::Core::CoreWindow^ corewindow = Windows::UI::Core::CoreWindow::GetForCurrentThread();
 		while (!finished)
 		{
-			if (corewindow) {
+			if (corewindow)
 				corewindow->Dispatcher->ProcessEvents(Windows::UI::Core::CoreProcessEventsOption::ProcessAllIfPresent);
-			}
 		}
-		
+
 		return returnValue;
 	}
 
@@ -982,9 +1229,9 @@ extern "C" {
 
 		/* At times CoreWindow will return NULL while running Dolphin core
 		 * Dolphin core runs on its own CPU thread separate from the UI-thread and so we must do a check for this. */
-		if (!window)
-			return false;
-		return (window->GetKeyState(sym) & CoreVirtualKeyStates::Down) == CoreVirtualKeyStates::Down;
+		if (window)
+			return (window->GetKeyState(sym) & CoreVirtualKeyStates::Down) == CoreVirtualKeyStates::Down;
+		return false;
 	}
 
 	int16_t uwp_mouse_state(unsigned port, unsigned id, bool screen)
@@ -1026,18 +1273,19 @@ extern "C" {
 
 	int16_t uwp_pointer_state(unsigned idx, unsigned id, bool screen)
 	{
+		input_pointer touch = getTouch(idx);
 		switch (id)
 		{
 		case RETRO_DEVICE_ID_POINTER_X:
 			return screen
-				? uwp_current_input.touch[idx].full_x
-				: uwp_current_input.touch[idx].x;
+				? touch.full_x
+				: touch.x;
 		case RETRO_DEVICE_ID_POINTER_Y:
 			return screen
-				? uwp_current_input.touch[idx].full_y
-				: uwp_current_input.touch[idx].y;
+				? touch.full_y
+				: touch.y;
 		case RETRO_DEVICE_ID_POINTER_PRESSED:
-			return uwp_current_input.touch[idx].isInContact;
+			return touch.isInContact;
 		case RETRO_DEVICE_ID_POINTER_COUNT:
 			return uwp_current_input.touch_count;
 		default:
@@ -1074,12 +1322,14 @@ extern "C" {
 				sizeof(lang_iso));
 		}
 		string_list_deinitialize(&split);
-		return rarch_get_language_from_iso(lang_iso);
+		return retroarch_get_language_from_iso(lang_iso);
 	}
 
 	const char* uwp_get_cpu_model_name(void)
 	{
-		if (!is_running_on_xbox())
+		/* TODO/FIXME - Xbox codepath should have a hardcoded CPU model name */
+		if (is_running_on_xbox()) {}
+		else
 		{
 			Platform::String^ cpu_id = nullptr;
 			Platform::String^ cpu_name = nullptr;
@@ -1114,14 +1364,12 @@ extern "C" {
 					}, nullptr);
 			}
 
-
-			if (!cpu_name)
-				return "Unknown";
-
-			wcstombs(win32_cpu_model_name, cpu_name->Data(), sizeof(win32_cpu_model_name));
-			return win32_cpu_model_name;
+			if (cpu_name)
+			{
+				wcstombs(win32_cpu_model_name, cpu_name->Data(), sizeof(win32_cpu_model_name));
+				return win32_cpu_model_name;
+			}
 		}
-		else
-			return "Unknown";
+		return "Unknown";
 	}
 }

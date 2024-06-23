@@ -30,55 +30,9 @@
 #include <boolean.h>
 
 #include "playlist.h"
+#include "runtime_file_defines.h"
 
 RETRO_BEGIN_DECLS
-
-/* Enums */
-
-enum playlist_sublabel_last_played_style_type
-{
-   PLAYLIST_LAST_PLAYED_STYLE_YMD_HMS = 0,
-   PLAYLIST_LAST_PLAYED_STYLE_YMD_HM,
-   PLAYLIST_LAST_PLAYED_STYLE_YMD,
-   PLAYLIST_LAST_PLAYED_STYLE_YM,
-   PLAYLIST_LAST_PLAYED_STYLE_MDYYYY_HMS,
-   PLAYLIST_LAST_PLAYED_STYLE_MDYYYY_HM,
-   PLAYLIST_LAST_PLAYED_STYLE_MD_HM,
-   PLAYLIST_LAST_PLAYED_STYLE_MDYYYY,
-   PLAYLIST_LAST_PLAYED_STYLE_MD,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMMYYYY_HMS,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMMYYYY_HM,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMM_HM,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMMYYYY,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMM,
-   PLAYLIST_LAST_PLAYED_STYLE_YMD_HMS_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_YMD_HM_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_MDYYYY_HMS_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_MDYYYY_HM_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_MD_HM_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMMYYYY_HMS_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMMYYYY_HM_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_DDMM_HM_AMPM,
-   PLAYLIST_LAST_PLAYED_STYLE_LAST
-};
-
-/* Note: These must be kept synchronised with
- * 'enum menu_timedate_date_separator_type' in
- * 'menu_defines.h' */
-enum playlist_sublabel_last_played_date_separator_type
-{
-   PLAYLIST_LAST_PLAYED_DATE_SEPARATOR_HYPHEN = 0,
-   PLAYLIST_LAST_PLAYED_DATE_SEPARATOR_SLASH,
-   PLAYLIST_LAST_PLAYED_DATE_SEPARATOR_PERIOD,
-   PLAYLIST_LAST_PLAYED_DATE_SEPARATOR_LAST
-};
-
-enum playlist_sublabel_runtime
-{
-   PLAYLIST_RUNTIME_PER_CORE = 0,
-   PLAYLIST_RUNTIME_AGGREGATE,
-   PLAYLIST_RUNTIME_LAST
-};
 
 /* Structs */
 
@@ -110,7 +64,9 @@ typedef struct
 
 /* Initialise runtime log, loading current parameters
  * if log file exists. Returned object must be free()'d.
- * Returns NULL if content_path and/or core_path are invalid */
+ * Returns NULL if core_path is invalid, or content_path
+ * is invalid and core does not support contentless
+ * operation */
 runtime_log_t *runtime_log_init(
       const char *content_path,
       const char *core_path,
@@ -205,19 +161,20 @@ void runtime_update_playlist(
       enum playlist_sublabel_last_played_style_type timedate_style,
       enum playlist_sublabel_last_played_date_separator_type date_separator);
 
-RETRO_END_DECLS
-
-#endif
 #if defined(HAVE_MENU)
 /* Contentless cores manipulation */
 
 /* Updates specified contentless core runtime values with
  * contents of associated log file */
-   void runtime_update_contentless_core(
-      const char* core_path,
-      const char* dir_runtime_log,
-      const char* dir_playlist,
+void runtime_update_contentless_core(
+      const char *core_path,
+      const char *dir_runtime_log,
+      const char *dir_playlist,
       bool log_per_core,
       enum playlist_sublabel_last_played_style_type timedate_style,
       enum playlist_sublabel_last_played_date_separator_type date_separator);
+#endif
+
+RETRO_END_DECLS
+
 #endif

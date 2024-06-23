@@ -40,14 +40,11 @@ bool input_remapping_load_file(void *data, const char *path);
 /**
  * Saves remapping values to file.
  *
- * @param path Relative path to remapping file.
+ * @param path Path to remapping file.
  *
  * @return true (1) if successful, otherwise false (0).
  **/
 bool input_remapping_save_file(const char *path);
-
-bool input_remapping_remove_file(const char *path, 
-                                 const char *dir_input_remapping);
 
 /**
  * Caches any global configuration settings that should not be overwritten by
@@ -57,24 +54,13 @@ bool input_remapping_remove_file(const char *path,
 void input_remapping_cache_global_config(void);
 
 /**
- * Sets flags to enable the restoration of global configuration settings from
- * the internal cache. Should be called independently from 
- * `input_remapping_cache_global_config()`.
- * Must be called:
- *   - Whenever content is loaded
- *   - Whenever a remap file is loaded 
- */
-void input_remapping_enable_global_config_restore(void);
-
-/**
  * Restores any global configuration settings that were cached on the last core
- * init if `input_remapping_enable_global_config_restore()` has been called.
+ * init if INP_FLAG_REMAPPING_CACHE_ACTIVE is set.
  * Must be called on core deinitialization. 
  * 
  * @param clear_cache  If true, function becomes a NOOP until the next time
- *                     `input_remapping_cache_global_config()` and 
- *                     `input_remapping_enable_global_config_restore()` are
- *                     called.
+ *                     `input_remapping_cache_global_config()` is called, and 
+ *                     INP_FLAG_REMAPPING_CACHE_ACTIVE is set.
  */
 void input_remapping_restore_global_config(bool clear_cache);
 
@@ -86,8 +72,12 @@ void input_remapping_update_port_map(void);
 /**
  * Frees runloop_st->name.remapfile and sets these runloop_state flags to false: 
  * remaps_core_active, remaps_content_dir_active, and remaps_game_active.
+ *
+ * @param save_remap  If true, current remap settings will be saved to
+ *                    runloop_st->name.remapfile before performing
+ *                    deinitialisation.
  */
-void input_remapping_deinit(void);
+void input_remapping_deinit(bool save_remap);
 
 /**
  * Used to set the default mapping values within the `settings` struct

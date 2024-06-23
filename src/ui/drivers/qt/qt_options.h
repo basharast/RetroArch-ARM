@@ -6,7 +6,7 @@
 #include <QScrollArea>
 #include <QDebug>
 
-#include "settingswidgets.h"
+#include "qt_widgets.h"
 
 #include "../../../configuration.h"
 
@@ -464,6 +464,12 @@ class AchievementsPage : public OptionsPage
 public:
    AchievementsPage(QObject *parent = nullptr);
    QWidget *widget();
+private slots:
+   void onAchievementEnabledChanged(int);
+private:
+   SettingsGroup* m_generalGroup;
+   SettingsGroup* m_appearanceGroup;
+   SettingsGroup* m_visibilityGroup;
 };
 
 /************************************************************

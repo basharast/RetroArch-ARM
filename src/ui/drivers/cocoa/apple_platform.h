@@ -6,6 +6,15 @@
 #import <MetalKit/MetalKit.h>
 #endif
 
+typedef enum apple_view_type
+{
+   APPLE_VIEW_TYPE_NONE = 0,
+   APPLE_VIEW_TYPE_OPENGL_ES,
+   APPLE_VIEW_TYPE_OPENGL,
+   APPLE_VIEW_TYPE_VULKAN,
+   APPLE_VIEW_TYPE_METAL
+} apple_view_type_t;
+
 #if defined(HAVE_COCOA_METAL) && !defined(HAVE_COCOATOUCH)
 @interface WindowListener : NSResponder<NSWindowDelegate>
 @end
@@ -28,16 +37,15 @@
  * the displays should not sleep.
  */
 - (bool)setDisableDisplaySleep:(bool)disable;
+- (void)setupMainWindow;
 @end
 
 #endif
 
 #if defined(HAVE_COCOA_METAL) || defined(HAVE_COCOATOUCH)
 extern id<ApplePlatform> apple_platform;
-
-id<ApplePlatform> apple_platform;
 #else
-id apple_platform;
+extern id apple_platform;
 #endif
 
 #if defined(HAVE_COCOATOUCH)
@@ -61,7 +69,7 @@ UINavigationControllerDelegate> {
 #else
 #if defined(HAVE_COCOA_METAL)
 @interface RetroArch_OSX : NSObject<ApplePlatform, NSApplicationDelegate> {
-#elif (defined(__MACH__) && (defined(__ppc__) || defined(__ppc64__)))
+#elif (defined(__MACH__)  && defined(MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED < 101200))
 @interface RetroArch_OSX : NSObject {
 #else
 @interface RetroArch_OSX : NSObject<NSApplicationDelegate> {

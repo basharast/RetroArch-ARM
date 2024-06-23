@@ -46,12 +46,24 @@ const struct retro_subsystem_info *libretro_find_subsystem_info(
  *
  * Search for a controller of type @id in @info.
  *
- * Returns: controller description of found controller on success,
+ * Leaf function.
+ *
+ * @return controller description of found controller on success,
  * otherwise NULL.
  **/
 const struct retro_controller_description *
    libretro_find_controller_description(
          const struct retro_controller_info *info, unsigned id);
+
+enum retro_core_flags
+{
+   RETRO_CORE_FLAG_INITED                    = (1 << 0),
+   RETRO_CORE_FLAG_SYMBOLS_INITED            = (1 << 1),
+   RETRO_CORE_FLAG_GAME_LOADED               = (1 << 2),
+   RETRO_CORE_FLAG_INPUT_POLLED              = (1 << 3),
+   RETRO_CORE_FLAG_HAS_SET_SUBSYSTEMS        = (1 << 4),
+   RETRO_CORE_FLAG_HAS_SET_INPUT_DESCRIPTORS = (1 << 5)
+};
 
 struct retro_core_t
 {
@@ -84,15 +96,8 @@ struct retro_core_t
    size_t (*retro_get_memory_size)(unsigned);
 
    unsigned poll_type;
-   bool inited;
-   bool symbols_inited;
-   bool game_loaded;
-   bool input_polled;
-   bool has_set_subsystems;
-   bool has_set_input_descriptors;
+   uint8_t flags;
 };
-
-bool libretro_get_shared_context(void);
 
 RETRO_END_DECLS
 

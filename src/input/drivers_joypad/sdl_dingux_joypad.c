@@ -32,9 +32,12 @@
 #include "../../config.def.h"
 #endif
 
-/* RS-90 and RetroFW devices:
+/* RS-90 devices:
  * - Analog input: No
  * - Menu button:  No
+* RetroFW devices:
+ * - Analog input: No
+ * - Menu button:  Yes
  * Miyoo devices:
  * - Analog input: No
  * - Menu button:  Yes
@@ -42,8 +45,8 @@
  * - Analog input: Yes
  * - Menu button:  Yes
  */
-#if !(defined(RS90) || defined(RETROFW))
-#if !defined(MIYOO)
+#if !defined(RS90)
+#if !(defined(MIYOO) || defined(RETROFW))
 #define SDL_DINGUX_HAS_ANALOG      1
 #endif
 #define SDL_DINGUX_HAS_MENU_TOGGLE 1
@@ -81,6 +84,8 @@
  * - B:      SDLK_LCTRL
  * - Y:      SDLK_SPACE
  * - Menu:   SDLK_RCTRL
+ * - L3:     SDLK_RALT
+ * - R3:     SDLK_RSHIFT
  */
 #if defined(MIYOO)
 #define SDL_DINGUX_SDLK_X      SDLK_LSHIFT
@@ -99,13 +104,20 @@
 #define SDL_DINGUX_SDLK_R2     SDLK_PAGEDOWN
 #define SDL_DINGUX_SDLK_SELECT SDLK_ESCAPE
 #define SDL_DINGUX_SDLK_START  SDLK_RETURN
+#if defined(MIYOO)
+#define SDL_DINGUX_SDLK_L3     SDLK_RALT
+#define SDL_DINGUX_SDLK_R3     SDLK_RSHIFT
+#else
 #define SDL_DINGUX_SDLK_L3     SDLK_KP_DIVIDE
 #define SDL_DINGUX_SDLK_R3     SDLK_KP_PERIOD
+#endif
 #define SDL_DINGUX_SDLK_UP     SDLK_UP
 #define SDL_DINGUX_SDLK_RIGHT  SDLK_RIGHT
 #define SDL_DINGUX_SDLK_DOWN   SDLK_DOWN
 #define SDL_DINGUX_SDLK_LEFT   SDLK_LEFT
-#if defined(MIYOO)
+#if defined(RETROFW)
+#define SDL_DINGUX_SDLK_MENU   SDLK_END
+#elif defined(MIYOO)
 #define SDL_DINGUX_SDLK_MENU   SDLK_RCTRL
 #else
 #define SDL_DINGUX_SDLK_MENU   SDLK_HOME

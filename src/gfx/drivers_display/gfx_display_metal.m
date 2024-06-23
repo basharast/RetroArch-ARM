@@ -21,8 +21,6 @@
 
 #include "../gfx_display.h"
 
-#include "../font_driver.h"
-#include "../../retroarch.h"
 #import "../common/metal_common.h"
 
 static const float *gfx_display_metal_get_default_vertices(void)
@@ -47,19 +45,15 @@ static void *gfx_display_metal_get_default_mvp(void *data)
 static void gfx_display_metal_blend_begin(void *data)
 {
    MetalDriver *md = (__bridge MetalDriver *)data;
-   if (!md)
-      return;
-
-   md.display.blend = YES;
+   if (md)
+      md.display.blend = YES;
 }
 
 static void gfx_display_metal_blend_end(void *data)
 {
    MetalDriver *md = (__bridge MetalDriver *)data;
-   if (!md)
-      return;
-
-   md.display.blend = NO;
+   if (md)
+      md.display.blend = NO;
 }
 
 static void gfx_display_metal_draw(gfx_display_ctx_draw_t *draw,
@@ -68,10 +62,8 @@ static void gfx_display_metal_draw(gfx_display_ctx_draw_t *draw,
       unsigned video_height)
 {
    MetalDriver *md = (__bridge MetalDriver *)data;
-   if (!md || !draw)
-      return;
-
-   [md.display draw:draw];
+   if (md && draw)
+      [md.display draw:draw];
 }
 
 static void gfx_display_metal_draw_pipeline(
@@ -82,10 +74,8 @@ static void gfx_display_metal_draw_pipeline(
       unsigned video_height)
 {
    MetalDriver *md = (__bridge MetalDriver *)data;
-   if (!md || !draw)
-      return;
-
-   [md.display drawPipeline:draw];
+   if (md && draw)
+      [md.display drawPipeline:draw];
 }
 
 static void gfx_display_metal_scissor_begin(
@@ -94,11 +84,15 @@ static void gfx_display_metal_scissor_begin(
       unsigned video_height,
       int x, int y, unsigned width, unsigned height)
 {
+   MTLScissorRect r;
    MetalDriver *md = (__bridge MetalDriver *)data;
    if (!md)
       return;
 
-   MTLScissorRect r = {.x = (NSUInteger)x, .y = (NSUInteger)y, .width = width, .height = height};
+   r.x      = (NSUInteger)x;
+   r.y      = (NSUInteger)y;
+   r.width  = width;
+   r.height = height;
    [md.display setScissorRect:r];
 }
 
@@ -107,41 +101,22 @@ static void gfx_display_metal_scissor_end(void *data,
       unsigned video_height)
 {
    MetalDriver *md = (__bridge MetalDriver *)data;
-   if (!md)
-      return;
-
-   [md.display clearScissorRect];
-}
-
-static bool gfx_display_metal_font_init_first(
-   void **font_handle, void *video_data,
-   const char *font_path, float font_size,
-   bool is_threaded)
-{
-   font_data_t **handle = (font_data_t **)font_handle;
-   *handle = font_driver_init_first(video_data,
-         font_path, font_size, true,
-         is_threaded,
-         FONT_DRIVER_RENDER_METAL_API);
-
-   if (*handle)
-      return true;
-
-   return false;
+   if (md)
+      [md.display clearScissorRect];
 }
 
 gfx_display_ctx_driver_t gfx_display_ctx_metal = {
-   .draw                   = gfx_display_metal_draw,
-   .draw_pipeline          = gfx_display_metal_draw_pipeline,
-   .blend_begin            = gfx_display_metal_blend_begin,
-   .blend_end              = gfx_display_metal_blend_end,
-   .get_default_mvp        = gfx_display_metal_get_default_mvp,
-   .get_default_vertices   = gfx_display_metal_get_default_vertices,
-   .get_default_tex_coords = gfx_display_metal_get_default_tex_coords,
-   .font_init_first        = gfx_display_metal_font_init_first,
-   .type                   = GFX_VIDEO_DRIVER_METAL,
-   .ident                  = "gfx_display_metal",
-   .handles_transform      = NO,
-   .scissor_begin          = gfx_display_metal_scissor_begin,
-   .scissor_end            = gfx_display_metal_scissor_end
+   gfx_display_metal_draw,
+   gfx_display_metal_draw_pipeline,
+   gfx_display_metal_blend_begin,
+   gfx_display_metal_blend_end,
+   gfx_display_metal_get_default_mvp,
+   gfx_display_metal_get_default_vertices,
+   gfx_display_metal_get_default_tex_coords,
+   FONT_DRIVER_RENDER_METAL_API,
+   GFX_VIDEO_DRIVER_METAL,
+   "metal",
+   false,
+   gfx_display_metal_scissor_begin,
+   gfx_display_metal_scissor_end
 };

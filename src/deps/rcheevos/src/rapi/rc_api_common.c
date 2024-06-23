@@ -4,15 +4,15 @@
 
 #include "../rcheevos/rc_compat.h"
 
-#include "../rhash/md5.h"
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define RETROACHIEVEMENTS_HOST "https://retroachievements.org"
-#define RETROACHIEVEMENTS_IMAGE_HOST "http://i.retroachievements.org"
+#define RETROACHIEVEMENTS_IMAGE_HOST "https://media.retroachievements.org"
+#define RETROACHIEVEMENTS_HOST_NONSSL "http://retroachievements.org"
+#define RETROACHIEVEMENTS_IMAGE_HOST_NONSSL "http://media.retroachievements.org"
 static char* g_host = NULL;
 static char* g_imagehost = NULL;
 
@@ -520,6 +520,13 @@ int rc_json_get_string(const char** out, rc_api_buffer_t* buffer, const rc_json_
           continue;
         }
 
+        if (*src == 't') {
+          /* tab */
+          ++src;
+          *dst++ = '\t';
+          continue;
+        }
+
         /* just an escaped character, fallthrough to normal copy */
       }
 
@@ -631,7 +638,7 @@ int rc_json_get_unum(unsigned* out, const rc_json_field_t* field, const char* fi
   return 1;
 }
 
-void rc_json_get_optional_unum(unsigned* out, const rc_json_field_t* field, const char* field_name, int default_value) {
+void rc_json_get_optional_unum(unsigned* out, const rc_json_field_t* field, const char* field_name, unsigned default_value) {
   if (!rc_json_get_unum(out, field, field_name))
     *out = default_value;
 }
@@ -813,13 +820,7 @@ void rc_api_destroy_request(rc_api_request_t* request) {
   rc_buf_destroy(&request->buffer);
 }
 
-void rc_api_generate_checksum(char checksum[33], const char* data) {
-  md5_state_t md5;
-  md5_byte_t digest[16];
-
-  md5_init(&md5);
-  md5_append(&md5, (unsigned char*)data, (int)strlen(data));
-  md5_finish(&md5, digest);
+void rc_api_format_md5(char checksum[33], const unsigned char digest[16]) {
   snprintf(checksum, 33, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
       digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7],
       digest[8], digest[9], digest[10], digest[11], digest[12], digest[13], digest[14], digest[15]
@@ -1055,6 +1056,16 @@ static void rc_api_update_host(char** host, const char* hostname) {
 
 void rc_api_set_host(const char* hostname) {
   rc_api_update_host(&g_host, hostname);
+
+  if (!hostname) {
+    /* also clear out the image hostname */
+    rc_api_set_image_host(NULL);
+  }
+  else if (strcmp(hostname, RETROACHIEVEMENTS_HOST_NONSSL) == 0) {
+    /* if just pointing at the non-HTTPS host, explicitly use the default image host
+     * so it doesn't try to use the web host directly */
+    rc_api_set_image_host(RETROACHIEVEMENTS_IMAGE_HOST_NONSSL);
+  }
 }
 
 void rc_api_set_image_host(const char* hostname) {

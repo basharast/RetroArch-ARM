@@ -35,6 +35,10 @@ extern "C" {
 #include "../../gfx/common/win32_common.h"
 #endif
 
+#ifdef HAVE_MENU
+#include "../../menu/menu_driver.h"
+#endif
+
 #include "../input_keymaps.h"
 
 #include "../../configuration.h"
@@ -53,6 +57,7 @@ typedef struct
    LONG x, y, dlt_x, dlt_y;
    LONG whl_u, whl_d;
    bool btn_l, btn_m, btn_r, btn_b4, btn_b5;
+   int device;
 } winraw_mouse_t;
 
 struct winraw_pointer_status
@@ -315,7 +320,7 @@ static bool winraw_mouse_button_pressed(
       winraw_mouse_t *mouse,
       unsigned port, unsigned key)
 {
-	switch (key)
+   switch (key)
    {
       case RETRO_DEVICE_ID_MOUSE_LEFT:
          return mouse->btn_l;
@@ -333,7 +338,7 @@ static bool winraw_mouse_button_pressed(
          return mouse->whl_d;
    }
 
-	return false;
+   return false;
 }
 
 static void winraw_init_mouse_xy_mapping(winraw_input_t *wr)
@@ -363,6 +368,7 @@ static void winraw_update_mouse_state(winraw_input_t *wr,
       winraw_mouse_t *mouse, RAWMOUSE *state)
 {
    POINT crs_pos;
+   bool swap_mouse_buttons = g_win32_flags & WIN32_CMN_FLAG_SWAP_MOUSE_BTNS;
 
    /* Used for fixing coordinates after switching resolutions */
    GetClientRect((HWND)video_driver_window_get(), &wr->prev_rect);
@@ -371,18 +377,16 @@ static void winraw_update_mouse_state(winraw_input_t *wr,
    {
       if (wr->rect_delay < 10)
       {
-          RARCH_DBG("[CRT][WinRaw]: Resize RECT delay for absolute co-ords - %d \n", wr->rect_delay);
           winraw_init_mouse_xy_mapping(wr); /* Triggering fewer times seems to fix the issue. Forcing resize while resolution is changing */
           wr->rect_delay ++;
       }
       else
       {
-	      int bottom = wr->prev_rect.bottom;
-	      int right = wr->prev_rect.right;
-	      RARCH_DBG("[CRT][WinRaw]: Resizing RECT for absolute coordinates to match new resolution - %dx%d\n", right ,bottom);
-	      wr->active_rect = wr->prev_rect;
-	      winraw_init_mouse_xy_mapping(wr);
-	      wr->rect_delay = 0;
+         int bottom      = wr->prev_rect.bottom;
+         int right       = wr->prev_rect.right;
+         wr->active_rect = wr->prev_rect;
+         winraw_init_mouse_xy_mapping(wr);
+         wr->rect_delay  = 0;
       }
    }
 
@@ -402,34 +406,95 @@ static void winraw_update_mouse_state(winraw_input_t *wr,
    }
    else if (state->lLastX || state->lLastY)
    {
-      InterlockedExchangeAdd(&mouse->dlt_x, state->lLastX);
-      InterlockedExchangeAdd(&mouse->dlt_y, state->lLastY);
+      /* Menu and pointer require GetCursorPos() for
+       * positioning, but using that always will
+       * break multiple mice positions */
+      bool getcursorpos = (mouse->device == RETRO_DEVICE_POINTER) ? true : false;
+#ifdef HAVE_MENU
+      if (menu_state_get_ptr()->flags & MENU_ST_FLAG_ALIVE)
+         getcursorpos = true;
+#endif
+      /* Input overlay with mouse cursor must also use GetCursorPos() */
+      if (!getcursorpos)
+      {
+         settings_t *settings = config_get_ptr();
+         if (     settings->bools.input_overlay_enable
+               && settings->bools.input_overlay_show_mouse_cursor)
+            getcursorpos = true;
+      }
 
-      if (!GetCursorPos(&crs_pos))
-         RARCH_DBG("[WinRaw]: GetCursorPos failed with error %lu.\n", GetLastError());
-      else if (!ScreenToClient((HWND)video_driver_window_get(), &crs_pos))
-         RARCH_DBG("[WinRaw]: ScreenToClient failed with error %lu.\n", GetLastError());
+      if (getcursorpos)
+      {
+         InterlockedExchangeAdd(&mouse->dlt_x, state->lLastX);
+         InterlockedExchangeAdd(&mouse->dlt_y, state->lLastY);
+
+         if (!GetCursorPos(&crs_pos))
+            RARCH_DBG("[WinRaw]: GetCursorPos failed with error %lu.\n", GetLastError());
+         else if (!ScreenToClient((HWND)video_driver_window_get(), &crs_pos))
+            RARCH_DBG("[WinRaw]: ScreenToClient failed with error %lu.\n", GetLastError());
+      }
       else
       {
-         mouse->x = crs_pos.x;
-         mouse->y = crs_pos.y;
+         /* Handle different sensitivity for lightguns */
+         if (mouse->device == RETRO_DEVICE_LIGHTGUN)
+         {
+            InterlockedExchange(&mouse->dlt_x, state->lLastX);
+            InterlockedExchange(&mouse->dlt_y, state->lLastY);
+         }
+         else
+         {
+            InterlockedExchangeAdd(&mouse->dlt_x, state->lLastX);
+            InterlockedExchangeAdd(&mouse->dlt_y, state->lLastY);
+         }
+
+         crs_pos.x = mouse->x + mouse->dlt_x;
+         crs_pos.y = mouse->y + mouse->dlt_y;
+
+         /* Prevent travel outside active window */
+         if (crs_pos.x < wr->active_rect.left)
+            crs_pos.x = wr->active_rect.left;
+         else if (crs_pos.x > wr->active_rect.right)
+            crs_pos.x = wr->active_rect.right;
+
+         if (crs_pos.y < wr->active_rect.top)
+            crs_pos.y = wr->active_rect.top;
+         else if (crs_pos.y > wr->active_rect.bottom)
+            crs_pos.y = wr->active_rect.bottom;
       }
+
+      mouse->x = crs_pos.x;
+      mouse->y = crs_pos.y;
    }
 
-   if (state->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)
-      mouse->btn_l = true;
-   else if (state->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP)
-      mouse->btn_l = false;
+   if (swap_mouse_buttons)
+   {
+      if (state->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)
+         mouse->btn_r = true;
+      else if (state->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP)
+         mouse->btn_r = false;
+
+      if (state->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN)
+         mouse->btn_l = true;
+      else if (state->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP)
+         mouse->btn_l = false;
+   }
+   else
+   {
+      if (state->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)
+         mouse->btn_l = true;
+      else if (state->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP)
+         mouse->btn_l = false;
+
+      if (state->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN)
+         mouse->btn_r = true;
+      else if (state->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP)
+         mouse->btn_r = false;
+   }
 
    if (state->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN)
-      mouse->btn_m  = true;
+      mouse->btn_m = true;
    else if (state->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP)
-      mouse->btn_m  = false;
-
-   if (state->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN)
-      mouse->btn_r  = true;
-   else if (state->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP)
-      mouse->btn_r  = false;
+      mouse->btn_m = false;
 
    if (state->usButtonFlags & RI_MOUSE_BUTTON_4_DOWN)
       mouse->btn_b4 = true;
@@ -454,7 +519,7 @@ static LRESULT CALLBACK winraw_callback(
       HWND wnd, UINT msg, WPARAM wpar, LPARAM lpar)
 {
    unsigned i;
-   unsigned mcode, flags, kdown;
+   unsigned mcode, flags, down, mod;
    static uint8_t data[1024];
    RAWINPUT       *ri = (RAWINPUT*)data;
    UINT size          = sizeof(data);
@@ -478,7 +543,8 @@ static LRESULT CALLBACK winraw_callback(
       case RIM_TYPEKEYBOARD:
          mcode = ri->data.keyboard.MakeCode;
          flags = ri->data.keyboard.Flags;
-         kdown = (flags & RI_KEY_BREAK) ? 0 : 1;
+         down  = (flags & RI_KEY_BREAK) ? 0 : 1;
+         mod   = 0;
 
          /* Extended scancodes */
          if (flags & RI_KEY_E0)
@@ -509,10 +575,23 @@ static LRESULT CALLBACK winraw_callback(
                return 0;
          }
 
-         wr->keyboard.keys[mcode] = kdown;
-         input_keyboard_event(kdown,
+         if (GetKeyState(VK_SHIFT)   & 0x80)
+            mod |= RETROKMOD_SHIFT;
+         if (GetKeyState(VK_CONTROL) & 0x80)
+            mod |= RETROKMOD_CTRL;
+         if (GetKeyState(VK_MENU)    & 0x80)
+            mod |= RETROKMOD_ALT;
+         if (GetKeyState(VK_CAPITAL) & 0x81)
+            mod |= RETROKMOD_CAPSLOCK;
+         if (GetKeyState(VK_SCROLL)  & 0x81)
+            mod |= RETROKMOD_SCROLLOCK;
+         if ((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x80)
+            mod |= RETROKMOD_META;
+
+         wr->keyboard.keys[mcode] = down;
+         input_keyboard_event(down,
                input_keymaps_translate_keysym_to_rk(mcode),
-               0, 0, RETRO_DEVICE_KEYBOARD);
+               0, mod, RETRO_DEVICE_KEYBOARD);
          break;
       case RIM_TYPEMOUSE:
          for (i = 0; i < wr->mouse_cnt; ++i)
@@ -603,7 +682,7 @@ static void winraw_poll(void *data)
    }
 
    /* Prevent LAlt sticky after unfocusing with Alt-Tab */
-   if (    !winraw_focus
+   if (     !winraw_focus
          && wr->keyboard.keys[SC_LALT] 
          && !(GetKeyState(VK_MENU) & 0x8000))
    {
@@ -612,6 +691,9 @@ static void winraw_poll(void *data)
             input_keymaps_translate_keysym_to_rk(SC_LALT),
             0, 0, RETRO_DEVICE_KEYBOARD);
    }
+   /* Clear all keyboard key states when unfocused */
+   else if (!winraw_focus && !(GetKeyState(VK_MENU) & 0x8000))
+      memset(wr->keyboard.keys, 0, SC_LAST);
 }
 
 static unsigned winraw_retro_id_to_rarch(unsigned id)
@@ -661,6 +743,7 @@ static int16_t winraw_input_state(
       unsigned idx,
       unsigned id)
 {
+   int16_t ret           = 0;
    settings_t *settings  = NULL;
    winraw_mouse_t *mouse = NULL;
    winraw_input_t *wr    = (winraw_input_t*)data;
@@ -669,7 +752,8 @@ static int16_t winraw_input_state(
       || (device == RETRO_DEVICE_MOUSE)
       || (device == RARCH_DEVICE_MOUSE_SCREEN)
       || (device == RETRO_DEVICE_LIGHTGUN)
-      || (device == RETRO_DEVICE_POINTER);
+      || (device == RETRO_DEVICE_POINTER)
+      || (device == RARCH_DEVICE_POINTER_SCREEN);
 
    if (port >= MAX_USERS)
       return 0;
@@ -683,6 +767,8 @@ static int16_t winraw_input_state(
          if (i == settings->uints.input_mouse_index[port])
          {
             mouse = &wr->mice[i];
+            if (mouse && device > RETRO_DEVICE_JOYPAD)
+               g_mice[i].device = device;
             break;
          }
       }
@@ -694,7 +780,6 @@ static int16_t winraw_input_state(
          if (id == RETRO_DEVICE_ID_JOYPAD_MASK)
          {
             unsigned i;
-            int16_t ret = 0;
 
             if (mouse)
             {
@@ -743,13 +828,11 @@ static int16_t winraw_input_state(
          }
          break;
       case RETRO_DEVICE_ANALOG:
-         if (binds[port])
          {
             int id_minus_key      = 0;
             int id_plus_key       = 0;
             unsigned id_minus     = 0;
             unsigned id_plus      = 0;
-            int16_t ret           = 0;
             bool id_plus_valid    = false;
             bool id_minus_valid   = false;
 
@@ -770,9 +853,8 @@ static int16_t winraw_input_state(
                if (WINRAW_KEYBOARD_PRESSED(wr, id_minus_key))
                   ret += -0x7fff;
             }
-            return ret;
          }
-         break;
+         return ret;
       case RETRO_DEVICE_KEYBOARD:
          return (id < RETROK_LAST) && WINRAW_KEYBOARD_PRESSED(wr, id);
       case RETRO_DEVICE_MOUSE:
@@ -889,28 +971,26 @@ static int16_t winraw_input_state(
          }
          break;
       case RETRO_DEVICE_LIGHTGUN:
-			switch (id)
-			{
-				/*aiming*/
-				case RETRO_DEVICE_ID_LIGHTGUN_SCREEN_X:
-				case RETRO_DEVICE_ID_LIGHTGUN_SCREEN_Y:
-				case RETRO_DEVICE_ID_LIGHTGUN_IS_OFFSCREEN:
-					if (mouse)
-						return winraw_lightgun_aiming_state(wr, mouse, port, id);
-					break;
-				/*buttons*/
-				case RETRO_DEVICE_ID_LIGHTGUN_TRIGGER:
-				case RETRO_DEVICE_ID_LIGHTGUN_RELOAD:
-				case RETRO_DEVICE_ID_LIGHTGUN_AUX_A:
-				case RETRO_DEVICE_ID_LIGHTGUN_AUX_B:
-				case RETRO_DEVICE_ID_LIGHTGUN_AUX_C:
-				case RETRO_DEVICE_ID_LIGHTGUN_START:
-				case RETRO_DEVICE_ID_LIGHTGUN_SELECT:
-				case RETRO_DEVICE_ID_LIGHTGUN_DPAD_UP:
-				case RETRO_DEVICE_ID_LIGHTGUN_DPAD_DOWN:
-				case RETRO_DEVICE_ID_LIGHTGUN_DPAD_LEFT:
-				case RETRO_DEVICE_ID_LIGHTGUN_DPAD_RIGHT:
-				case RETRO_DEVICE_ID_LIGHTGUN_PAUSE: /* deprecated */
+         switch (id)
+         {
+            case RETRO_DEVICE_ID_LIGHTGUN_SCREEN_X:
+            case RETRO_DEVICE_ID_LIGHTGUN_SCREEN_Y:
+            case RETRO_DEVICE_ID_LIGHTGUN_IS_OFFSCREEN:
+               if (mouse)
+                  return winraw_lightgun_aiming_state(wr, mouse, port, id);
+               break;
+            case RETRO_DEVICE_ID_LIGHTGUN_TRIGGER:
+            case RETRO_DEVICE_ID_LIGHTGUN_RELOAD:
+            case RETRO_DEVICE_ID_LIGHTGUN_AUX_A:
+            case RETRO_DEVICE_ID_LIGHTGUN_AUX_B:
+            case RETRO_DEVICE_ID_LIGHTGUN_AUX_C:
+            case RETRO_DEVICE_ID_LIGHTGUN_START:
+            case RETRO_DEVICE_ID_LIGHTGUN_SELECT:
+            case RETRO_DEVICE_ID_LIGHTGUN_DPAD_UP:
+            case RETRO_DEVICE_ID_LIGHTGUN_DPAD_DOWN:
+            case RETRO_DEVICE_ID_LIGHTGUN_DPAD_LEFT:
+            case RETRO_DEVICE_ID_LIGHTGUN_DPAD_RIGHT:
+            case RETRO_DEVICE_ID_LIGHTGUN_PAUSE: /* deprecated */
                {
                   unsigned new_id                = winraw_retro_id_to_rarch(id);
                   const uint64_t bind_joykey     = input_config_binds[port][new_id].joykey;
@@ -1011,12 +1091,12 @@ static void winraw_free(void *data)
 
 static uint64_t winraw_get_capabilities(void *u)
 {
-   return (1 << RETRO_DEVICE_KEYBOARD) |
-          (1 << RETRO_DEVICE_MOUSE)    |
-          (1 << RETRO_DEVICE_JOYPAD)   |
-          (1 << RETRO_DEVICE_ANALOG)   |
-          (1 << RETRO_DEVICE_POINTER)  |
-          (1 << RETRO_DEVICE_LIGHTGUN);
+   return   (1 << RETRO_DEVICE_KEYBOARD)
+          | (1 << RETRO_DEVICE_MOUSE)
+          | (1 << RETRO_DEVICE_JOYPAD)
+          | (1 << RETRO_DEVICE_ANALOG)
+          | (1 << RETRO_DEVICE_POINTER)
+          | (1 << RETRO_DEVICE_LIGHTGUN);
 }
 
 static void winraw_grab_mouse(void *d, bool state)
@@ -1046,5 +1126,6 @@ input_driver_t input_winraw = {
    winraw_get_capabilities,
    "raw",
    winraw_grab_mouse,
+   NULL,
    NULL
 };

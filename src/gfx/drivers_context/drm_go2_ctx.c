@@ -19,7 +19,6 @@
  */
 
 #include <stdint.h>
-#include <errno.h>
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
@@ -229,7 +228,8 @@ static bool gfx_ctx_go2_drm_set_video_mode(void *data,
    frontend_driver_install_signal_handler();
 
 #ifdef HAVE_MENU
-   if (config_get_ptr()->bools.video_ctx_scaling && !menu_state_get_ptr()->alive)
+   if (      config_get_ptr()->bools.video_ctx_scaling 
+         && !(menu_state_get_ptr()->flags & MENU_ST_FLAG_ALIVE))
    {
        drm->fb_width  = av_info->geometry.base_width;
        drm->fb_height = av_info->geometry.base_height;
@@ -267,6 +267,18 @@ static bool gfx_ctx_go2_drm_set_video_mode(void *data,
    return true;
 }
 
+static void gfx_ctx_go2_drm_get_video_size(void *data,
+unsigned *width, unsigned *height)
+{
+   gfx_ctx_go2_drm_data_t *drm = (gfx_ctx_go2_drm_data_t*)data;
+
+   if (!drm)
+      return;
+
+   *width  = drm->fb_width;
+   *height = drm->fb_height;
+}
+
 static void gfx_ctx_go2_drm_check_window(void *data, bool *quit,
       bool *resize, unsigned *width, unsigned *height)
 {
@@ -278,7 +290,8 @@ static void gfx_ctx_go2_drm_check_window(void *data, bool *quit,
    settings_t *settings = config_get_ptr();
    bool use_ctx_scaling = settings->bools.video_ctx_scaling;
 
-   if (use_ctx_scaling && !menu_state_get_ptr()->alive)
+   if (      use_ctx_scaling 
+         && !(menu_state_get_ptr()->flags & MENU_ST_FLAG_ALIVE))
    {
       struct retro_system_av_info* 
          av_info  = video_viewport_get_system_av_info();
@@ -387,7 +400,7 @@ const gfx_ctx_driver_t gfx_ctx_go2_drm = {
    gfx_ctx_go2_drm_bind_api,
    gfx_ctx_go2_drm_swap_interval,
    gfx_ctx_go2_drm_set_video_mode,
-   NULL, /* get_video_size */
+   gfx_ctx_go2_drm_get_video_size,
    drm_get_refresh_rate,
    NULL, /* get_video_output_size */
    NULL, /* get_video_output_prev */

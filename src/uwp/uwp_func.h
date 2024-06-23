@@ -25,12 +25,10 @@ extern "C" {
 extern char uwp_dir_install[PATH_MAX_LENGTH];
 extern char uwp_dir_data[PATH_MAX_LENGTH];
 extern char uwp_device_family[128];
-extern bool isAppReady;
-extern bool isGameOpen;
 
-bool uwp_drive_exists(const char* path);
 char* uwp_trigger_picker(void);
-char* uwp_picker_recent(void);
+bool check_access(char *path, bool checkDuplicates);
+void clear_access();
 char* uwp_recent_by_index(int);
 int get_total_access_list(void);
 

@@ -66,24 +66,38 @@ struct dinput_pointer_status
    int pointer_y;
 };
 
+enum dinput_input_flags
+{
+   DINP_FLAG_SHIFT_L           = (1 << 0),
+   DINP_FLAG_SHIFT_R           = (1 << 1),
+   DINP_FLAG_ALT_L             = (1 << 2),
+   DINP_FLAG_DBCLK_ON_TITLEBAR = (1 << 3),
+   DINP_FLAG_MOUSE_L_BTN       = (1 << 4),
+   DINP_FLAG_MOUSE_R_BTN       = (1 << 5),
+   DINP_FLAG_MOUSE_M_BTN       = (1 << 6),
+   DINP_FLAG_MOUSE_B4_BTN      = (1 << 7),
+   DINP_FLAG_MOUSE_B5_BTN      = (1 << 8),
+   DINP_FLAG_MOUSE_WU_BTN      = (1 << 9),
+   DINP_FLAG_MOUSE_WD_BTN      = (1 << 10),
+   DINP_FLAG_MOUSE_HWU_BTN     = (1 << 11),
+   DINP_FLAG_MOUSE_HWD_BTN     = (1 << 12)
+};
+
 struct dinput_input
 {
-   char *joypad_driver_name;
+   char *joypad_drv_name;
    LPDIRECTINPUTDEVICE8 keyboard;
    LPDIRECTINPUTDEVICE8 mouse;
    const input_device_driver_t *joypad;
-   struct dinput_pointer_status pointer_head;  /* dummy head for easier iteration */
-
+   struct dinput_pointer_status pointer_head; /* dummy head for easy iteration */
    int window_pos_x;
    int window_pos_y;
    int mouse_rel_x;
    int mouse_rel_y;
    int mouse_x;
    int mouse_y;
+   uint16_t flags;
    uint8_t state[256];
-   bool shift_l, shift_r, alt_l;
-   bool doubleclick_on_titlebar;
-   bool mouse_l, mouse_r, mouse_m, mouse_b4, mouse_b5, mouse_wu, mouse_wd, mouse_hwu, mouse_hwd;
 };
 
 void dinput_destroy_context(void)
@@ -129,7 +143,7 @@ static void *dinput_init(const char *joypad_driver)
       return NULL;
 
    if (!string_is_empty(joypad_driver))
-      di->joypad_driver_name = strdup(joypad_driver);
+      di->joypad_drv_name = strdup(joypad_driver);
 
 #ifdef __cplusplus
    if (FAILED(IDirectInput8_CreateDevice(g_dinput_ctx,
@@ -159,13 +173,10 @@ static void *dinput_init(const char *joypad_driver)
 
    if (di->keyboard)
    {
-      DWORD flags;
-      settings_t *settings;
-
-      settings = config_get_ptr();
-      flags    = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
+      settings_t *settings = config_get_ptr();
+      DWORD flags          = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
       if (settings->bools.input_nowinkey_enable)
-         flags |= DISCL_NOWINKEY;
+         flags            |= DISCL_NOWINKEY;
 
       IDirectInputDevice8_SetDataFormat(di->keyboard, &c_dfDIKeyboard);
       IDirectInputDevice8_SetCooperativeLevel(di->keyboard,
@@ -184,7 +195,7 @@ static void *dinput_init(const char *joypad_driver)
    input_keymaps_init_keyboard_lut(rarch_key_map_dinput);
 
 #ifndef _XBOX
-   win32_set_input_userdata(di);
+   SetWindowLongPtr(main_window.hwnd, GWLP_USERDATA, (LONG_PTR)di);
 #endif
 
    return di;
@@ -199,20 +210,26 @@ static void dinput_keyboard_mods(struct dinput_input *di, int mod)
             unsigned vk_shift_l = GetAsyncKeyState(VK_LSHIFT) >> 1;
             unsigned vk_shift_r = GetAsyncKeyState(VK_RSHIFT) >> 1;
 
-            if ( (vk_shift_l && !di->shift_l) ||
-                (!vk_shift_l && di->shift_l))
+            if (   ( vk_shift_l && (!(di->flags & DINP_FLAG_SHIFT_L)))
+                || (!vk_shift_l &&   (di->flags & DINP_FLAG_SHIFT_L)))
             {
                input_keyboard_event(vk_shift_l, RETROK_LSHIFT,
                      0, RETROKMOD_SHIFT, RETRO_DEVICE_KEYBOARD);
-               di->shift_l = !di->shift_l;
+               if (di->flags & DINP_FLAG_SHIFT_L)
+                  di->flags &= ~DINP_FLAG_SHIFT_L;
+               else
+                  di->flags |=  DINP_FLAG_SHIFT_L;
             }
 
-            if ( (vk_shift_r && !di->shift_r) ||
-                (!vk_shift_r && di->shift_r))
+            if (   ( vk_shift_r && (!(di->flags & DINP_FLAG_SHIFT_R)))
+                || (!vk_shift_r &&   (di->flags & DINP_FLAG_SHIFT_R)))
             {
                input_keyboard_event(vk_shift_r, RETROK_RSHIFT,
                      0, RETROKMOD_SHIFT, RETRO_DEVICE_KEYBOARD);
-               di->shift_r = !di->shift_r;
+               if (di->flags & DINP_FLAG_SHIFT_R)
+                  di->flags &= ~DINP_FLAG_SHIFT_R;
+               else
+                  di->flags |=  DINP_FLAG_SHIFT_R;
             }
          }
          break;
@@ -221,13 +238,21 @@ static void dinput_keyboard_mods(struct dinput_input *di, int mod)
          {
             unsigned vk_alt_l = GetAsyncKeyState(VK_LMENU) >> 1;
 
-            if (vk_alt_l && !di->alt_l)
-               di->alt_l = !di->alt_l;
-            else if (!vk_alt_l && di->alt_l)
+            if (vk_alt_l && (!(di->flags & DINP_FLAG_ALT_L)))
+            {
+               if (di->flags & DINP_FLAG_ALT_L)
+                  di->flags &= ~DINP_FLAG_ALT_L;
+               else
+                  di->flags |=  DINP_FLAG_ALT_L;
+            }
+            else if (!vk_alt_l && (di->flags & DINP_FLAG_ALT_L))
             {
                input_keyboard_event(vk_alt_l, RETROK_LALT,
                      0, RETROKMOD_ALT, RETRO_DEVICE_KEYBOARD);
-               di->alt_l = !di->alt_l;
+               if (di->flags & DINP_FLAG_ALT_L)
+                  di->flags &= ~DINP_FLAG_ALT_L;
+               else
+                  di->flags |=  DINP_FLAG_ALT_L;
             }
          }
          break;
@@ -273,8 +298,6 @@ static void dinput_poll(void *data)
          di->state[RETROK_UNKNOWN] = 0;
       }
 
-
-
       /* Left alt keyup when unfocused, to prevent alt-tab sticky */
       dinput_keyboard_mods(di, RETROKMOD_ALT);
    }
@@ -284,6 +307,7 @@ static void dinput_poll(void *data)
       POINT point;
       DIMOUSESTATE2 mouse_state;
       BYTE *rgb_buttons_ptr     = &mouse_state.rgbButtons[0];
+      bool swap_mouse_buttons   = g_win32_flags & WIN32_CMN_FLAG_SWAP_MOUSE_BTNS;
       
       point.x = 0;
       point.y = 0;
@@ -317,16 +341,61 @@ static void dinput_poll(void *data)
       di->mouse_rel_x = mouse_state.lX;
       di->mouse_rel_y = mouse_state.lY;
 
-      if (!mouse_state.rgbButtons[0])
-         di->doubleclick_on_titlebar = false;
-      if (di->doubleclick_on_titlebar)
-         di->mouse_l  = 0;
+      if (swap_mouse_buttons)
+      {
+         if (!mouse_state.rgbButtons[1])
+            di->flags &= ~DINP_FLAG_DBCLK_ON_TITLEBAR;
+
+         if (di->flags & DINP_FLAG_DBCLK_ON_TITLEBAR)
+            di->flags &= ~DINP_FLAG_MOUSE_R_BTN;
+         else
+         {
+            if (mouse_state.rgbButtons[0])
+               di->flags |=  DINP_FLAG_MOUSE_R_BTN;
+            else
+               di->flags &= ~DINP_FLAG_MOUSE_R_BTN;
+         }
+
+         if (mouse_state.rgbButtons[1])
+            di->flags    |=  DINP_FLAG_MOUSE_L_BTN;
+         else
+            di->flags    &= ~DINP_FLAG_MOUSE_L_BTN;
+      }
       else
-         di->mouse_l  = mouse_state.rgbButtons[0];
-      di->mouse_r     = mouse_state.rgbButtons[1];
-      di->mouse_m     = mouse_state.rgbButtons[2];
-      di->mouse_b4    = mouse_state.rgbButtons[3];
-      di->mouse_b5    = mouse_state.rgbButtons[4];
+      {
+         if (!mouse_state.rgbButtons[0])
+            di->flags &= ~DINP_FLAG_DBCLK_ON_TITLEBAR;
+
+         if (di->flags & DINP_FLAG_DBCLK_ON_TITLEBAR)
+            di->flags &= ~DINP_FLAG_MOUSE_L_BTN;
+         else
+         {
+            if (mouse_state.rgbButtons[0])
+               di->flags |=  DINP_FLAG_MOUSE_L_BTN;
+            else
+               di->flags &= ~DINP_FLAG_MOUSE_L_BTN;
+         }
+
+         if (mouse_state.rgbButtons[1])
+            di->flags    |=  DINP_FLAG_MOUSE_R_BTN;
+         else
+            di->flags    &= ~DINP_FLAG_MOUSE_R_BTN;
+      }
+
+      if (mouse_state.rgbButtons[2])
+         di->flags    |=  DINP_FLAG_MOUSE_M_BTN;
+      else
+         di->flags    &= ~DINP_FLAG_MOUSE_M_BTN;
+
+      if (mouse_state.rgbButtons[3])
+         di->flags    |=  DINP_FLAG_MOUSE_B4_BTN;
+      else
+         di->flags    &= ~DINP_FLAG_MOUSE_B4_BTN;
+
+      if (mouse_state.rgbButtons[4])
+         di->flags    |=  DINP_FLAG_MOUSE_B5_BTN;
+      else
+         di->flags    &= ~DINP_FLAG_MOUSE_B5_BTN;
 
       /* No simple way to get absolute coordinates
        * for RETRO_DEVICE_POINTER. Just use Win32 APIs. */
@@ -345,34 +414,30 @@ static bool dinput_mouse_button_pressed(
 	switch (key)
    {
       case RETRO_DEVICE_ID_MOUSE_LEFT:
-         return di->mouse_l;
+         return (di->flags & DINP_FLAG_MOUSE_L_BTN);
       case RETRO_DEVICE_ID_MOUSE_RIGHT:
-         return di->mouse_r;
+         return (di->flags & DINP_FLAG_MOUSE_R_BTN);
       case RETRO_DEVICE_ID_MOUSE_MIDDLE:
-         return di->mouse_m;
+         return (di->flags & DINP_FLAG_MOUSE_M_BTN);
       case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
-         return di->mouse_b4;
+         return (di->flags & DINP_FLAG_MOUSE_B4_BTN);
       case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
-         return di->mouse_b5;
-
+         return (di->flags & DINP_FLAG_MOUSE_B5_BTN);
       case RETRO_DEVICE_ID_MOUSE_WHEELUP:
-         result = di->mouse_wu;
-         di->mouse_wu = false;
+         result        = di->flags & DINP_FLAG_MOUSE_WU_BTN;
+         di->flags    &= ~DINP_FLAG_MOUSE_WU_BTN;
          return result;
-
       case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
-         result = di->mouse_wd;
-         di->mouse_wd = false;
+         result        = di->flags & DINP_FLAG_MOUSE_WD_BTN;
+         di->flags    &= ~DINP_FLAG_MOUSE_WD_BTN;
          return result;
-
       case RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:
-         result = di->mouse_hwu;
-         di->mouse_hwu = false;
+         result        = di->flags & DINP_FLAG_MOUSE_HWU_BTN;
+         di->flags    &= ~DINP_FLAG_MOUSE_HWU_BTN;
          return result;
-
       case RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN:
-         result = di->mouse_hwd;
-         di->mouse_hwd = false;
+         result        = di->flags & DINP_FLAG_MOUSE_HWD_BTN;
+         di->flags    &= ~DINP_FLAG_MOUSE_HWD_BTN;
          return result;
    }
 
@@ -499,6 +564,7 @@ static int16_t dinput_input_state(
       unsigned id)
 {
    settings_t *settings;
+   int16_t ret                = 0;
    struct dinput_input *di    = (struct dinput_input*)data;
 
 	if (port >= MAX_USERS)
@@ -513,7 +579,6 @@ static int16_t dinput_input_state(
             if (id == RETRO_DEVICE_ID_JOYPAD_MASK)
             {
                unsigned i;
-               int16_t ret = 0;
 
                if (settings->uints.input_mouse_index[port] == 0)
                {
@@ -570,13 +635,11 @@ static int16_t dinput_input_state(
          return (id < RETROK_LAST) && 
             di->state[rarch_keysym_lut[(enum retro_key)id]] & 0x80;
       case RETRO_DEVICE_ANALOG:
-         if (binds[port])
          {
             int id_minus_key      = 0;
             int id_plus_key       = 0;
             unsigned id_minus     = 0;
             unsigned id_plus      = 0;
-            int16_t ret           = 0;
             bool id_plus_valid    = false;
             bool id_minus_valid   = false;
 
@@ -599,9 +662,8 @@ static int16_t dinput_input_state(
                if (di->state[sym] & 0x80)
                   ret += -0x7fff;
             }
-            return ret;
          }
-         break;
+         return ret;
       case RARCH_DEVICE_MOUSE_SCREEN:
          settings                   = config_get_ptr();
          if (settings->uints.input_mouse_index[ port ] != 0)
@@ -630,35 +692,35 @@ static int16_t dinput_input_state(
                case RETRO_DEVICE_ID_MOUSE_Y:
                   return di->mouse_rel_y;
                case RETRO_DEVICE_ID_MOUSE_LEFT:
-                  return di->mouse_l;
+                  return (di->flags & DINP_FLAG_MOUSE_L_BTN);
                case RETRO_DEVICE_ID_MOUSE_RIGHT:
-                  return di->mouse_r;
+                  return (di->flags & DINP_FLAG_MOUSE_R_BTN);
                case RETRO_DEVICE_ID_MOUSE_WHEELUP:
-                  if (di->mouse_wu)
+                  if (di->flags & DINP_FLAG_MOUSE_WU_BTN)
                      state = 1;
-                  di->mouse_wu = false;
+                  di->flags &= ~DINP_FLAG_MOUSE_WU_BTN;
                   return state;
                case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
-                  if (di->mouse_wd)
+                  if (di->flags & DINP_FLAG_MOUSE_WD_BTN)
                      state = 1;
-                  di->mouse_wd = false;
+                  di->flags &= ~DINP_FLAG_MOUSE_WD_BTN;
                   return state;
                case RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:
-                  if (di->mouse_hwu)
+                  if (di->flags & DINP_FLAG_MOUSE_HWU_BTN)
                      state = 1;
-                  di->mouse_hwu = false;
+                  di->flags &= ~DINP_FLAG_MOUSE_HWU_BTN;
                   return state;
                case RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN:
-                  if (di->mouse_hwd)
+                  if (di->flags & DINP_FLAG_MOUSE_HWD_BTN)
                      state = 1;
-                  di->mouse_hwd = false;
+                  di->flags &= ~DINP_FLAG_MOUSE_HWD_BTN;
                   return state;
                case RETRO_DEVICE_ID_MOUSE_MIDDLE:
-                  return di->mouse_m;
+                  return (di->flags & DINP_FLAG_MOUSE_M_BTN);
                case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
-                  return di->mouse_b4;
+                  return (di->flags & DINP_FLAG_MOUSE_B4_BTN);
                case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
-                  return di->mouse_b5;
+                  return (di->flags & DINP_FLAG_MOUSE_B5_BTN);
             }
          }
          break;
@@ -695,7 +757,7 @@ static int16_t dinput_input_state(
 
             x               = di->mouse_x;
             y               = di->mouse_y;
-            pointer_down    = di->mouse_l;
+            pointer_down    = di->flags & DINP_FLAG_MOUSE_L_BTN;
 
             if (check_pos)
             {
@@ -908,7 +970,7 @@ bool dinput_handle_message(void *data,
    switch (message)
    {
       case WM_NCLBUTTONDBLCLK:
-         di->doubleclick_on_titlebar = true;
+         di->flags       |= DINP_FLAG_DBCLK_ON_TITLEBAR;
          break;
       case WM_MOUSEMOVE:
          di->window_pos_x = GET_X_LPARAM(lParam);
@@ -956,22 +1018,22 @@ bool dinput_handle_message(void *data,
 
                /* TODO/FIXME: Don't destroy everything, let's just 
                 * handle new devices gracefully */
-               joypad_driver_reinit(di, di->joypad_driver_name);
+               joypad_driver_reinit(di, di->joypad_drv_name);
             }
          }
 #endif
          break;
       case WM_MOUSEWHEEL:
          if (((short) HIWORD(wParam))/120 > 0)
-            di->mouse_wu = true;
+            di->flags |= DINP_FLAG_MOUSE_WU_BTN;
          if (((short) HIWORD(wParam))/120 < 0)
-            di->mouse_wd = true;
+            di->flags |= DINP_FLAG_MOUSE_WD_BTN;
          break;
       case WM_MOUSEHWHEEL:
          if (((short) HIWORD(wParam))/120 > 0)
-            di->mouse_hwu = true;
+            di->flags |= DINP_FLAG_MOUSE_HWU_BTN;
          if (((short) HIWORD(wParam))/120 < 0)
-            di->mouse_hwd = true;
+            di->flags |= DINP_FLAG_MOUSE_HWD_BTN;
          break;
    }
 
@@ -990,7 +1052,7 @@ static void dinput_free(void *data)
    g_dinput_ctx = NULL;
 
 #ifndef _XBOX
-   win32_unset_input_userdata();
+   SetWindowLongPtr(main_window.hwnd, GWLP_USERDATA, 0);
 #endif
 
    g_dinput_ctx = hold_ctx;
@@ -1004,9 +1066,9 @@ static void dinput_free(void *data)
    if (di->mouse)
       IDirectInputDevice8_Release(di->mouse);
 
-   if (di->joypad_driver_name)
-      free(di->joypad_driver_name);
-   di->joypad_driver_name = NULL;
+   if (di->joypad_drv_name)
+      free(di->joypad_drv_name);
+   di->joypad_drv_name = NULL;
 
    free(di);
 
@@ -1032,16 +1094,12 @@ static void dinput_grab_mouse(void *data, bool state)
 
 static uint64_t dinput_get_capabilities(void *data)
 {
-   uint64_t caps = 0;
-
-   caps |= (1 << RETRO_DEVICE_JOYPAD);
-   caps |= (1 << RETRO_DEVICE_MOUSE);
-   caps |= (1 << RETRO_DEVICE_KEYBOARD);
-   caps |= (1 << RETRO_DEVICE_LIGHTGUN);
-   caps |= (1 << RETRO_DEVICE_POINTER);
-   caps |= (1 << RETRO_DEVICE_ANALOG);
-
-   return caps;
+   return (1 << RETRO_DEVICE_JOYPAD)
+        | (1 << RETRO_DEVICE_MOUSE)
+        | (1 << RETRO_DEVICE_KEYBOARD)
+        | (1 << RETRO_DEVICE_LIGHTGUN)
+        | (1 << RETRO_DEVICE_POINTER)
+        | (1 << RETRO_DEVICE_ANALOG);
 }
 
 input_driver_t input_dinput = {
@@ -1054,5 +1112,6 @@ input_driver_t input_dinput = {
    dinput_get_capabilities,
    "dinput",
    dinput_grab_mouse,
+   NULL,
    NULL
 };

@@ -49,15 +49,15 @@ static void bluetoothctl_scan(void *data)
       free(btctl->lines);
    btctl->lines = string_list_new();
 
-   _pclose(_popen("bluetoothctl -- power on", "r"));
+   pclose(popen("bluetoothctl -- power on", "r"));
 
-   _pclose(_popen("bluetoothctl --timeout 10 scan on", "r"));
+   pclose(popen("bluetoothctl --timeout 10 scan on", "r"));
 
    runloop_msg_queue_push(msg_hash_to_str(MSG_BLUETOOTH_SCAN_COMPLETE),
          1, 180, true, NULL, MESSAGE_QUEUE_ICON_DEFAULT,
          MESSAGE_QUEUE_CATEGORY_INFO);
 
-   dev_file = _popen("bluetoothctl -- devices", "r");
+   dev_file = popen("bluetoothctl -- devices", "r");
 
    while (fgets(line, 512, dev_file))
    {
@@ -68,7 +68,7 @@ static void bluetoothctl_scan(void *data)
       string_list_append(btctl->lines, line, attr);
    }
 
-   _pclose(dev_file);
+   pclose(dev_file);
 }
 
 static void bluetoothctl_get_devices(void *data, struct string_list* devices)
@@ -125,14 +125,14 @@ static bool bluetoothctl_device_is_connected(void *data, unsigned i)
             bluetoothctl -- info %s | grep 'Connected: yes'",
             device);
 
-      command_file = _popen(btctl->command, "r");
+      command_file = popen(btctl->command, "r");
 
       while (fgets(ln, 512, command_file))
       {
          btctl->bluetoothctl_cache[i] = true;
          return true;
       }
-      _pclose(command_file);
+      pclose(command_file);
       btctl->bluetoothctl_cache[i] = false;
    }
    else
@@ -170,22 +170,27 @@ static bool bluetoothctl_connect_device(void *data, unsigned idx)
    string_list_free(list);
 
    snprintf(btctl->command, sizeof(btctl->command), "\
-         bluetoothctl -- trust %s",
-         device);
+         bluetoothctl -- pairable on");
 
-   _pclose(_popen(btctl->command, "r"));
+   pclose(popen(btctl->command, "r"));
 
    snprintf(btctl->command, sizeof(btctl->command), "\
          bluetoothctl -- pair %s",
          device);
 
-   _pclose(_popen(btctl->command, "r"));
+   pclose(popen(btctl->command, "r"));
+
+   snprintf(btctl->command, sizeof(btctl->command), "\
+         bluetoothctl -- trust %s",
+         device);
+
+   pclose(popen(btctl->command, "r"));
 
    snprintf(btctl->command, sizeof(btctl->command), "\
          bluetoothctl -- connect %s",
          device);
 
-   _pclose(_popen(btctl->command, "r"));
+   pclose(popen(btctl->command, "r"));
 
    btctl->bluetoothctl_counter[idx] = 0;
    return true;
@@ -220,7 +225,7 @@ static bool bluetoothctl_remove_device(void *data, unsigned idx)
          echo -e \"disconnect %s\\nremove %s\\n\" | bluetoothctl",
          device, device);
 
-   _pclose(_popen(btctl->command, "r"));
+   pclose(popen(btctl->command, "r"));
 
    runloop_msg_queue_push(msg_hash_to_str(MSG_BLUETOOTH_PAIRING_REMOVED),
          1, 180, true, NULL, MESSAGE_QUEUE_ICON_DEFAULT,

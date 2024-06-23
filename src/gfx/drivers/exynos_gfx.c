@@ -29,7 +29,6 @@
 #include <exynos/exynos_fimg2d.h>
 
 #include <retro_inline.h>
-#include <retro_assert.h>
 #include <string/stdstring.h>
 
 #ifdef HAVE_CONFIG_H
@@ -267,7 +266,6 @@ static const char *exynos_buffer_name(enum exynos_buffer_type type)
       case EXYNOS_BUFFER_AUX:
          return "aux";
       default:
-         retro_assert(false);
          break;
    }
 
@@ -410,7 +408,7 @@ static void exynos_perf_memcpy(struct exynos_perf *p, bool start)
       clock_gettime(CLOCK_MONOTONIC, &p->tspec);
    else
    {
-      struct timespec new = { 0 };
+      struct timespec new;
       clock_gettime(CLOCK_MONOTONIC, &new);
 
       p->memcpy_time += (new.tv_sec - p->tspec.tv_sec) * 1000000;
@@ -425,7 +423,7 @@ static void exynos_perf_g2d(struct exynos_perf *p, bool start)
       clock_gettime(CLOCK_MONOTONIC, &p->tspec);
    else
    {
-      struct timespec new = { 0 };
+      struct timespec new;
       clock_gettime(CLOCK_MONOTONIC, &new);
 
       p->g2d_time += (new.tv_sec - p->tspec.tv_sec) * 1000000;

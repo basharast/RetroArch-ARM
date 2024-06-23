@@ -28,7 +28,7 @@
 #define IDI_ICON 1
 
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0500 //_WIN32_WINNT_WIN2K
+#define _WIN32_WINNT 0x0500 /* _WIN32_WINNT_WIN2K */
 #endif
 
 #ifndef _WIN32_IE
@@ -49,7 +49,6 @@
 
 #include "../ui_companion_driver.h"
 #include "../../msg_hash.h"
-#include "../../driver.h"
 #include "../../paths.h"
 #include "../../configuration.h"
 #include "../../retroarch.h"
@@ -158,15 +157,15 @@ static enum ui_msg_window_response ui_msg_window_win32_response(
 	switch (response)
 	{
 	   case IDOK:
-		return UI_MSG_RESPONSE_OK;
+         return UI_MSG_RESPONSE_OK;
 	   case IDCANCEL:
-		return UI_MSG_RESPONSE_CANCEL;
+         return UI_MSG_RESPONSE_CANCEL;
 	   case IDYES:
-	    return UI_MSG_RESPONSE_YES;
+         return UI_MSG_RESPONSE_YES;
 	   case IDNO:
-        return UI_MSG_RESPONSE_NO;
+         return UI_MSG_RESPONSE_NO;
 	   default:
-		   break;
+         break;
 	}
 
 	switch (state->buttons)
