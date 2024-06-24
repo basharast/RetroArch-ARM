@@ -2,7 +2,7 @@
   <img src="assets/logo.png" width="176"><br>
   <b>RetroArch UWP ARM32 only</b><br/>
   <a href="./cores">Cores</a> |
-  <a href="https://github.com/libretro/RetroArch">Project</a> 
+  <a href="https://github.com/libretro/RetroArch">Original Project</a> 
   <br/><br/>
   <img src="assets/screen.png"><br/><br/>
 </p>
