@@ -2,7 +2,13 @@
 
 Tested on UWP & WOA versions including quick tests for the contents
 
+# Copy
 
+Those in total are more than 10GB, there is no way I can get them uploaded,
+
+as well I have no interests to fill my profile with them as sources,
+
+to obtain the compress backup file please contact me at: bashar.astifan@outlook.com
 
 # Supported Cores
 ## Not updated, more cores added
