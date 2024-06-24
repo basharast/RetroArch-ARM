@@ -1,6 +1,6 @@
 <p align="center">
   <img src="assets/logo.png" width="176"><br>
-  <b>RetroArch ARM UWP release</b><br/>
+  <b>RetroArch UWP ARM32 only</b><br/>
   <a href="./cores">Cores</a> |
   <a href="https://github.com/libretro/RetroArch">Project</a> 
   <br/><br/>
@@ -10,25 +10,21 @@
 
 # About
 
-After long time of work I present to you this UWP release of RetroArch for Windows (ARM) devices
+After long time of work I present to you this UWP release of RetroArch for Windows (ARM32) devices
 
 With more than 70+ core
 
 
-# Target
+# Target (ARM32)
 
 - It should work with Build: 15035+ 
 - (14393 with few cores)
 
-# Support
-
-Please note that I'm not maintaining WOA (.exe) releases any more, only UWP
-if you faced installation difficulties please checkout [this page](https://github.com/basharast/RetroArch-ARM/wiki/Installation)
-
-## Surface (ARM64)
-- Please note Qualcomm and Windows are no longer support ARM32 (which what I do)
-- Keep check the official download page for any update from libretro side [Click here](https://retroarch.com/?page=platforms)
-- My work is focus on legacy support for older devices and ARM devices that still support ARM32
+## ARM64 or Latest
+- This repo for ARM32, legacy support only
+- Refer to the official repo for any updates [Click here](https://retroarch.com/?page=platforms)
+- Please don't ask or contact me for other than ARM32
+- This repo is not meant to be up-to date fork (nor redistribution)
 
 # UWP improvements
 This app supported by [UWP2Win32](https://github.com/basharast/UWP2Win32)
