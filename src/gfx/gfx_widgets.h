@@ -54,6 +54,14 @@
 
 RETRO_BEGIN_DECLS
 
+static volatile char global_msg_new[1024];
+static volatile bool was_on = false;
+/* Color of first progress bar in a task message */
+static float msg_queue_task_progress_1[16] = COLOR_HEX_TO_FLOAT(0x1A1A1A, 1.0f);
+/* Color of second progress bar in a task message
+ * (for multiple tasks with same message) */
+static float msg_queue_task_progress_2[16] = COLOR_HEX_TO_FLOAT(0x317198, 1.0f);
+
 enum gfx_widgets_icon
 {
    MENU_WIDGETS_ICON_PAUSED = 0,
@@ -63,6 +71,7 @@ enum gfx_widgets_icon
 
    MENU_WIDGETS_ICON_HOURGLASS,
    MENU_WIDGETS_ICON_CHECK,
+   MENU_WIDGETS_ICON_EXIT,
 
    MENU_WIDGETS_ICON_INFO,
 
@@ -212,6 +221,7 @@ typedef struct dispgfx_widget
    unsigned generic_message_height;
 
    unsigned msg_queue_height;
+   unsigned msg_queue_padding;
    unsigned msg_queue_spacing;
    unsigned msg_queue_rect_start_x;
    unsigned msg_queue_internal_icon_size;

@@ -109,11 +109,6 @@ dylib_t dylib_load(const char *path)
 
    lib = LoadPackagedLibrary(path_wide, 0);
 
-   if (!lib) {
-	   RARCH_WARN("Trying dynamic loading! %s\n", path);
-      lib = LoadLibraryA(path);
-   }
-
    free(path_wide);
 #elif defined(LEGACY_WIN32)
    dylib_t lib        = LoadLibrary(path);

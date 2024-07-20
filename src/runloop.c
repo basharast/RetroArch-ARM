@@ -2,9 +2,9 @@
  *  Copyright (C) 2010-2014 - Hans-Kristian Arntzen
  *  Copyright (C) 2011-2021 - Daniel De Matteis
  *  Copyright (C) 2012-2015 - Michael Lelli
- *  Copyright (C) 2014-2017 - Jean-Andr� Santoni
+ *  Copyright (C) 2014-2017 - Jean-Andr  Santoni
  *  Copyright (C) 2016-2019 - Brad Parker
- *  Copyright (C) 2016-2019 - Andr�s Su�rez (input mapper code)
+ *  Copyright (C) 2016-2019 - Andr s Su rez (input mapper code)
  *  Copyright (C) 2016-2017 - Gregor Richards (network code)
  *
  *  RetroArch is free software: you can redistribute it and/or modify it under the terms
@@ -5817,9 +5817,10 @@ static enum runloop_state_enum runloop_check_state(
             if (      (menu_st->flags & MENU_ST_FLAG_ALIVE) 
                   && !(runloop_st->flags & RUNLOOP_FLAG_IDLE))
                if (display_menu_libretro(runloop_st, input_st,
-                        settings->floats.slowmotion_ratio,
-                        libretro_running, current_time))
+                  settings->floats.slowmotion_ratio,
+                  libretro_running, current_time)) {
                   video_driver_cached_frame();
+               }
 
             if (menu->driver_ctx->set_texture)
                menu->driver_ctx->set_texture(menu->userdata);

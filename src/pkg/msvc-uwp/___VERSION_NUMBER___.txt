@@ -1,1 +1,1 @@
-"C:\Users\Stevans Server\Desktop\Dev\RetroArch 1.15.5\version.all"
+"RetroArch 1.15.5\version.all"

@@ -1,42 +1,18 @@
-// UWP STORAGE MANAGER
-// Copyright (c) 2023 Bashar Astifan.
-// Email: bashar@astifan.online
-// Telegram: @basharastifan
-// GitHub: https://github.com/basharast/UWP2Win32
-
-// Functions:
-// replace(std::string& str, const std::string& from, const std::string& to)
-// replace2(const std::string str, const std::string& from, const std::string& to)
-// split(const std::string s, char seperator)
-// 
-// isChild(std::string parent, std::string child)
-// isParent(std::string parent, std::string child, std::string childName)
-// 
-// iequals(const std::string a, const std::string b) case-insenstive
-// equals(const std::string a, const std::string b) case-senstive
-// ends_with(std::string const& value, std::string const& ending)
-// 
-// convert(const std::string input)
-// convertToWString(const std::string input)
-// convert(Platform::String^ input)
-// convert(std::wstring input)
-// convert(const char* input)
-// convertToLPCWSTR(Platform::String^ input)
-// convertToLPCWSTR(std::string input)
-// convertToChar(Platform::String^ input)
-// 
-// tolower(std::string& input)
-// tolower(Platform::String^ &input)
-// toupper(std::string& input)
-// toupper(Platform::String^& input)
-// 
-// windowsPath(std::string& path)
-// windowsPath(Platform::String^ &path)
-// merge(std::string targetFullPath, std::string subFullPath)
-// 
-// findInList(std::list<T>& inputList, T& str)
-// isWriteMode(const char* mode)
-// getSubRoot(std::string parent, std::string child)
+/*  RetroArch - A frontend for libretro.
+ *
+ *  Copyright (C) 2023-2024 - Bashar Astifan
+ *
+ *  RetroArch is free software: you can redistribute it and/or modify it under the terms
+ *  of the GNU General Public License as published by the Free Software Found-
+ *  ation, either version 3 of the License, or (at your option) any later version.
+ *
+ *  RetroArch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *  PURPOSE.  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along with RetroArch.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #pragma once
 
@@ -46,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <cctype>
 
 typedef struct {
    DWORD dwDesiredAccess;

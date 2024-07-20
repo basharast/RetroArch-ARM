@@ -1,16 +1,18 @@
-// UWP STORAGE MANAGER
-// Copyright (c) 2023 Bashar Astifan.
-// Email: bashar@astifan.online
-// Telegram: @basharastifan
-
-// Functions:
-// GetFileHandle(StorageFile^ file, HANDLE* handle, HANDLE_ACCESS_OPTIONS accessMode, HANDLE_SHARING_OPTIONS shareMode)
-// GetFileHandleFromFolder(StorageFolder^ folder, std::string filename, HANDLE* handle, HANDLE_ACCESS_OPTIONS accessMode, HANDLE_SHARING_OPTIONS shareMode, HANDLE_CREATION_OPTIONS openMode)
-// GetFolderHandle(StorageFolder^ folder, HANDLE* handle, HANDLE_ACCESS_OPTIONS accessMode, HANDLE_SHARING_OPTIONS shareMode)
-// 
-// GetAccessMode(int accessMode)
-// GetShareMode(int shareMode)
-// GetOpenMode(int openMode)
+/*  RetroArch - A frontend for libretro.
+ *
+ *  Copyright (C) 2023-2024 - Bashar Astifan
+ *
+ *  RetroArch is free software: you can redistribute it and/or modify it under the terms
+ *  of the GNU General Public License as published by the Free Software Found-
+ *  ation, either version 3 of the License, or (at your option) any later version.
+ *
+ *  RetroArch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *  PURPOSE.  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along with RetroArch.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "StorageHandler.h"
 #include "StorageExtensions.h"

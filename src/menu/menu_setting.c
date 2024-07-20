@@ -10585,9 +10585,9 @@ static bool setting_append_list(
          {
             unsigned i, listing = 0;
 #ifndef HAVE_DYNAMIC
-            struct bool_entry bool_entries[9];
+            struct bool_entry bool_entries[10];
 #else
-            struct bool_entry bool_entries[9];
+            struct bool_entry bool_entries[10];
 #endif
             START_GROUP(list, list_info, &group_info,
                   msg_hash_to_str(MENU_ENUM_LABEL_VALUE_CORE_SETTINGS), parent_group);
@@ -10662,6 +10662,13 @@ static bool setting_append_list(
             bool_entries[listing].flags          = SD_FLAG_ADVANCED;
             listing++;
 
+            bool_entries[listing].target         = &settings->bools.core_limit_fps_enable;
+            bool_entries[listing].name_enum_idx  = MENU_ENUM_LABEL_CORE_LIMIT_FPS_ENABLE;
+            bool_entries[listing].SHORT_enum_idx = MENU_ENUM_LABEL_VALUE_CORE_LIMIT_FPS_ENABLE;
+            bool_entries[listing].default_value  = DEFAULT_CORE_LIMIT_FPS_ENABLE;
+            bool_entries[listing].flags          = SD_FLAG_ADVANCED;
+            listing++;
+			
 #ifndef HAVE_DYNAMIC
             bool_entries[listing].target         = &settings->bools.always_reload_core_on_run_content;
             bool_entries[listing].name_enum_idx  = MENU_ENUM_LABEL_ALWAYS_RELOAD_CORE_ON_RUN_CONTENT;
@@ -12856,6 +12863,7 @@ static bool setting_append_list(
             }
 
 #if defined(HAVE_THREADS) && !defined(__PSL1GHT__) && !defined(__PS3__)
+#ifndef IS_LEVEL_93
             CONFIG_BOOL(
                   list, list_info,
                   video_driver_get_threaded(),
@@ -12872,6 +12880,7 @@ static bool setting_append_list(
                   SD_FLAG_CMD_APPLY_AUTO
                   );
             MENU_SETTINGS_LIST_CURRENT_ADD_CMD(list, list_info, CMD_EVENT_REINIT);
+#endif
 #endif
 
             CONFIG_BOOL(
@@ -15720,6 +15729,59 @@ static bool setting_append_list(
          (*list)[list_info->index - 1].change_handler = overlay_enable_toggle_change_handler;
 
          CONFIG_BOOL(
+            list, list_info,
+            &settings->bools.input_overlay_auto_rotate,
+            MENU_ENUM_LABEL_INPUT_OVERLAY_AUTO_ROTATE,
+            MENU_ENUM_LABEL_VALUE_INPUT_OVERLAY_AUTO_ROTATE,
+            DEFAULT_OVERLAY_AUTO_ROTATE,
+            MENU_ENUM_LABEL_VALUE_OFF,
+            MENU_ENUM_LABEL_VALUE_ON,
+            &group_info,
+            &subgroup_info,
+            parent_group,
+            general_write_handler,
+            general_read_handler,
+            SD_FLAG_NONE
+         );
+         (*list)[list_info->index - 1].change_handler = overlay_auto_rotate_toggle_change_handler;
+
+         CONFIG_BOOL(
+            list, list_info,
+            &settings->bools.input_overlay_auto_scale,
+            MENU_ENUM_LABEL_INPUT_OVERLAY_AUTO_SCALE,
+            MENU_ENUM_LABEL_VALUE_INPUT_OVERLAY_AUTO_SCALE,
+            DEFAULT_INPUT_OVERLAY_AUTO_SCALE,
+            MENU_ENUM_LABEL_VALUE_OFF,
+            MENU_ENUM_LABEL_VALUE_ON,
+            &group_info,
+            &subgroup_info,
+            parent_group,
+            general_write_handler,
+            general_read_handler,
+            SD_FLAG_NONE
+         );
+         (*list)[list_info->index - 1].action_ok = &setting_bool_action_left_with_refresh;
+         (*list)[list_info->index - 1].action_left = &setting_bool_action_left_with_refresh;
+         (*list)[list_info->index - 1].action_right = &setting_bool_action_right_with_refresh;
+         MENU_SETTINGS_LIST_CURRENT_ADD_CMD(list, list_info, CMD_EVENT_OVERLAY_SET_SCALE_FACTOR);
+         SETTINGS_DATA_LIST_CURRENT_ADD_FLAGS(list, list_info, SD_FLAG_CMD_APPLY_AUTO);
+
+         CONFIG_PATH(
+            list, list_info,
+            settings->paths.path_overlay,
+            sizeof(settings->paths.path_overlay),
+            MENU_ENUM_LABEL_OVERLAY_PRESET,
+            MENU_ENUM_LABEL_VALUE_OVERLAY_PRESET,
+            settings->paths.directory_overlay,
+            &group_info,
+            &subgroup_info,
+            parent_group,
+            general_write_handler,
+            general_read_handler);
+         MENU_SETTINGS_LIST_CURRENT_ADD_VALUES(list, list_info, "cfg");
+         MENU_SETTINGS_LIST_CURRENT_ADD_CMD(list, list_info, CMD_EVENT_OVERLAY_INIT);
+
+         CONFIG_BOOL(
                list, list_info,
                &settings->bools.input_overlay_enable_autopreferred,
                MENU_ENUM_LABEL_OVERLAY_AUTOLOAD_PREFERRED,
@@ -15736,6 +15798,7 @@ static bool setting_append_list(
                );
          (*list)[list_info->index - 1].change_handler = overlay_enable_toggle_change_handler;
 
+#ifndef IS_LEVEL_93
          if (video_driver_test_all_flags(GFX_CTX_FLAGS_OVERLAY_BEHIND_MENU_SUPPORTED))
          {
             CONFIG_BOOL(
@@ -15770,6 +15833,7 @@ static bool setting_append_list(
                SD_FLAG_NONE
                );
          (*list)[list_info->index - 1].change_handler = overlay_enable_toggle_change_handler;
+#endif
 
          CONFIG_BOOL(
                list, list_info,
@@ -15840,59 +15904,6 @@ static bool setting_append_list(
                general_read_handler,
                SD_FLAG_NONE
                );
-
-         CONFIG_BOOL(
-               list, list_info,
-               &settings->bools.input_overlay_auto_rotate,
-               MENU_ENUM_LABEL_INPUT_OVERLAY_AUTO_ROTATE,
-               MENU_ENUM_LABEL_VALUE_INPUT_OVERLAY_AUTO_ROTATE,
-               DEFAULT_OVERLAY_AUTO_ROTATE,
-               MENU_ENUM_LABEL_VALUE_OFF,
-               MENU_ENUM_LABEL_VALUE_ON,
-               &group_info,
-               &subgroup_info,
-               parent_group,
-               general_write_handler,
-               general_read_handler,
-               SD_FLAG_NONE
-               );
-         (*list)[list_info->index - 1].change_handler = overlay_auto_rotate_toggle_change_handler;
-
-         CONFIG_BOOL(
-               list, list_info,
-               &settings->bools.input_overlay_auto_scale,
-               MENU_ENUM_LABEL_INPUT_OVERLAY_AUTO_SCALE,
-               MENU_ENUM_LABEL_VALUE_INPUT_OVERLAY_AUTO_SCALE,
-               DEFAULT_INPUT_OVERLAY_AUTO_SCALE,
-               MENU_ENUM_LABEL_VALUE_OFF,
-               MENU_ENUM_LABEL_VALUE_ON,
-               &group_info,
-               &subgroup_info,
-               parent_group,
-               general_write_handler,
-               general_read_handler,
-               SD_FLAG_NONE
-               );
-         (*list)[list_info->index - 1].action_ok     = &setting_bool_action_left_with_refresh;
-         (*list)[list_info->index - 1].action_left   = &setting_bool_action_left_with_refresh;
-         (*list)[list_info->index - 1].action_right  = &setting_bool_action_right_with_refresh;
-         MENU_SETTINGS_LIST_CURRENT_ADD_CMD(list, list_info, CMD_EVENT_OVERLAY_SET_SCALE_FACTOR);
-         SETTINGS_DATA_LIST_CURRENT_ADD_FLAGS(list, list_info, SD_FLAG_CMD_APPLY_AUTO);
-
-         CONFIG_PATH(
-               list, list_info,
-               settings->paths.path_overlay,
-               sizeof(settings->paths.path_overlay),
-               MENU_ENUM_LABEL_OVERLAY_PRESET,
-               MENU_ENUM_LABEL_VALUE_OVERLAY_PRESET,
-               settings->paths.directory_overlay,
-               &group_info,
-               &subgroup_info,
-               parent_group,
-               general_write_handler,
-               general_read_handler);
-         MENU_SETTINGS_LIST_CURRENT_ADD_VALUES(list, list_info, "cfg");
-         MENU_SETTINGS_LIST_CURRENT_ADD_CMD(list, list_info, CMD_EVENT_OVERLAY_INIT);
 
          CONFIG_FLOAT(
                list, list_info,

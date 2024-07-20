@@ -5,7 +5,7 @@
 #include <retro_common_api.h>
 
 #ifndef HAVE_DXGI_HDR
-#define HAVE_DXGI_HDR
+//#define HAVE_DXGI_HDR
 #endif
 
 #ifdef HAVE_DXGI_HDR
@@ -18,6 +18,7 @@
 #endif
 
 #include <gfx/math/matrix_4x4.h>
+#include <d3d11.h>
 
 RETRO_BEGIN_DECLS
 

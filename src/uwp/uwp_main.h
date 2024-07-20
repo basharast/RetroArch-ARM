@@ -37,7 +37,9 @@ namespace RetroArchUWP
       void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args);
       void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
       void OnResuming(Platform::Object^ sender, Platform::Object^ args);
+#ifndef IS_LEVEL_93
       void OnEnteredBackground(Platform::Object^ sender, Windows::ApplicationModel::EnteredBackgroundEventArgs^ args);
+#endif
 
       void OnBackRequested(Platform::Object^ sender, Windows::UI::Core::BackRequestedEventArgs^ args);
 
@@ -54,8 +56,9 @@ namespace RetroArchUWP
       void OnDpiChanged(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
       void OnOrientationChanged(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
       void OnDisplayContentsInvalidated(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
-
+#ifndef IS_LEVEL_93
       void OnPackageInstalling(Windows::ApplicationModel::PackageCatalog^ sender, Windows::ApplicationModel::PackageInstallingEventArgs^ args);
+#endif
 
    public:
       bool IsInitialized() { return m_initialized; }

@@ -3451,6 +3451,14 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_CORE_RESOLVE_WIN32_ENABLE,
    "Replace Win32 APIs with UWP alternatives, not compatible with all cores."
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_LIMIT_FPS_ENABLE,
+   "Skip frames"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CORE_LIMIT_FPS_ENABLE,
+   "Skip frames with minimal amount, may help to get better speed"
+   )
 #ifndef HAVE_DYNAMIC
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_ALWAYS_RELOAD_CORE_ON_RUN_CONTENT,

@@ -1490,6 +1490,10 @@ MSG_HASH(
    "core_resolve_win32_enable"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_CORE_LIMIT_FPS_ENABLE,
+   "core_limit_fps_enable"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_DUMMY_ON_CORE_SHUTDOWN,
    "dummy_on_core_shutdown"
    )

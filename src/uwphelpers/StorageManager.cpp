@@ -1,49 +1,18 @@
-// UWP STORAGE MANAGER
-// Copyright (c) 2023 Bashar Astifan.
-// Email: bashar@astifan.online
-// Telegram: @basharastifan
-// GitHub: https://github.com/basharast/UWP2Win32
-
-// This code must keep support for lower builds (15063+)
-// Try always to find possible way to keep that support
-
-// Functions:
-// GetWorkingFolder()
-// SetWorkingFolder(std::string location)
-// GetInstallationFolder()
-// GetLocalFolder()
-// GetTempFolder()
-// GetPicturesFolder()
-// GetVideosFolder()
-// GetDocumentsFolder()
-// GetMusicFolder()
-// GetPreviewPath(std::string path)
-//
-// CreateFileUWP(std::string path, int accessMode, int shareMode, int openMode)
-// CreateFileUWP(std::wstring path, int accessMode, int shareMode, int openMode)
-// GetFileStream(std::string path, const char* mode)
-// IsValidUWP(std::string path)
-// IsExistsUWP(std::string path)
-// IsDirectoryUWP(std::string path)
-// 
-// GetFolderContents(std::string path, bool deepScan = false)
-// GetFolderContents(std::wstring path, bool deepScan = false)
-// GetFileInfoUWP(std::string path)
-//
-// GetSizeUWP(std::string path)
-// DeleteUWP(std::string path)
-// CreateDirectoryUWP(std::string path, bool replaceExisting)
-// RenameUWP(std::string path, std::string name)
-// CopyUWP(std::string path, std::string name)
-// MoveUWP(std::string path, std::string name)
-//
-// OpenFile(std::string path)
-// OpenFolder(std::string path)
-// IsFirstStart()
-//
-// GetLogFile()
-// SaveLogs()
-// CleanupLogs()
+/*  RetroArch - A frontend for libretro.
+ *
+ *  Copyright (C) 2023-2024 - Bashar Astifan
+ *
+ *  RetroArch is free software: you can redistribute it and/or modify it under the terms
+ *  of the GNU General Public License as published by the Free Software Found-
+ *  ation, either version 3 of the License, or (at your option) any later version.
+ *
+ *  RetroArch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *  PURPOSE.  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along with RetroArch.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "pch.h"
 
@@ -61,6 +30,7 @@
 #endif
 
 #include <defaults.h>
+#include <ctime>
 #include "configuration.h"
 
 using namespace Platform;
@@ -146,6 +116,23 @@ std::list<std::string> GetLookupLocations() {
 #pragma endregion
 
 #pragma region Internal
+std::string GetLastErrorAsString() {
+	DWORD errorMessageID = ::GetLastError();
+	if (errorMessageID == 0) {
+		return "Unknown";
+	}
+
+	LPSTR messageBuffer = nullptr;
+	size_t size = FormatMessageA( // Use FormatMessageA for ANSI
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+	std::string message(messageBuffer, size - 2); // -2 to strip \r\n appended at the end
+	LocalFree(messageBuffer); // Free the buffer allocated by FormatMessage
+
+	return message;
+}
+
 PathUWP PathResolver(PathUWP path) {
 	auto root = path.GetDirectory();
 	auto newPath = path.ToString();
@@ -359,14 +346,17 @@ bool IsRootForAccessibleItems(std::string path) {
 }
 
 std::map<std::string, bool> accessState;
-bool CheckDriveAccess(std::string driveName, bool checkIfContainsFutureAccessItems) {
+bool CheckDriveAccess(std::string driveName, bool checkIfContainsFutureAccessItems)
+{
 	bool state = false;
 
 	auto keyIter = accessState.find(driveName);
-	if (keyIter != accessState.end()) {
+	if (keyIter != accessState.end())
+	{
 		state = keyIter->second;
-}
-	else {
+	}
+	else
+	{
 		try {
 			auto dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
 			auto dwShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
@@ -374,19 +364,27 @@ bool CheckDriveAccess(std::string driveName, bool checkIfContainsFutureAccessIte
 
 			auto testFile = std::string(driveName);
 			testFile.append("\\.UWPAccessCheck");
-#if defined(_M_ARM)
+			replace(testFile, "\\\\", "\\");
+#if defined(_M_ARM) || IS_LEVEL_93
 			HANDLE h = CreateFile2(convertToLPCWSTR(testFile), dwDesiredAccess, dwShareMode, dwCreationDisposition, nullptr);
 #else
-			HANDLE h = CreateFile2FromAppW(convertToLPCWSTR(testFile), dwDesiredAccess, dwShareMode, dwCreationDisposition, nullptr);
+			HANDLE h = CreateFile2(convertToLPCWSTR(testFile), dwDesiredAccess, dwShareMode, dwCreationDisposition, nullptr);
 #endif
+			DWORD errorMessageId = ::GetLastError();
+			auto errorString = GetLastErrorAsString();
 			if (h != INVALID_HANDLE_VALUE) {
-				state = true;
+				//Double check
 				CloseHandle(h);
-#if defined(_M_ARM)
-				DeleteFileW(convertToLPCWSTR(testFile));
+				FILE* tFile = fopen(testFile.c_str(), "r+");
+				if (tFile) {
+					fclose(tFile);
+					state = true;
+#if defined(_M_ARM) || IS_LEVEL_93
+					DeleteFileW(convertToLPCWSTR(testFile));
 #else
-				DeleteFileFromAppW(convertToLPCWSTR(testFile));
+					DeleteFileW(convertToLPCWSTR(testFile));
 #endif
+				}
 			}
 			accessState.insert(std::make_pair(driveName, state));
 		}
@@ -394,7 +392,8 @@ bool CheckDriveAccess(std::string driveName, bool checkIfContainsFutureAccessIte
 		}
 	}
 
-	if (!state && checkIfContainsFutureAccessItems) {
+	if (!state && checkIfContainsFutureAccessItems)
+	{
 		// Consider the drive accessible in case it contain files/folder selected before to avoid empty results
 		state = IsRootForAccessibleItems(driveName) || IsContainsAccessibleItems(driveName);
 	}
@@ -402,40 +401,42 @@ bool CheckDriveAccess(std::string driveName, bool checkIfContainsFutureAccessIte
 }
 
 bool IsValidUWP(std::string path, bool allowForAppData) {
+	// The idea of this functions is to determine whether we need to use native UWP fallback,
+	// this usually help to avoid unnecessary checks if file is not exists within accessible path,
+	// usually API will fail and storage manager will try to use native fallback solution,
+	// in this case as example we shouldn't fallback to check using UWP, it should end at API level,
+	// so the result will be reversed at the end, 
+	// means file/folder is not accessible by default and something prevent the API to work.
 	auto p = PathResolver(path);
 
-	//if (!allowForAppData) {
-	//	//Allow search for specific files
-	//	if (path.find("\\system") != std::string::npos || path.find("/system") != std::string::npos) {
-	//		RARCH_DBG("Allow system paths for extra lookup (%s)\n", p.ToString().c_str());
-	//		allowForAppData = true;
-	//	}
-	//}
 	//Check valid path
 	if (p.Type() == PathTypeUWP::UNDEFINED || !p.IsAbsolute()) {
 		// Nothing to do here
-		RARCH_LOG("File is not valid (%s)\n", p.ToString().c_str());
+		UWP_VERBOSE_LOG(UWPSMT, "File is not valid (%s)", p.ToString().c_str());
 		return false;
 	}
-
 
 	bool state = false;
 
 	if (!allowForAppData) {
 		auto resolvedPathStr = p.ToString();
-		if (ends_with(resolvedPathStr, "LocalState") || ends_with(resolvedPathStr, "TempState") || ends_with(resolvedPathStr, "LocalCache")) {
+		if (ends_with(resolvedPathStr, "LocalState") || ends_with(resolvedPathStr, "TempState") ||
+			ends_with(resolvedPathStr, "LocalCache"))
+		{
 			state = true;
 		}
-		else
-			if (isChild(GetLocalFolder(), resolvedPathStr)) {
-				state = true;
-			}
-			else if (isChild(GetInstallationFolder(), resolvedPathStr)) {
-				state = true;
-			}
-			else if (isChild(GetTempFolder(), resolvedPathStr)) {
-				state = true;
-			}
+		else if (isChild(GetLocalFolder(), resolvedPathStr))
+		{
+			state = true;
+		}
+		else if (isChild(GetInstallationFolder(), resolvedPathStr))
+		{
+			state = true;
+		}
+		else if (isChild(GetTempFolder(), resolvedPathStr))
+		{
+			state = true;
+		}
 
 		if (!state)
 		{
@@ -444,6 +445,7 @@ bool IsValidUWP(std::string path, bool allowForAppData) {
 			state = CheckDriveAccess(driveName, false);
 		}
 	}
+
 	return !state;
 }
 
@@ -540,7 +542,7 @@ FILE* GetFileStreamFromApp(std::string path, const char* mode) {
 
 	auto fileMode = GetFileMode(mode);
 	if (fileMode) {
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 		handle = CreateFile2(pathResolved.ToWString().c_str(), fileMode->dwDesiredAccess, fileMode->dwShareMode, fileMode->dwCreationDisposition, nullptr);
 #else
 		handle = CreateFile2FromAppW(pathResolved.ToWString().c_str(), fileMode->dwDesiredAccess, fileMode->dwShareMode, fileMode->dwCreationDisposition, nullptr);

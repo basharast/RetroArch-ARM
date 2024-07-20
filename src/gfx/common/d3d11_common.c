@@ -80,6 +80,113 @@ HRESULT WINAPI D3D11CreateDeviceAndSwapChain(
 }
 #endif
 
+#if IS_LEVEL_93
+void d3d11_init_texture(D3D11Device device, d3d11_texture_t* texture)
+{
+   bool is_render_target = texture->desc.BindFlags & D3D11_BIND_RENDER_TARGET;
+   UINT format_support = D3D11_FORMAT_SUPPORT_TEXTURE2D | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE;
+
+   texture->desc.MipLevels = 1;
+   texture->desc.ArraySize = 1;
+   texture->desc.SampleDesc.Count = 1;
+   texture->desc.SampleDesc.Quality = 0;
+   texture->desc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+   texture->desc.CPUAccessFlags =
+      texture->desc.Usage == D3D11_USAGE_DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0;
+
+   if (texture->desc.MiscFlags & D3D11_RESOURCE_MISC_GENERATE_MIPS)
+   {
+      unsigned width, height;
+
+      texture->desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+      width = texture->desc.Width >> 5;
+      height = texture->desc.Height >> 5;
+
+      while (width && height)
+      {
+         width >>= 1;
+         height >>= 1;
+         texture->desc.MipLevels++;
+      }
+   }
+
+   if (texture->desc.BindFlags & D3D11_BIND_RENDER_TARGET)
+      format_support |= D3D11_FORMAT_SUPPORT_RENDER_TARGET;
+
+   texture->desc.Format = d3d11_get_closest_match(device, texture->desc.Format, format_support);
+
+   HRESULT hr = device->lpVtbl->CreateTexture2D(device, &texture->desc, NULL, &texture->handle);
+   if (FAILED(hr))
+      return;
+
+   {
+      D3D11_SHADER_RESOURCE_VIEW_DESC view_desc;
+      view_desc.Format = texture->desc.Format;
+      view_desc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+      view_desc.Texture2D.MostDetailedMip = 0;
+      view_desc.Texture2D.MipLevels = -1;
+      hr = device->lpVtbl->CreateShaderResourceView(device, (D3D11Resource)texture->handle, &view_desc, &texture->view);
+      if (FAILED(hr))
+         return;
+   }
+
+   if (is_render_target)
+   {
+      hr = device->lpVtbl->CreateRenderTargetView(device, (D3D11Resource)texture->handle, NULL, &texture->rt_view);
+      if (FAILED(hr))
+         return;
+   }
+   else
+   {
+      D3D11_TEXTURE2D_DESC desc = texture->desc;
+      desc.MipLevels = 1;
+      desc.BindFlags = 0;
+      desc.MiscFlags = 0;
+      desc.Usage = D3D11_USAGE_STAGING;
+      desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+      hr = device->lpVtbl->CreateTexture2D(device, &desc, NULL, &texture->staging);
+      if (FAILED(hr))
+         return;
+   }
+
+   texture->size_data.x = texture->desc.Width;
+   texture->size_data.y = texture->desc.Height;
+   texture->size_data.z = 1.0f / texture->desc.Width;
+   texture->size_data.w = 1.0f / texture->desc.Height;
+}
+
+void d3d11_update_texture(
+   D3D11DeviceContext ctx,
+   unsigned           width,
+   unsigned           height,
+   unsigned           pitch,
+   DXGI_FORMAT        format,
+   const void* data,
+   d3d11_texture_t* texture)
+{
+   D3D11_MAPPED_SUBRESOURCE mapped_texture;
+   D3D11_BOX frame_box;
+
+   HRESULT hr = ctx->lpVtbl->Map(ctx, (D3D11Resource)texture->staging, 0, D3D11_MAP_WRITE, 0, &mapped_texture);
+   if (FAILED(hr))
+      return;
+
+   dxgi_copy(width, height, format, pitch, data, texture->desc.Format, mapped_texture.RowPitch, mapped_texture.pData);
+
+   frame_box.left = 0;
+   frame_box.top = 0;
+   frame_box.front = 0;
+   frame_box.right = width;
+   frame_box.bottom = height;
+   frame_box.back = 1;
+   ctx->lpVtbl->Unmap(ctx, (D3D11Resource)texture->staging, 0);
+   ctx->lpVtbl->CopySubresourceRegion(ctx, (D3D11Resource)texture->handle, 0, 0, 0, 0, (D3D11Resource)texture->staging, 0, &frame_box);
+
+   if (texture->desc.MiscFlags & D3D11_RESOURCE_MISC_GENERATE_MIPS)
+      ctx->lpVtbl->GenerateMips(ctx, texture->view);
+}
+
+#else
 void d3d11_init_texture(D3D11Device device, d3d11_texture_t* texture)
 {
    bool is_render_target            = texture->desc.BindFlags & D3D11_BIND_RENDER_TARGET;
@@ -182,6 +289,8 @@ void d3d11_update_texture(
       ctx->lpVtbl->GenerateMips(ctx, texture->view);
 }
 
+#endif
+
    DXGI_FORMAT
 d3d11_get_closest_match(D3D11Device device, DXGI_FORMAT desired_format, UINT desired_format_support)
 {
@@ -224,6 +333,8 @@ bool d3d11_init_shader(
    const char *ps_str = NULL;
    const char *gs_str = NULL;
 
+   D3D_FEATURE_LEVEL featureLevel = device->lpVtbl->GetFeatureLevel(device);
+
    switch (hint)
    {
       case D3D11_FEATURE_LEVEL_HINT_11_0:
@@ -235,11 +346,38 @@ bool d3d11_init_shader(
          ps_str       = "ps_5_0";
          gs_str       = "gs_5_0";
          break;
+      case D3D11_FEATURE_LEVEL_HINT_9_3:
+         vs_str       = "vs_4_0_level_9_3";
+         ps_str       = "ps_4_0_level_9_3";
+         gs_str       = "gs_4_0"; // We don't use it
+         break;
+      case D3D11_FEATURE_LEVEL_HINT_9_1:
+         vs_str       = "vs_4_0_level_9_1";
+         ps_str       = "ps_4_0_level_9_1";
+         gs_str       = "gs_4_0"; // We don't use it
+         break;
       case D3D11_FEATURE_LEVEL_HINT_DONTCARE:
       default:
-         vs_str       = "vs_4_0";
-         ps_str       = "ps_4_0";
-         gs_str       = "gs_4_0";
+      {
+         switch (featureLevel)
+         {
+         case D3D_FEATURE_LEVEL_9_3:
+            vs_str = "vs_4_0_level_9_3";
+            ps_str = "ps_4_0_level_9_3";
+            gs_str = "gs_4_0"; // We don't use it
+            break;
+         case D3D_FEATURE_LEVEL_9_1:
+            vs_str = "vs_4_0_level_9_1";
+            ps_str = "ps_4_0_level_9_1";
+            gs_str = "gs_4_0"; // We don't use it
+            break;
+         default:
+            vs_str = "vs_4_0";
+            ps_str = "ps_4_0";
+            gs_str = "gs_4_0";
+            break;
+         }
+      }
          break;
    }
 

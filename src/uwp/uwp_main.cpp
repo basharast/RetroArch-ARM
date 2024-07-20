@@ -223,6 +223,14 @@ static inline float ConvertDipsToPixels(float dips, float dpi)
 	return floorf(dips * dpi / dips_per_inch + 0.5f);
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+	char localFolder[1024];
+#ifdef __cplusplus
+}
+#endif
+
 /* The main function is only used to initialize our IFrameworkView class. */
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
@@ -234,6 +242,7 @@ int main(Platform::Array<Platform::String^>^)
 	Platform::String^ install_dir = Windows::ApplicationModel::Package::Current->InstalledLocation->Path + L"\\";
 	Platform::String^ data_dir = local_folder + L"\\";
 
+	strlcpy(localFolder, convert(data_dir).c_str(), sizeof(localFolder));
 
 	/* Delete VFS cache dir, we do this because this allows a far more
 	* concise implementation than manually implementing a function to do this
@@ -245,6 +254,11 @@ int main(Platform::Array<Platform::String^>^)
 	wcstombs(uwp_dir_data, data_dir->Data(), sizeof(uwp_dir_data));
 	wcstombs(vfs_cache_dir, vfs_dir->Data(), sizeof(vfs_cache_dir));
 
+#if IS_LEVEL_93
+	if (IsExistsUWP(convert(vfs_dir))) {
+		DeleteUWP(convert(vfs_dir));
+	}
+#else
 	dwAttrib = GetFileAttributesA(vfs_cache_dir);
 	if ((dwAttrib != INVALID_FILE_ATTRIBUTES) && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
@@ -253,6 +267,7 @@ int main(Platform::Array<Platform::String^>^)
 		StorageFolder^ vfsdir = vfsdirtask.get();
 		vfsdir->DeleteAsync();
 	}
+#endif
 
 	wcstombs(uwp_device_family,
 		AnalyticsInfo::VersionInfo->DeviceFamily->Data(),
@@ -299,9 +314,10 @@ void App::Initialize(CoreApplicationView^ applicationView)
 
 	CoreApplication::Resuming +=
 		ref new EventHandler<Platform::Object^>(this, &App::OnResuming);
-
+#ifndef IS_LEVEL_93
 	CoreApplication::EnteredBackground +=
 		ref new EventHandler<EnteredBackgroundEventArgs^>(this, &App::OnEnteredBackground);
+#endif
 }
 
 /* Called when the CoreWindow object is created (or re-created). */
@@ -416,11 +432,11 @@ void ValidateContentFolder(Platform::String^ name, bool justCheck, retro_task_t*
 	}
 	try {
 		if (targetFolder == nullptr) {
-			missingFilesCopies = true;
-			if (!justCheck) {
-				IStorageItem^ src;
-				ExecuteTask(src, Package::Current->InstalledLocation->TryGetItemAsync(L"contents\\" + tempName));
-				if (src != nullptr) {
+			IStorageItem^ src;
+			ExecuteTask(src, Package::Current->InstalledLocation->TryGetItemAsync(L"contents\\" + tempName));
+			if (src != nullptr) {
+				missingFilesCopies = true;
+				if (!justCheck) {
 					auto srcItem = StorageItemW(src);
 					if (customTarget != nullptr && !targetIsDest) {
 						IStorageItem^ testDest;
@@ -431,6 +447,7 @@ void ValidateContentFolder(Platform::String^ name, bool justCheck, retro_task_t*
 						}
 					}
 					srcItem.Copy(destFolder, deepScan, task, targetIsDest);
+
 				}
 			}
 		}
@@ -438,62 +455,160 @@ void ValidateContentFolder(Platform::String^ name, bool justCheck, retro_task_t*
 	catch (...) {
 
 	}
+}
+
+void ValidateContentFolder2(Platform::String^ name, bool justCheck, retro_task_t* task = nullptr, char* title = nullptr, bool deepScan = false, Platform::String^ customTarget = nullptr) {
+	if (task != nullptr) {
+		task_set_title(task, title);
 	}
+	auto tempName = name;
+	auto destFolder = ApplicationData::Current->LocalFolder;
+
+	bool targetIsDest = false;
+	settings_t* settings = config_get_ptr();
+	if (settings && (iequals(convert(name), "system") || (customTarget != nullptr && iequals(convert(customTarget), "system")))) {
+		auto systemDir = settings->paths.directory_system;
+		if (!isChild(convert(destFolder->Path), std::string(systemDir))) {
+			StorageFolder^ systemStorageFolder;
+			try {
+				ExecuteTask(systemStorageFolder, StorageFolder::GetFolderFromPathAsync(convert(std::string(systemDir))));
+			}
+			catch (...) {
+
+			}
+			if (systemStorageFolder == nullptr) {
+				auto itemUWPTest = GetStorageItem(std::string(systemDir));
+				if (itemUWPTest.IsValid() && itemUWPTest.IsDirectory()) {
+					systemStorageFolder = itemUWPTest.GetStorageFolder();
+				}
+			}
+			if (!systemPathPrinted) {
+				systemPathPrinted = true;
+				auto isAccessible = systemStorageFolder != nullptr ? "Yes" : "No";
+				RARCH_DBG("System dir (Access->%s): %s\n", isAccessible, systemDir);
+			}
+			if (systemStorageFolder != nullptr) {
+				destFolder = systemStorageFolder;
+				name = convert(replace2(convert(name), "system\\", ""));
+				name = convert(replace2(convert(name), "system", ""));
+				targetIsDest = true;
+			}
+		}
+	}
+
+	auto fileToCheck = "z_copied.txt";
+	if (!targetIsDest && iequals(convert(name), "info")) {
+		//Force re-copy from old releases
+		fileToCheck = "z1_copied.txt";
+	}
+
+	IStorageItem^ targetFolder;
+	if (name->Length() > 1) {
+		ExecuteTask(targetFolder, destFolder->TryGetItemAsync(name));
+	}
+	else {
+		targetFolder = destFolder;
+	}
+	if (targetFolder != nullptr) {
+		if (targetFolder->IsOfType(StorageItemTypes::Folder)) {
+			ExecuteTask(targetFolder, ((StorageFolder^)targetFolder)->TryGetItemAsync(convert(std::string(fileToCheck))));
+		}
+	}
+	try {
+		//if (targetFolder == nullptr) {
+		if (!justCheck) {
+			IStorageItem^ src;
+			ExecuteTask(src, Package::Current->InstalledLocation->TryGetItemAsync(L"contents\\" + tempName));
+			if (src != nullptr) {
+				auto srcItem = StorageItemW(src);
+				if (customTarget != nullptr && !targetIsDest) {
+					IStorageItem^ testDest;
+					ExecuteTask(testDest, destFolder->TryGetItemAsync(customTarget));
+
+					if (testDest != nullptr && testDest->IsOfType(StorageItemTypes::Folder)) {
+						destFolder = (StorageFolder^)testDest;
+					}
+				}
+				srcItem.Copy(destFolder, deepScan, nullptr, targetIsDest);
+			}
+		}
+		//}
+	}
+	catch (...) {
+
+	}
+}
+
 
 retro_task_t* copyTask;
 
 bool isCopyRequired() {
 	ValidateContentFolder(L"info", true);
-#if defined(_M_ARM)
 	ValidateContentFolder(L"overlays", true);
-#endif
 	ValidateContentFolder(L"assets", true);
+	ValidateContentFolder(L"pkg", true);
+	ValidateContentFolder(L"sounds", true);
 	ValidateContentFolder(L"filters", true);
+#if defined(_M_ARM) || IS_LEVEL_93
 	ValidateContentFolder(L"system\\Mupen64plus", true, nullptr, nullptr, false, L"system");
 	ValidateContentFolder(L"system\\RiceVideoLinux.ini", true, nullptr, nullptr, false, L"system");
+#endif
 	//ValidateContentFolder(L"system\\wildmidi", true, nullptr, nullptr, false, L"system");
 
 	return missingFilesCopies;
 }
 void task_fake_handler(retro_task_t* task) {
 	ValidateContentFolder(L"info", false, task, "Copy cores info..");
-#if defined(_M_ARM)
 	ValidateContentFolder(L"overlays", false, task, "Copy basic overlays..", true);
-#endif
 	ValidateContentFolder(L"assets", false, task, "Copy initial assets..", true);
+	ValidateContentFolder(L"pkg", false, task, "Copy basic fonts..");
+	ValidateContentFolder(L"sounds", false, task, "Copy sounds..");
 	ValidateContentFolder(L"filters", false, task, "Copy A/V filters..", true);
+#if defined(_M_ARM) || IS_LEVEL_93
 	ValidateContentFolder(L"system\\Mupen64plus", false, task, "Copy N64 Configs..", true, L"system");
 	ValidateContentFolder(L"system\\RiceVideoLinux.ini", false, task, "Copy Rice64 Configs..", true, L"system");
+#endif
 	//ValidateContentFolder(L"system\\wildmidi", false, task, "Copy EasyRPG Configs..", true, L"system");
 
 	Sleep(100);
 	task_set_progress(task, 0);
-#if defined(_M_ARM)
-	task_set_title(task, strdup("Please restart.."));
+	if (IsFirstStart()) {
+#if defined(_M_ARM) || IS_LEVEL_93
+		task_set_title(task, strdup("Please restart.."));
 #else
-	task_set_title(task, strdup("Restarting.."));
+		task_set_title(task, strdup("Restarting.."));
 #endif
-	int timeout = 0;
-	while (timeout < 10) {
-		Sleep(1000);
-		timeout++;
-		task_set_progress(task, timeout * 10);
-}
-#if defined(_M_ARM)
-	CoreApplication::Exit();
+		int timeout = 0;
+		while (timeout < 10) {
+			Sleep(1000);
+			timeout++;
+			task_set_progress(task, timeout * 10);
+		}
+#if defined(_M_ARM) || IS_LEVEL_93
+		CoreApplication::Exit();
 #else
-	Windows::ApplicationModel::Core::AppRestartFailureReason error;
-	ExecuteTask(error, Windows::ApplicationModel::Core::CoreApplication::RequestRestartAsync(nullptr));
-	if (error != Windows::ApplicationModel::Core::AppRestartFailureReason::RestartPending) {
-		// Shutdown
-		bool state = false;
-		ExecuteTask(state, Windows::UI::ViewManagement::ApplicationView::GetForCurrentView()->TryConsolidateAsync());
-		if (!state) {
-			// Notify the user?
-			CoreApplication::Exit();
+		Windows::ApplicationModel::Core::AppRestartFailureReason error;
+		ExecuteTask(error, Windows::ApplicationModel::Core::CoreApplication::RequestRestartAsync(nullptr));
+		if (error != Windows::ApplicationModel::Core::AppRestartFailureReason::RestartPending) {
+			// Shutdown
+			bool state = false;
+			ExecuteTask(state, Windows::UI::ViewManagement::ApplicationView::GetForCurrentView()->TryConsolidateAsync());
+			if (!state) {
+				// Notify the user?
+				CoreApplication::Exit();
+			}
+		}
+#endif
+	}
+	else {
+		task_set_title(task, strdup("Restart recommended.."));
+		int timeout = 0;
+		while (timeout < 5) {
+			Sleep(1000);
+			timeout++;
+			task_set_progress(task, timeout * 20);
 		}
 	}
-#endif
 	task_set_finished(task, true);
 }
 
@@ -503,11 +618,12 @@ void App::Load(Platform::String^ entryPoint)
 	if (isAppReady) {
 		return;
 	}
-
+#ifndef IS_LEVEL_93
 	auto catalog = Windows::ApplicationModel::PackageCatalog::OpenForCurrentPackage();
 
 	catalog->PackageInstalling +=
 		ref new TypedEventHandler<PackageCatalog^, PackageInstallingEventArgs^>(this, &App::OnPackageInstalling);
+#endif
 	isAppReady = true;
 }
 
@@ -535,21 +651,38 @@ void App::Run()
 		}
 		});
 
+	settings_t* settings = config_get_ptr();
 	for (;;)
 	{
+		static int frameCounter = 0;  // Frame counter to keep track of frame skips
+
 		int ret;
 		CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-		ret = runloop_iterate();
+		// Only process every second frame
+		if (settings->bools.core_limit_fps_enable) {
+			if (frameCounter % 2 == 0) {
+				ret = runloop_iterate();
+				task_queue_check();
+			}
+			frameCounter++;  // Increment frame counter
 
-		task_queue_check();
+			// Reset frame counter to prevent it from growing too large
+			if (frameCounter >= 1000) {
+				frameCounter = 0;
+			}
+		}
+		else {
+			ret = runloop_iterate();
+			task_queue_check();
+		}
 
 		if (!x)
 		{
 			/* HACK: I have no idea why is this necessary but
-		  * it is required to get proper scaling on Xbox *
-			 * Perhaps PreferredLaunchViewSize is broken and
-		  * we need to wait until the app starts to call TryResizeView */
+			* it is required to get proper scaling on Xbox *
+			* Perhaps PreferredLaunchViewSize is broken and
+			* we need to wait until the app starts to call TryResizeView */
 			m_windowResized = true;
 			x = true;
 		}
@@ -727,6 +860,7 @@ void App::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 	*/
 }
 
+#ifndef IS_LEVEL_93
 void App::OnEnteredBackground(Platform::Object^ sender, EnteredBackgroundEventArgs^ args)
 {
 	/* RetroArch entered background because another app/frontend
@@ -734,6 +868,7 @@ void App::OnEnteredBackground(Platform::Object^ sender, EnteredBackgroundEventAr
 	if (m_launchOnExitShutdown)
 		CoreApplication::Exit();
 }
+#endif
 
 void App::OnBackRequested(Platform::Object^ sender, Windows::UI::Core::BackRequestedEventArgs^ args)
 {
@@ -918,6 +1053,7 @@ void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
 	/* Probably can be ignored? */
 }
 
+#ifndef IS_LEVEL_93
 void App::OnPackageInstalling(PackageCatalog^ sender,
 	PackageInstallingEventArgs^ args)
 {
@@ -929,6 +1065,7 @@ void App::OnPackageInstalling(PackageCatalog^ sender,
 		runloop_msg_queue_push(msg, 1, 5 * 60, false, NULL, MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
 	}
 }
+#endif
 
 void App::ParseProtocolArgs(Windows::ApplicationModel::Activation::IActivatedEventArgs^ args, int* argc, std::vector<char*>* argv, std::vector<std::string>* argvTmp)
 {
@@ -1005,36 +1142,52 @@ extern "C" {
 
 	bool win32_set_video_mode(void* data, unsigned width, unsigned height, bool fullscreen)
 	{
-		if (App::GetInstance()->IsInitialized())
-		{
-			if (fullscreen !=
-				ApplicationView::GetForCurrentView()->IsFullScreenMode)
-			{
-				if (fullscreen)
-					ApplicationView::GetForCurrentView()->TryEnterFullScreenMode();
-				else
-					ApplicationView::GetForCurrentView()->ExitFullScreenMode();
-			}
-			ApplicationView::GetForCurrentView()->TryResizeView(Size(width, height));
-		}
-		else
-		{
-			/* In case the window is not activated yet,
-		  * TryResizeView will fail and we have to set the
-		  * initial parameters instead
-			 * Note that these are preserved after restarting the app
-		  * and used for the UWP splash screen size (!), so they
-		  * should be set only during init and not changed afterwards */
-			ApplicationView::PreferredLaunchViewSize = Size(width, height);
-			ApplicationView::PreferredLaunchWindowingMode = fullscreen ? ApplicationViewWindowingMode::FullScreen : ApplicationViewWindowingMode::PreferredLaunchViewSize;
-		}
+		volatile bool finished = false;
+		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+			CoreDispatcherPriority::Normal,
+			ref new Windows::UI::Core::DispatchedHandler([&]()
+				{
+					if (App::GetInstance()->IsInitialized())
+					{
+						if (fullscreen !=
+							ApplicationView::GetForCurrentView()->IsFullScreenMode)
+						{
+							if (fullscreen) {
+#if _M_ARM
+								ApplicationView::GetForCurrentView()->TryEnterFullScreenMode();
+#endif
+							}
+							else
+								ApplicationView::GetForCurrentView()->ExitFullScreenMode();
+						}
+						ApplicationView::GetForCurrentView()->TryResizeView(Size(width, height));
+					}
+					else
+					{
+						/* In case the window is not activated yet,
+					  * TryResizeView will fail and we have to set the
+					  * initial parameters instead
+						 * Note that these are preserved after restarting the app
+					  * and used for the UWP splash screen size (!), so they
+					  * should be set only during init and not changed afterwards */
+						ApplicationView::PreferredLaunchViewSize = Size(width, height);
+						ApplicationView::PreferredLaunchWindowingMode = fullscreen ? ApplicationViewWindowingMode::FullScreen : ApplicationViewWindowingMode::PreferredLaunchViewSize;
+					}
 
-		/* Setting the window size may sometimes fail "because UWP"
-		 * (i.e. we are on device with no windows, or Windows sandbox decides the window can't be that small)
-		 * so in case resizing fails we just send a resized event back to RetroArch with old size
-		 * (and report success because otherwise it bails out hard about failing
-		 * to set video mode) */
-		App::GetInstance()->SetWindowResized();
+					/* Setting the window size may sometimes fail "because UWP"
+					 * (i.e. we are on device with no windows, or Windows sandbox decides the window can't be that small)
+					 * so in case resizing fails we just send a resized event back to RetroArch with old size
+					 * (and report success because otherwise it bails out hard about failing
+					 * to set video mode) */
+					App::GetInstance()->SetWindowResized();
+					finished = true;
+				}));
+		Windows::UI::Core::CoreWindow^ corewindow = Windows::UI::Core::CoreWindow::GetForCurrentThread();
+		while (!finished)
+		{
+			if (corewindow)
+				corewindow->Dispatcher->ProcessEvents(Windows::UI::Core::CoreProcessEventsOption::ProcessAllIfPresent);
+		}
 		return true;
 	}
 
@@ -1045,11 +1198,23 @@ extern "C" {
 
 	bool win32_get_client_rect(RECT* rect)
 	{
-		rect->top = ApplicationView::GetForCurrentView()->VisibleBounds.Top;
-		rect->left = ApplicationView::GetForCurrentView()->VisibleBounds.Left;
-		rect->bottom = ApplicationView::GetForCurrentView()->VisibleBounds.Bottom;
-		rect->right = ApplicationView::GetForCurrentView()->VisibleBounds.Right;
-
+		volatile bool finished = false;
+		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+			CoreDispatcherPriority::Normal,
+			ref new Windows::UI::Core::DispatchedHandler([&]()
+				{
+					rect->top = ApplicationView::GetForCurrentView()->VisibleBounds.Top;
+					rect->left = ApplicationView::GetForCurrentView()->VisibleBounds.Left;
+					rect->bottom = ApplicationView::GetForCurrentView()->VisibleBounds.Bottom;
+					rect->right = ApplicationView::GetForCurrentView()->VisibleBounds.Right;
+					finished = true;
+				}));
+		Windows::UI::Core::CoreWindow^ corewindow = Windows::UI::Core::CoreWindow::GetForCurrentThread();
+		while (!finished)
+		{
+			if (corewindow)
+				corewindow->Dispatcher->ProcessEvents(Windows::UI::Core::CoreProcessEventsOption::ProcessAllIfPresent);
+		}
 		return true;
 	}
 
@@ -1067,19 +1232,68 @@ extern "C" {
 		case DISPLAY_METRIC_MM_WIDTH:
 			/* 25.4 mm in an inch. */
 		{
-			int pixels_x = DisplayInformation::GetForCurrentView()->ScreenWidthInRawPixels;
-			int raw_dpi_x = DisplayInformation::GetForCurrentView()->RawDpiX;
-			int physical_width = pixels_x / raw_dpi_x;
-			*value = 254 * physical_width / 10;
+			try {
+				// Older builds don't have ScreenWidthInRawPixels
+				int pixels_x = DisplayInformation::GetForCurrentView()->ScreenWidthInRawPixels;
+				int raw_dpi_x = DisplayInformation::GetForCurrentView()->RawDpiX;
+				int physical_width = pixels_x / raw_dpi_x;
+				*value = 254 * physical_width / 10;
+			}
+			catch (...) {
+				try {
+					// Get the current window
+					auto currentWindow = CoreWindow::GetForCurrentThread();
+
+					// Get the display information
+					auto displayInfo = DisplayInformation::GetForCurrentView();
+
+					// Calculate the raw pixel width
+					float dpi = displayInfo->LogicalDpi;
+					float rawPixelsPerViewPixel = static_cast<LONG32>(Windows::Graphics::Display::DisplayInformation::GetForCurrentView()->ResolutionScale) / 100.0f;
+					int pixels_x = static_cast<int>(currentWindow->Bounds.Width * rawPixelsPerViewPixel);
+
+					int raw_dpi_x = DisplayInformation::GetForCurrentView()->RawDpiX;
+					int physical_width = pixels_x / raw_dpi_x;
+					*value = 254 * physical_width / 10;
+				}
+				catch (...) {
+					*value = 0;
+				}
+			}
 		}
 		return true;
 		case DISPLAY_METRIC_MM_HEIGHT:
 			/* 25.4 mm in an inch. */
 		{
-			int pixels_y = DisplayInformation::GetForCurrentView()->ScreenHeightInRawPixels;
-			int raw_dpi_y = DisplayInformation::GetForCurrentView()->RawDpiY;
-			int physical_height = pixels_y / raw_dpi_y;
-			*value = 254 * physical_height / 10;
+			try {
+				// Older builds don't have ScreenHeightInRawPixels
+				int pixels_y = DisplayInformation::GetForCurrentView()->ScreenHeightInRawPixels;
+				int raw_dpi_y = DisplayInformation::GetForCurrentView()->RawDpiY;
+				int physical_height = pixels_y / raw_dpi_y;
+				*value = 254 * physical_height / 10;
+			}
+			catch (...) {
+				try {
+					// Get the current window
+					auto currentWindow = CoreWindow::GetForCurrentThread();
+
+					// Get the display information
+					auto displayInfo = DisplayInformation::GetForCurrentView();
+
+					// Calculate the raw pixel width
+					float dpi = displayInfo->LogicalDpi;
+					float rawPixelsPerViewPixel = static_cast<LONG32>(Windows::Graphics::Display::DisplayInformation::GetForCurrentView()->ResolutionScale) / 100.0f;
+
+					// Calculate the raw pixel height using the same logic
+					int pixels_y = static_cast<int>(currentWindow->Bounds.Height * rawPixelsPerViewPixel);
+					int raw_dpi_y = DisplayInformation::GetForCurrentView()->RawDpiY;
+					int physical_height = pixels_y / raw_dpi_y;
+					*value = 254 * physical_height / 10;  // Assuming the same formula applies to Y
+				}
+				catch (...) {
+					*value = 0;
+				}
+			}
 		}
 		return true;
 		case DISPLAY_METRIC_DPI:
@@ -1132,12 +1346,14 @@ extern "C" {
 			CoreDispatcherPriority::Normal,
 			ref new Windows::UI::Core::DispatchedHandler([&surface_scale, &ret, &finished]()
 				{
+#ifndef IS_LEVEL_93
 					if (is_running_on_xbox())
 					{
 						const Windows::Graphics::Display::Core::HdmiDisplayInformation^ hdi = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView();
 						if (hdi)
 							ret = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionHeightInRawPixels;
 					}
+#endif
 
 		if (ret == -1)
 		{
@@ -1170,12 +1386,14 @@ extern "C" {
 			CoreDispatcherPriority::Normal,
 			ref new Windows::UI::Core::DispatchedHandler([&surface_scale, &returnValue, &finished]()
 				{
+#ifndef IS_LEVEL_93
 					if (is_running_on_xbox())
 					{
 						const Windows::Graphics::Display::Core::HdmiDisplayInformation^ hdi = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView();
 						if (hdi)
 							returnValue = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionWidthInRawPixels;
 					}
+#endif
 
 		if (returnValue == -1)
 		{
@@ -1199,6 +1417,7 @@ extern "C" {
 
 	void uwp_fill_installed_core_packages(struct string_list* list)
 	{
+#ifndef IS_LEVEL_93
 		for (auto package : Windows::ApplicationModel::Package::Current->Dependencies)
 		{
 			if (package->IsOptional)
@@ -1207,6 +1426,7 @@ extern "C" {
 				string_list_append(list, utf16_to_utf8_string_alloc((package->InstalledLocation->Path + L"\\cores")->Data()), attr);
 			}
 		}
+#endif
 	}
 
 	void uwp_input_next_frame(void* data)

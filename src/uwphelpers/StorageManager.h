@@ -1,49 +1,18 @@
-// UWP STORAGE MANAGER
-// Copyright (c) 2023 Bashar Astifan.
-// Email: bashar@astifan.online
-// Telegram: @basharastifan
-// GitHub: https://github.com/basharast/UWP2Win32
-
-// This code must keep support for lower builds (15063+)
-// Try always to find possible way to keep that support
-
-// Functions:
-// GetWorkingFolder()
-// SetWorkingFolder(std::string location)
-// GetInstallationFolder()
-// GetLocalFolder()
-// GetTempFolder()
-// GetPicturesFolder()
-// GetVideosFolder()
-// GetDocumentsFolder()
-// GetMusicFolder()
-// GetPreviewPath(std::string path)
-//
-// CreateFileUWP(std::string path, int accessMode, int shareMode, int openMode)
-// CreateFileUWP(std::wstring path, int accessMode, int shareMode, int openMode)
-// GetFileStream(std::string path, const char* mode)
-// IsValidUWP(std::string path)
-// IsExistsUWP(std::string path)
-// IsDirectoryUWP(std::string path)
-// 
-// GetFolderContents(std::string path, bool deepScan = false)
-// GetFolderContents(std::wstring path, bool deepScan = false)
-// GetFileInfoUWP(std::string path)
-//
-// GetSizeUWP(std::string path)
-// DeleteUWP(std::string path)
-// CreateDirectoryUWP(std::string path, bool replaceExisting)
-// RenameUWP(std::string path, std::string name)
-// CopyUWP(std::string path, std::string name)
-// MoveUWP(std::string path, std::string name)
-//
-// OpenFile(std::string path)
-// OpenFolder(std::string path)
-// IsFirstStart()
-//
-// GetLogFile()
-// SaveLogs()
-// CleanupLogs()
+/*  RetroArch - A frontend for libretro.
+ *
+ *  Copyright (C) 2023-2024 - Bashar Astifan
+ *
+ *  RetroArch is free software: you can redistribute it and/or modify it under the terms
+ *  of the GNU General Public License as published by the Free Software Found-
+ *  ation, either version 3 of the License, or (at your option) any later version.
+ *
+ *  RetroArch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *  PURPOSE.  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along with RetroArch.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #pragma once 
 

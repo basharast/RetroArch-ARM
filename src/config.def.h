@@ -93,12 +93,21 @@
 #endif
 
 #ifdef HAVE_MATERIALUI
+#if IS_LEVEL_93
+/* Show icons to the left of each menu entry */
+#define DEFAULT_MATERIALUI_ICONS_ENABLE false
+/* Show boolean option ON/OFF icons */
+#define DEFAULT_MATERIALUI_SWITCH_ICONS false
+/* Show system-specific icons in the playlists tab */
+#define DEFAULT_MATERIALUI_PLAYLIST_ICONS_ENABLE false
+#else
 /* Show icons to the left of each menu entry */
 #define DEFAULT_MATERIALUI_ICONS_ENABLE true
 /* Show boolean option ON/OFF icons */
 #define DEFAULT_MATERIALUI_SWITCH_ICONS true
 /* Show system-specific icons in the playlists tab */
 #define DEFAULT_MATERIALUI_PLAYLIST_ICONS_ENABLE true
+#endif
 #endif
 
 /* Material UI colour theme */
@@ -131,25 +140,37 @@
 
 /* Default portrait/landscape playlist view modes
  * (when thumbnails are enabled) */
+#if IS_LEVEL_93
+#define DEFAULT_MATERIALUI_THUMBNAIL_VIEW_PORTRAIT MATERIALUI_THUMBNAIL_VIEW_PORTRAIT_DISABLED
+#define DEFAULT_MATERIALUI_THUMBNAIL_VIEW_LANDSCAPE MATERIALUI_THUMBNAIL_VIEW_LANDSCAPE_DISABLED
+#else
 #define DEFAULT_MATERIALUI_THUMBNAIL_VIEW_PORTRAIT MATERIALUI_THUMBNAIL_VIEW_PORTRAIT_LIST_SMALL
 #define DEFAULT_MATERIALUI_THUMBNAIL_VIEW_LANDSCAPE MATERIALUI_THUMBNAIL_VIEW_LANDSCAPE_LIST_MEDIUM
+#endif
 
 /* Enable second thumbnail when using 'list view'
  * thumbnail views
  * Note: Second thumbnail will only be drawn if
  * display has sufficient horizontal real estate */
+#if IS_LEVEL_93
+#define DEFAULT_MATERIALUI_DUAL_THUMBNAIL_LIST_VIEW_ENABLE false
+#else
 #if defined(RARCH_MOBILE)
 #define DEFAULT_MATERIALUI_DUAL_THUMBNAIL_LIST_VIEW_ENABLE false
 #else
 #define DEFAULT_MATERIALUI_DUAL_THUMBNAIL_LIST_VIEW_ENABLE true
+#endif
 #endif
 
 /* Draw solid colour 4:3 background when rendering
  * thumbnails
  * > Helps to unify menu appearance when viewing
  *   thumbnails of different sizes */
+#if IS_LEVEL_93
+#define DEFAULT_MATERIALUI_THUMBNAIL_BACKGROUND_ENABLE false
+#else
 #define DEFAULT_MATERIALUI_THUMBNAIL_BACKGROUND_ENABLE true
-
+#endif
 #define DEFAULT_SCREEN_BRIGHTNESS 100
 
 #define DEFAULT_CRT_SWITCH_RESOLUTION CRT_SWITCH_NONE
@@ -321,7 +342,8 @@
  * into a single (compressed) file for improved
  * load times on platforms with slow IO */
 #define DEFAULT_CORE_INFO_CACHE_ENABLE true
-#define DEFAULT_CORE_RESOLVE_WIN32_ENABLE true
+#define DEFAULT_CORE_RESOLVE_WIN32_ENABLE false
+#define DEFAULT_CORE_LIMIT_FPS_ENABLE false
 
 /* Specifies whether to 'reload' (fork and quit)
  * RetroArch when launching content with the

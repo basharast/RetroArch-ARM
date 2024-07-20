@@ -228,7 +228,7 @@ int retro_vfs_file_remove_impl(const char* path)
 	windowsize_path(path_wide);
 
 	/* Try Win32 first, this should work in AppData */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 	result = DeleteFileW(path_wide);
 #else
 	result = DeleteFileFromAppW(path_wide);
@@ -351,7 +351,7 @@ libretro_vfs_implementation_file* retro_vfs_file_open_impl(
 		creationDisposition = (mode & RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING) != 0
 		? OPEN_ALWAYS
 		: CREATE_ALWAYS;
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 	if ((file_handle = CreateFile2(path_wstring.data(), desireAccess, FILE_SHARE_READ, creationDisposition, NULL)) == INVALID_HANDLE_VALUE) {
 #else
 	if ((file_handle = CreateFile2FromAppW(path_wstring.data(), desireAccess, FILE_SHARE_READ, creationDisposition, NULL)) == INVALID_HANDLE_VALUE) {
@@ -420,7 +420,7 @@ static int uwp_mkdir_impl(std::experimental::filesystem::path dir)
 		return -1;
 
 	/* Check if file attributes can be gotten successfully  */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 	if (GetFileAttributesEx(dir.parent_path().wstring().c_str(), GetFileExInfoStandard, &lpFileInfo))
 #else
 	if (GetFileAttributesExFromAppW(dir.parent_path().wstring().c_str(), GetFileExInfoStandard, &lpFileInfo))
@@ -455,7 +455,7 @@ static int uwp_mkdir_impl(std::experimental::filesystem::path dir)
 
 
 	/* Try Win32 first, this should work in AppData */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 	if (CreateDirectory(dir.wstring().c_str(), NULL))
 #else
 	if (CreateDirectoryFromAppW(dir.wstring().c_str(), NULL))
@@ -497,7 +497,7 @@ static int uwp_move_path(
 		bool parent_dir_exists = false;
 
 		/* Make sure that parent path exists */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 		if (GetFileAttributesEx(new_path.parent_path().wstring().c_str(), GetFileExInfoStandard, &lpFileInfo))
 #else
 		if (GetFileAttributesExFromAppW(new_path.parent_path().wstring().c_str(), GetFileExInfoStandard, &lpFileInfo))
@@ -529,7 +529,7 @@ static int uwp_move_path(
 		}
 
 		/* Make sure that source path exists */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 		if (GetFileAttributesEx(old_path.wstring().c_str(), GetFileExInfoStandard, &lpFileInfo))
 #else
 		if (GetFileAttributesExFromAppW(old_path.wstring().c_str(), GetFileExInfoStandard, &lpFileInfo))
@@ -545,7 +545,7 @@ static int uwp_move_path(
 					int result;
 					/* create the target dir */
 					BOOL state = 0;
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 					state = CreateDirectory(new_path.wstring().c_str(), NULL);
 #else
 					state = CreateDirectoryFromAppW(new_path.wstring().c_str(), NULL);
@@ -562,7 +562,7 @@ static int uwp_move_path(
 				{
 					/* The file that we want to move exists so we can copy it now
 					 * check if target file already exists. */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 					if (GetFileAttributesEx(new_path.wstring().c_str(), GetFileExInfoStandard, &targetfileinfo))
 #else
 					if (GetFileAttributesExFromAppW(new_path.wstring().c_str(), GetFileExInfoStandard, &targetfileinfo))
@@ -573,7 +573,7 @@ static int uwp_move_path(
 							&& targetfileinfo.dwFileAttributes != 0
 							&& (!(targetfileinfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)))
 						{
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 							if (DeleteFile(new_path.wstring().c_str()) || DeleteUWP(new_path.wstring()))
 #else
 							if (DeleteFileFromAppW(new_path.wstring().c_str()))
@@ -581,7 +581,7 @@ static int uwp_move_path(
 								return -1;
 						}
 					}
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 					if (!MoveFileEx(old_path.wstring().c_str(), new_path.wstring().c_str(), 0))
 #else
 					if (!MoveFileFromAppW(old_path.wstring().c_str(), new_path.wstring().c_str()))
@@ -603,7 +603,7 @@ static int uwp_move_path(
 				{
 					int result;
 					/* create the target dir */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 					if (!CreateDirectory(new_path.wstring().c_str(), NULL)) {
 #else
 					if (!CreateDirectoryFromAppW(new_path.wstring().c_str(), NULL)) {
@@ -621,7 +621,7 @@ static int uwp_move_path(
 				{
 					/* The file that we want to move exists so we can copy it now
 					 * check if target file already exists. */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 					if (GetFileAttributesEx(new_path.wstring().c_str(), GetFileExInfoStandard, &targetfileinfo))
 #else
 					if (GetFileAttributesExFromAppW(new_path.wstring().c_str(), GetFileExInfoStandard, &targetfileinfo))
@@ -632,7 +632,7 @@ static int uwp_move_path(
 							&& uwpItemInfo.attributes != 0
 							&& (!(uwpItemInfo.attributes & FILE_ATTRIBUTE_DIRECTORY)))
 						{
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 							if (DeleteFile(new_path.wstring().c_str())) {
 #else
 							if (DeleteFileFromAppW(new_path.wstring().c_str())) {
@@ -656,7 +656,7 @@ static int uwp_move_path(
 								return -1;
 						}
 					}
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 					if (!MoveFileEx(old_path.wstring().c_str(), new_path.wstring().c_str(), 0)) {
 #else
 					if (!MoveFileFromAppW(old_path.wstring().c_str(), new_path.wstring().c_str())) {
@@ -681,7 +681,7 @@ static int uwp_move_path(
 		 * First we have to get a list of files in the dir. */
 		wchar_t* filteredPath = wcsdup(old_path.wstring().c_str());
 		wcscat_s(filteredPath, sizeof(L"\\*.*"), L"\\*.*");
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 		searchResults = FindFirstFileEx(filteredPath, FindExInfoBasic, &findDataResult, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
 #else
 		searchResults = FindFirstFileExFromAppW(filteredPath, FindExInfoBasic, &findDataResult, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
@@ -703,7 +703,7 @@ static int uwp_move_path(
 						& FILE_ATTRIBUTE_DIRECTORY)
 					{
 						BOOL state = 0;
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 						state = CreateDirectory(temp_new.wstring().c_str(), NULL);
 #else
 						state = CreateDirectoryFromAppW(temp_new.wstring().c_str(), NULL);
@@ -720,7 +720,7 @@ static int uwp_move_path(
 						/* The file that we want to move exists so we can copy
 						 * it now.
 						 * Check if target file already exists. */
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 						if (GetFileAttributesEx(temp_new.wstring().c_str(), GetFileExInfoStandard, &targetfileinfo))
 #else
 						if (GetFileAttributesExFromAppW(temp_new.wstring().c_str(), GetFileExInfoStandard, &targetfileinfo))
@@ -733,7 +733,7 @@ static int uwp_move_path(
 								&& (!(targetfileinfo.dwFileAttributes
 									& FILE_ATTRIBUTE_DIRECTORY)))
 							{
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 								if (DeleteFile(temp_new.wstring().c_str()))
 #else
 								if (DeleteFileFromAppW(temp_new.wstring().c_str()))
@@ -741,7 +741,7 @@ static int uwp_move_path(
 									fail = true;
 							}
 						}
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 						if (!MoveFileEx(temp_old.wstring().c_str(), temp_new.wstring().c_str(), 0))
 #else
 						if (!MoveFileFromAppW(temp_old.wstring().c_str(), temp_new.wstring().c_str()))
@@ -775,7 +775,7 @@ static int uwp_move_path(
 						if (item.attributes
 							& FILE_ATTRIBUTE_DIRECTORY)
 						{
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 							if (!CreateDirectory(temp_new.wstring().c_str(), NULL)) {
 #else
 							if (!CreateDirectoryFromAppW(temp_new.wstring().c_str(), NULL)) {
@@ -801,7 +801,7 @@ static int uwp_move_path(
 									&& (!(targetfileinfo.attributes
 										& FILE_ATTRIBUTE_DIRECTORY)))
 								{
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 									if (DeleteFile(temp_new.wstring().c_str())) {
 #else
 									if (DeleteFileFromAppW(temp_new.wstring().c_str())) {
@@ -815,7 +815,7 @@ static int uwp_move_path(
 									}
 								}
 							}
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 							if (!MoveFileEx(temp_old.wstring().c_str(), temp_new.wstring().c_str(), 0)) {
 #else
 							if (!MoveFileFromAppW(temp_old.wstring().c_str(), temp_new.wstring().c_str())) {
@@ -870,7 +870,7 @@ int retro_vfs_exists_impl(const char* path) {
 	path_wide = utf8_to_utf16_string_alloc(path);
 	windowsize_path(path_wide);
 
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 	if (GetFileAttributesEx(path_wide, GetFileExInfoStandard, &attribdata))
 #else
 	if (GetFileAttributesExFromAppW(path_wide, GetFileExInfoStandard, &attribdata))
@@ -900,8 +900,9 @@ int retro_vfs_stat_impl(const char* path, int32_t * size)
 	windowsize_path(path_wide);
 
 	/* Try Win32 first, this should work in AppData */
-#if defined(_M_ARM)
-	if (GetFileAttributesEx(path_wide, GetFileExInfoStandard, &attribdata))
+#if defined(_M_ARM) || IS_LEVEL_93
+	BOOL result = GetFileAttributesExW(path_wide, GetFileExInfoStandard, &attribdata);
+	if (result)
 #else
 	if (GetFileAttributesExFromAppW(path_wide, GetFileExInfoStandard, &attribdata))
 #endif
@@ -990,7 +991,7 @@ libretro_vfs_implementation_dir* retro_vfs_opendir_impl(
 	path_buf[copied + 1] = '\0';
 
 	path_wide = utf8_to_utf16_string_alloc(path_buf);
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 	rdir->directory = FindFirstFileEx(path_wide, FindExInfoStandard, &rdir->entry, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
 #else
 	rdir->directory = FindFirstFileExFromAppW(path_wide, FindExInfoStandard, &rdir->entry, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
@@ -1098,7 +1099,7 @@ void uwp_set_acl(const wchar_t* path, const wchar_t* AccessString)
 	ACL* AccessControlNew = NULL;
 	SECURITY_INFORMATION SecurityInfo = DACL_SECURITY_INFORMATION;
 	PSID SecurityIdentifier = NULL;
-#if defined(_M_ARM)
+#if defined(_M_ARM) || IS_LEVEL_93
 	HANDLE original_file = CreateFile2(path, GENERIC_READ | GENERIC_WRITE | WRITE_DAC, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, NULL);
 #else
 	HANDLE original_file = CreateFile2(path, GENERIC_READ | GENERIC_WRITE | WRITE_DAC, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, NULL);

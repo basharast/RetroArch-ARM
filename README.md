@@ -17,26 +17,29 @@ With more than 70+ core
 
 # Target (ARM32)
 
-- It should work with Build: 15035+ 
-- (14393 with few cores)
+- Windows 15035+ Full cores
+- Windows 14393 with few cores
+- Windows 10586 with few cores
+- DirectX Feature level 11, 9.3 & 9.1
+
 
 ## ARM64 or Latest
+
 - This repo for ARM32, legacy support only
 - Refer to the official repo for any updates [Click here](https://retroarch.com/?page=platforms)
 - Please don't ask or contact me for other than ARM32
 - This repo is not meant to be up-to date fork (nor redistribution)
 
 # UWP improvements
+
 This app supported by [UWP2Win32](https://github.com/basharast/UWP2Win32)
 
+
 # Cores updater
+
 The current cores downloader/updater linked with my repo at `docs/cores`
 
 if you want to help to get/fix more cores for ARM please submit pull request with the target core or contact me
-
-
-# Recently added
-- EasyRPG (supported only with `1.15.5` or higher)
 
 
 # Future
@@ -60,18 +63,27 @@ if you want to help to get/fix more cores for ARM please submit pull request wit
 
 RetroArch Team done great job to make this project if you would like to support them <a href="https://www.retroarch.com/index.php?page=donate">Click Here</a>
 
+
 # Building
 
-- You need SDKs: 18362 and 14393
+- You need SDKs: 19041 and 14393
 - Use Visual Studio 2022
 - Goto pkg\msvc-uwp
 - Use only `RetroArch-msvc2019-UWP.sln` 
-- You can build it as `ReleaseANGLE` or `ReleaseANGLE GL`
-- `ReleaseANGLE GL` for devices with no DirectX 11.x support
-- There is also Release 14393 (pointless, no much cores)
+- You can build it as `ReleaseANGLE`
+- There is also Release 14393 (no much cores)
 - To ensure cores loaded correctly, you can make them built-in
 - Built-in cores must be at `pkg\msvc-uwp\RetroArch-msvc2019-UWP\cores`
 
+
+## D3D 9.3 & 9.1
+
+- Use `ReleaseANGLE Legacy`
+- Or create new config from `ReleaseANGLE 14393 D3D` 
+- Define `IS_LEVEL_93` in project Preprocessors
+- Remove the following from project Preprocessors
+- - `HAVE_OZONE`
+- - `HAVE_XMB`
 
 ## Important
 
@@ -79,6 +91,15 @@ This project maintained for legacy hardware, when something don't work well on m
 
 please don't open issue for it, I have no interests to support other than ARM32
 
+## WinRT Surface
+
+I'm refering to the ARM32 old one, it was before super slow and the reason was:
+
+- Only ANGLE was used to support older devices
+- ANGLE don't have support for feature level 9.1
+- It will fallback to WARP device (more like software render)
+- 5~ frames per seconds was expected (WARP is super slow)
+- With the latest update in theory it's expected to work under DirectX and should be fast.
 
 # Note
 

@@ -2,7 +2,6 @@
 *.bmpobj
 *.binobj
 *.so
-*.dll
 *.a
 *.elf
 *.dol
@@ -77,7 +76,6 @@ libretro-super
 run.sh
 convert_rumble.awk
 *~
-assets
 info
 content_favorites.lpl
 content_history.lpl

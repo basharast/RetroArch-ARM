@@ -23,6 +23,9 @@
 #define SCREENSHOT_DURATION_IN            66
 #define SCREENSHOT_DURATION_OUT           SCREENSHOT_DURATION_IN*10
 
+extern void rgui_direct_msg(char* msg);
+extern void rgui_clear_msg();
+
 struct gfx_widget_screenshot_state
 {
    uintptr_t texture;
@@ -132,7 +135,9 @@ void gfx_widget_screenshot_taken(
    settings_t *settings                 = config_get_ptr();
    dispgfx_widget_t *p_dispwidget       = (dispgfx_widget_t*)data;
    gfx_widget_screenshot_state_t *state = &p_w_screenshot_st;
-
+#if IS_LEVEL_93
+   rgui_direct_msg(filename);
+#endif
    if (settings->uints.notification_show_screenshot_flash != NOTIFICATION_SHOW_SCREENSHOT_FLASH_OFF)
       gfx_widgets_play_screenshot_flash(p_dispwidget);
 
@@ -150,6 +155,9 @@ static void gfx_widget_screenshot_dispose(void *userdata)
    state->loaded  = false;
    video_driver_texture_unload(&state->texture);
    state->texture = 0;
+#if IS_LEVEL_93
+   rgui_clear_msg();
+#endif
 }
 
 static void gfx_widget_screenshot_end(void *userdata)
@@ -190,6 +198,9 @@ static void gfx_widget_screenshot_free(void)
 
    state->alpha         = 0.0f;
    gfx_widget_screenshot_dispose(NULL);
+#if IS_LEVEL_93
+   rgui_clear_msg();
+#endif
 }
 
 static void gfx_widget_screenshot_context_destroy(void)

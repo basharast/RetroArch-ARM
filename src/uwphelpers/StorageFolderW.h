@@ -1,35 +1,18 @@
-// UWP STORAGE MANAGER
-// Copyright (c) 2023 Bashar Astifan.
-// Email: bashar@astifan.online
-// Telegram: @basharastifan
-// GitHub: https://github.com/basharast/UWP2Win32
-
-// This code must keep support for lower builds (15063+)
-// Try always to find possible way to keep that support
-
-// Functions:
-// IsValid()
-// GetPath()
-// GetName()
-// Delete()
-// Equal(std::string path)
-// Equal(Path path)
-// Equal(Platform::String^ path)
-// Equal(StorageFolder^ folder)
-// GetSize(bool updateCache)
-// CreateFolder(std::string name, bool replaceExisting)
-// CreateFile(std::string name)
-// Rename(std::string name)
-// GetAllFiles(bool useWindowsIndexer)
-// GetAllFolders(bool useWindowsIndexer)
-// Contains(Path path, IStorageItem^& storageItem)
-// Contains(std::string item)
-// Copy(StorageFolderW folder)
-// Move(StorageFolderW destination)
-// GetHandle(HANDLE* handle, HANDLE_ACCESS_OPTIONS access)
-// GetProperties()
-// GetStorageFolder()
-// GetFileStream(std::string name, const char* mode)
+/*  RetroArch - A frontend for libretro.
+ *
+ *  Copyright (C) 2023-2024 - Bashar Astifan
+ *
+ *  RetroArch is free software: you can redistribute it and/or modify it under the terms
+ *  of the GNU General Public License as published by the Free Software Found-
+ *  ation, either version 3 of the License, or (at your option) any later version.
+ *
+ *  RetroArch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *  PURPOSE.  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along with RetroArch.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #pragma once 
 
@@ -497,11 +480,13 @@ public:
 			if (handle == INVALID_HANDLE_VALUE || hr != S_OK) {
 				// We have no other option, fallback to UWP
 				// This need to sum all files inside
-            int total = 0;
+            /*int total = 0;
 				auto files = GetAllFiles(total, true);
 				for each (auto file in files) {
 					folderSize += file.GetSize();
-				}
+				}*/
+            // Don't try to fetch using UWP, mostly will stuck
+            folderSize = 1; // Anything
 			}
 			else {
 				LARGE_INTEGER size{ 0 };
