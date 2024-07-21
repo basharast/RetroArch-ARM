@@ -42,13 +42,6 @@ The current cores downloader/updater linked with my repo at `docs/cores`
 if you want to help to get/fix more cores for ARM please submit pull request with the target core or contact me
 
 
-# Future
-
-- Help me add Dynarec for Flycast: [GitHub Issue here](https://github.com/flyinghead/flycast/issues/545)
-
-- ~~Help me to solve N64 issue: [GitHub Issue here](https://github.com/mupen64plus/mupen64plus-video-rice/issues/102)~~ [Solved]
-
-
 # Credits
 
 - <a href="https://www.retroarch.com/">RetroArch</a> Developed by RetroArch Team 

@@ -88,7 +88,6 @@ autoconfig
 config
 database
 overlays
-playlists
 states
 shaders/shaders_cg
 shaders/shaders_glsl
