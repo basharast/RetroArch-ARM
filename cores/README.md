@@ -2,13 +2,11 @@
 
 Tested on UWP & WOA versions including quick tests for the contents
 
-# Copy
+# Sources
 
-Those in total are more than 10GB, there is no way I can get them uploaded,
+Those in total are ~8GB > 1.5GB compressed,
 
-as well I have no interests to fill my profile with them as sources,
-
-to obtain the compress backup file please contact me at: bashar.astifan@outlook.com
+I have no interests to fill my profile with them as sources, get copy [here](https://mega.nz/folder/akgHWbSD#KYr2MEFqxHSTEJiX4uNXxw)
 
 # Supported Cores
 ## Not updated, more cores added
