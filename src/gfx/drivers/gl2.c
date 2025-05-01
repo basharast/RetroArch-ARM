@@ -1919,6 +1919,7 @@ static void gl2_overlay_tex_geom(void *data,
    tex[7]       = y + h;
 }
 
+extern float getScaleFix();
 static void gl2_render_overlay(gl2_t *gl)
 {
    unsigned i;
@@ -4074,9 +4075,10 @@ static bool gl2_alive(void *data)
 #ifdef __WINRT__
    if (is_running_on_xbox())
    {
+      float scaleFixBack = 1.f / getScaleFix();
       //match the output res to the display res
-      temp_width = uwp_get_width();
-      temp_height = uwp_get_height();
+      temp_width = uwp_get_width() * scaleFixBack;
+      temp_height = uwp_get_height() * scaleFixBack;
    }
 #endif
    if (quit)
@@ -4274,9 +4276,10 @@ error:
 static void gl2_viewport_info(void *data, struct video_viewport *vp)
 {
    unsigned top_y, top_dist;
-   gl2_t *gl        = (gl2_t*)data;
-   unsigned width  = gl->video_width;
-   unsigned height = gl->video_height;
+   float scaleFixBack = 1.f / getScaleFix();
+   gl2_t* gl = (gl2_t*)data;
+   unsigned width = gl->video_width * getScaleFix();
+   unsigned height = gl->video_height * getScaleFix();
 
    *vp             = gl->vp;
    vp->full_width  = width;

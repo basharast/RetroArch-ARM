@@ -227,9 +227,39 @@ static inline float ConvertDipsToPixels(float dips, float dpi)
 extern "C" {
 #endif
 	char localFolder[1024];
+
+	float gScaleFix = 1.0;
+
+	float getScaleFix() {
+		return gScaleFix;
+	}
 #ifdef __cplusplus
 }
 #endif
+
+const int HD_WIDTH = 1280;
+const int HD_HEIGHT = 720;
+
+void updateScale(int tWidth, int tHeight) {
+	float widthScale = static_cast<float>(HD_WIDTH) / tWidth;
+	float heightScale = static_cast<float>(HD_HEIGHT) / tHeight;
+
+	if (tWidth < tHeight) {
+		widthScale = static_cast<float>(HD_HEIGHT) / tWidth;
+		heightScale = static_cast<float>(HD_WIDTH) / tHeight;
+	}
+
+	float recommendedScale = min(widthScale, heightScale);
+
+	// Only update gScaleFix if the image needs to be scaled down (i.e., scale < 1)
+	if (recommendedScale < 1.0f) {
+		gScaleFix = recommendedScale;
+	}
+	else {
+		// If no scaling down needed, use default or previous scale
+		gScaleFix = 1.0f;
+	}
+}
 
 /* The main function is only used to initialize our IFrameworkView class. */
 [Platform::MTAThread]
@@ -366,6 +396,10 @@ void App::SetWindow(CoreWindow^ window)
 
 	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->BackRequested +=
 		ref new EventHandler<Windows::UI::Core::BackRequestedEventArgs^>(this, &App::OnBackRequested);
+
+	int tWidth = uwp_get_width();
+	int tHeight = uwp_get_height();
+	updateScale(tWidth, tHeight);
 }
 
 
@@ -966,8 +1000,8 @@ void App::OnPointerRelease(CoreWindow^ sender, PointerEventArgs^ args) {
 		uwp_next_input.mouse_right = args->CurrentPoint->Properties->IsRightButtonPressed;
 		uwp_next_input.mouse_button4 = args->CurrentPoint->Properties->IsXButton1Pressed;
 		uwp_next_input.mouse_button5 = args->CurrentPoint->Properties->IsXButton2Pressed;
-		uwp_next_input.mouse_screen_x = ConvertDipsToPixels(args->CurrentPoint->Position.X, dpi);
-		uwp_next_input.mouse_screen_y = ConvertDipsToPixels(args->CurrentPoint->Position.Y, dpi);
+		uwp_next_input.mouse_screen_x = ConvertDipsToPixels(args->CurrentPoint->Position.X * gScaleFix, dpi);
+		uwp_next_input.mouse_screen_y = ConvertDipsToPixels(args->CurrentPoint->Position.Y * gScaleFix, dpi);
 		uwp_next_input.mouse_rel_x = uwp_next_input.mouse_screen_x - uwp_current_input.mouse_screen_x;
 		uwp_next_input.mouse_rel_y = uwp_next_input.mouse_screen_y - uwp_current_input.mouse_screen_y;
 		if (args->CurrentPoint->Properties->IsHorizontalMouseWheel)
@@ -994,8 +1028,8 @@ void App::OnPointer(CoreWindow^ sender, PointerEventArgs^ args)
 		uwp_next_input.mouse_right = args->CurrentPoint->Properties->IsRightButtonPressed;
 		uwp_next_input.mouse_button4 = args->CurrentPoint->Properties->IsXButton1Pressed;
 		uwp_next_input.mouse_button5 = args->CurrentPoint->Properties->IsXButton2Pressed;
-		uwp_next_input.mouse_screen_x = ConvertDipsToPixels(args->CurrentPoint->Position.X, dpi);
-		uwp_next_input.mouse_screen_y = ConvertDipsToPixels(args->CurrentPoint->Position.Y, dpi);
+		uwp_next_input.mouse_screen_x = ConvertDipsToPixels(args->CurrentPoint->Position.X * gScaleFix, dpi);
+		uwp_next_input.mouse_screen_y = ConvertDipsToPixels(args->CurrentPoint->Position.Y * gScaleFix, dpi);
 		uwp_next_input.mouse_rel_x = uwp_next_input.mouse_screen_x - uwp_current_input.mouse_screen_x;
 		uwp_next_input.mouse_rel_y = uwp_next_input.mouse_screen_y - uwp_current_input.mouse_screen_y;
 		if (args->CurrentPoint->Properties->IsHorizontalMouseWheel)
@@ -1020,8 +1054,8 @@ void App::OnPointer(CoreWindow^ sender, PointerEventArgs^ args)
 
 		video_driver_translate_coord_viewport_wrap(
 			&vp,
-			ConvertDipsToPixels(args->CurrentPoint->Position.X, dpi),
-			ConvertDipsToPixels(args->CurrentPoint->Position.Y, dpi),
+			ConvertDipsToPixels(args->CurrentPoint->Position.X * gScaleFix, dpi),
+			ConvertDipsToPixels(args->CurrentPoint->Position.Y * gScaleFix, dpi),
 			&uwp_next_input.touch.x,
 			&uwp_next_input.touch.y,
 			&uwp_next_input.touch.full_x,
@@ -1260,6 +1294,7 @@ extern "C" {
 					*value = 0;
 				}
 			}
+			*value = *value * gScaleFix;
 		}
 		return true;
 		case DISPLAY_METRIC_MM_HEIGHT:
@@ -1294,6 +1329,7 @@ extern "C" {
 					*value = 0;
 				}
 			}
+			*value = *value * gScaleFix;
 		}
 		return true;
 		case DISPLAY_METRIC_DPI:
@@ -1324,8 +1360,8 @@ extern "C" {
 		if (*resize)
 		{
 			float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
-			*width = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Width, dpi);
-			*height = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Height, dpi);
+			*width = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Width * gScaleFix, dpi);
+			*height = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Height * gScaleFix, dpi);
 		}
 	}
 
@@ -1371,7 +1407,7 @@ extern "C" {
 			if (corewindow)
 				corewindow->Dispatcher->ProcessEvents(Windows::UI::Core::CoreProcessEventsOption::ProcessAllIfPresent);
 		}
-		return ret;
+		return ret * gScaleFix;
 	}
 
 	int uwp_get_width(void)
@@ -1412,7 +1448,7 @@ extern "C" {
 				corewindow->Dispatcher->ProcessEvents(Windows::UI::Core::CoreProcessEventsOption::ProcessAllIfPresent);
 		}
 
-		return returnValue;
+		return returnValue * gScaleFix;
 	}
 
 	void uwp_fill_installed_core_packages(struct string_list* list)
