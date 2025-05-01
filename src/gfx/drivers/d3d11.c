@@ -2315,7 +2315,7 @@ static bool d3d11_gfx_frame(
          d3d11->chain_formats[d3d11->chain_bit_depth],
          swapchain_flags);
 #else
-      DXGIResizeBuffers(d3d11->swapChain, 0, 0, 0,
+      DXGIResizeBuffers(d3d11->swapChain, 2, video_width, video_height,
          DXGI_FORMAT_UNKNOWN,
          swapchain_flags);
 #endif

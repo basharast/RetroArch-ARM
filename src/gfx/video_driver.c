@@ -3322,13 +3322,13 @@ bool video_driver_init_internal(bool *video_is_threaded, bool verbosity_enabled)
             aspectratio_lut[new_aspect_idx].value);
    }
 
-   if (     settings->bools.video_fullscreen 
+   /*if (     settings->bools.video_fullscreen 
          || (video_st->flags & VIDEO_FLAG_FORCE_FULLSCREEN))
    {
       width  = settings->uints.video_fullscreen_x;
       height = settings->uints.video_fullscreen_y;
    }
-   else
+   else*/
    {
 #ifdef __WINRT__
       if (is_running_on_xbox())

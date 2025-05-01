@@ -240,7 +240,9 @@ extern "C" {
 const int HD_WIDTH = 1280;
 const int HD_HEIGHT = 720;
 
-void updateScale(int tWidth, int tHeight) {
+void updateScale() {
+	int tWidth = uwp_get_width();
+	int tHeight = uwp_get_height();
 	float widthScale = static_cast<float>(HD_WIDTH) / tWidth;
 	float heightScale = static_cast<float>(HD_HEIGHT) / tHeight;
 
@@ -396,10 +398,6 @@ void App::SetWindow(CoreWindow^ window)
 
 	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->BackRequested +=
 		ref new EventHandler<Windows::UI::Core::BackRequestedEventArgs^>(this, &App::OnBackRequested);
-
-	int tWidth = uwp_get_width();
-	int tHeight = uwp_get_height();
-	updateScale(tWidth, tHeight);
 }
 
 
@@ -784,6 +782,9 @@ void App::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^
 		CoreApplication::Exit();
 		return;
 	}
+
+	updateScale();
+
 	m_initialized = true;
 
 	//if (is_running_on_xbox())
@@ -825,6 +826,11 @@ void App::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^
 				height);
 			reset = true; /* Reset needed */
 		}
+
+		if (gScaleFix != 1.f) {
+			reset = true;
+		}
+
 		if (reset) /* Restart driver */
 			command_event(CMD_EVENT_REINIT, NULL);
 	}
@@ -1165,8 +1171,9 @@ extern "C" {
 
 	bool is_running_on_xbox(void)
 	{
-		Platform::String^ device_family = Windows::System::Profile::AnalyticsInfo::VersionInfo->DeviceFamily;
-		return (device_family == L"Windows.Xbox");
+		/*Platform::String^ device_family = Windows::System::Profile::AnalyticsInfo::VersionInfo->DeviceFamily;
+		return (device_family == L"Windows.Xbox");*/
+		return true;
 	}
 
 	bool win32_has_focus(void* data)
@@ -1348,21 +1355,10 @@ extern "C" {
 	{
 		static bool is_xbox = is_running_on_xbox();
 		*quit = App::GetInstance()->IsWindowClosed();
-		if (is_xbox)
-		{
-			settings_t* settings = config_get_ptr();
-			*width = settings->uints.video_fullscreen_x != 0 ? settings->uints.video_fullscreen_x : uwp_get_width();
-			*height = settings->uints.video_fullscreen_y != 0 ? settings->uints.video_fullscreen_y : uwp_get_height();
-			return;
-		}
 
+		*width = uwp_get_width();
+		*height = uwp_get_height();
 		*resize = App::GetInstance()->CheckWindowResized();
-		if (*resize)
-		{
-			float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
-			*width = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Width * gScaleFix, dpi);
-			*height = ConvertDipsToPixels(CoreWindow::GetForCurrentThread()->Bounds.Height * gScaleFix, dpi);
-		}
 	}
 
 	void* uwp_get_corewindow(void)
@@ -1383,12 +1379,12 @@ extern "C" {
 			ref new Windows::UI::Core::DispatchedHandler([&surface_scale, &ret, &finished]()
 				{
 #ifndef IS_LEVEL_93
-					if (is_running_on_xbox())
-					{
-						const Windows::Graphics::Display::Core::HdmiDisplayInformation^ hdi = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView();
-						if (hdi)
-							ret = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionHeightInRawPixels;
-					}
+					//if (is_running_on_xbox())
+					//{
+					//	const Windows::Graphics::Display::Core::HdmiDisplayInformation^ hdi = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView();
+					//	if (hdi)
+					//		ret = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionHeightInRawPixels;
+					//}
 #endif
 
 		if (ret == -1)
@@ -1423,12 +1419,12 @@ extern "C" {
 			ref new Windows::UI::Core::DispatchedHandler([&surface_scale, &returnValue, &finished]()
 				{
 #ifndef IS_LEVEL_93
-					if (is_running_on_xbox())
-					{
-						const Windows::Graphics::Display::Core::HdmiDisplayInformation^ hdi = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView();
-						if (hdi)
-							returnValue = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionWidthInRawPixels;
-					}
+					//if (is_running_on_xbox())
+					//{
+					//	const Windows::Graphics::Display::Core::HdmiDisplayInformation^ hdi = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView();
+					//	if (hdi)
+					//		returnValue = Windows::Graphics::Display::Core::HdmiDisplayInformation::GetForCurrentView()->GetCurrentDisplayMode()->ResolutionWidthInRawPixels;
+					//}
 #endif
 
 		if (returnValue == -1)
@@ -1584,8 +1580,8 @@ extern "C" {
 	const char* uwp_get_cpu_model_name(void)
 	{
 		/* TODO/FIXME - Xbox codepath should have a hardcoded CPU model name */
-		if (is_running_on_xbox()) {}
-		else
+		/*if (is_running_on_xbox()) {}
+		else*/
 		{
 			Platform::String^ cpu_id = nullptr;
 			Platform::String^ cpu_name = nullptr;
